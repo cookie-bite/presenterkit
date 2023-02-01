@@ -1,0 +1,30 @@
+{
+    "name": "chatapp",
+    "version": "0.0.1",
+    "description": "Chat app",
+    "author": "Ali Mammadli",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.18.2"
+    },
+    "main": "electron.js",
+    "scripts": {
+        "start": "cd client && npm run build && cd .. && electron .",
+        "build-react": "cd client && npm run build",
+        "electron:start": "wait-on http://127.0.0.1:3000 && electron .",
+        "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
+        "electron:build": "npm run build-react && electron-builder",
+        "kill:process": "kill -9 $(lsof -ti:3000)"
+    },
+    "build": {
+        "appId": "com.electron.chatapp"
+    },
+    "devDependencies": {
+        "concurrently": "^7.6.0",
+        "cross-env": "^7.0.3",
+        "electron": "^22.2.0",
+        "electron-builder": "^23.6.0",
+        "wait-on": "^7.0.1"
+    }
+}
