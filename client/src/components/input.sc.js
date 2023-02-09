@@ -1,8 +1,18 @@
 import React, { useState } from 'react'
 
 
+const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
+
 export const Input = () => {
     const [text, setText] = useState('')
+
+    const send = () => {
+        if (text.trim() !== '') {
+            ws.send(JSON.stringify({ message: text, params: { room: 2 } }))
+            setText('')
+            console.log('sent messages:', text)
+        }
+    }
 
     const sty = {
         inputView: {
@@ -47,7 +57,7 @@ export const Input = () => {
     return (
         <div style={sty.inputView}>
             <input style={sty.input} type="text" name="text" autoComplete='off' placeholder="Type a question..." value={text} onChange={(e) => setText(e.target.value)} />
-            {text && <button style={sty.sendButton} onClick={() => console.log('clicked')}>
+            {text && <button style={sty.sendButton} onClick={() => send()}>
                 <img style={sty.sendButtonIcon} src="/icons/arrow-up.svg" />
             </button>}
         </div>

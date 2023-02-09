@@ -4,10 +4,15 @@ import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/
 import { useControl } from 'react-three-gui'
 import { DirectionalLightHelper } from 'three'
 
+
+const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
+
 export const Scene = () => {
     const [isMobile, setIsMobile] = useState(null)
     const [texts, setTexts] = useState([])
     const [activeText, setActiveText] = useState('What is your pain point?')
+
+    const [userId, setUserId] = useState([])
 
     const dLight = useRef()
 
@@ -54,6 +59,29 @@ export const Scene = () => {
         "dba2e6", "76fc1b", "608fa4", "20f6ba", "07d7f6", "dce77a", "77ecca"
     ]
 
+    ws.onopen = () => console.log('WebSocket Client Connected' + ws.readyState)
+
+    ws.onmessage = ({ data }) => {
+        console.log('got reply!', JSON.parse(data).message)
+
+
+        setTexts([...texts, {
+            sentence: JSON.parse(data).message,
+            pos: isMobile
+                ? [
+                    Math.random() * (3 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
+                    (2 + Math.random() * (8 + texts.length / 2.5)) * [-1, 1][Math.floor(Math.random() * 2)],
+                    Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
+                ]
+                : [
+                    Math.random() * (10 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
+                    (2 + Math.random() * (texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)],
+                    Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
+                ],
+            color: `#${colorsArray[Math.floor(Math.random() * colorsArray.length)]}`
+        }])
+    }
+
     const checkIsMobile = () => {
         try {
             document.createEvent('TouchEvent')
@@ -79,11 +107,6 @@ export const Scene = () => {
 
         setTexts([...texts, {
             sentence,
-            // pos: [
-            //     Math.random() * (10 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
-            //     (2 + Math.random() * (texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)],
-            //     Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-            // ],
             pos: isMobile
                 ? [
                     Math.random() * (3 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
@@ -102,8 +125,8 @@ export const Scene = () => {
 
     useEffect(() => {
         if (isMobile === null) checkIsMobile()
-        if (texts.length < 30) setTimeout(() => genText(), 3000)
-        fetch('http://localhost:3000/api').then(res => res.json()).then(res => console.log({ res: res.message }))
+        // if (texts.length < 30) setTimeout(() => genText(), 3000)
+        // fetch('http://localhost:3000/api').then(res => res.json()).then(res => console.log({ res: res.message }))
     }, [texts])
 
 
@@ -164,7 +187,6 @@ export const Scene = () => {
                     <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05}>
                         {activeText}
                         <meshNormalMaterial />
-                        {/* <meshStandardMaterial attach="material" color={'hotpink'} /> */}
                     </Text3D>
                 </Center>
                 <Selection>
@@ -178,8 +200,6 @@ export const Scene = () => {
                                     <Center>
                                         <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
                                             {text.sentence}
-                                            {/* <meshNormalMaterial /> */}
-                                            {/* <meshStandardMaterial attach="material" color={'hotpink'} /> */}
                                             <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
                                         </Text3D>
                                         {/* <mesh rotation={[0, 0, Math.PI / 2]}>
