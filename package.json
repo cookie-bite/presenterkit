@@ -13,6 +13,7 @@
     "scripts": {
         "start": "cd client && npm run build && cd .. && electron .",
         "start:node": "cd client && npm run build && cd .. && node app",
+        "build:node": "cd client && npm install && npm run build && cd .. && node app",
         "build:react": "cd client && npm run build",
         "electron:start": "wait-on http://127.0.0.1:3000 && electron .",
         "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
