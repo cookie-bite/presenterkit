@@ -11,10 +11,10 @@
     "main": "electron.js",
     "scripts": {
         "start": "cd client && npm run build && cd .. && electron .",
-        "build-react": "cd client && npm run build",
+        "build:react": "cd client && npm run build",
         "electron:start": "wait-on http://127.0.0.1:3000 && electron .",
         "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
-        "electron:build": "npm run build-react && electron-builder",
+        "electron:build": "npm run build:react && electron-builder",
         "kill:process": "kill -9 $(lsof -ti:3000)"
     },
     "build": {

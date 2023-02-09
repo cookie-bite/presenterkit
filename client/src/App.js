@@ -1,31 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
-import { useEffect, useState } from 'react';
-
-function App() {
-    const [msg, setMsg] = useState()
-
-    useEffect(() => {
-        fetch('http://localhost:3000/api').then(res => res.json()).then(res => setMsg(res.message))
-    }, [])
+import { Controls } from 'react-three-gui'
+import { Scene } from './components/core.sc'
+import { Input } from './components/input.sc'
 
 
+export const App = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>{msg}</p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
-    );
+        <Controls.Provider>
+            <Controls.Canvas shadows>
+                <Scene />
+            </Controls.Canvas>
+            {/* <Controls title='Settings' /> */}
+            <Input />
+        </Controls.Provider>
+    )
 }
-
-export default App;
