@@ -5,8 +5,7 @@ import { useControl } from 'react-three-gui'
 import { DirectionalLightHelper } from 'three'
 
 
-// const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
-const ws = new WebSocket(`ws://${window.location.hostname}`)
+const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
 
 export const Scene = () => {
     const [isMobile, setIsMobile] = useState(null)

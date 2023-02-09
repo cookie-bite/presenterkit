@@ -39,5 +39,4 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname + '/client/build')))
 app.get('/api', (req, res) => res.json({ message: 'From api with love' }))
 
 // app.listen(3000, () => { console.log('App running on port 3000 🔥') })
-// server.listen(3000, '0.0.0.0', () => { console.log(`App running on port 3000 🔥`); wss.on('error', console.error) })
-server.listen(process.env.PORT, () => { console.log(`App running on port ${process.env.PORT} 🔥`); wss.on('error', console.error) })
+server.listen(3000, '0.0.0.0', () => { console.log(`App running on port 3000 🔥`); wss.on('error', console.error) })
