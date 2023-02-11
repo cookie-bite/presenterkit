@@ -45,6 +45,17 @@ input:focus, select:focus, textarea:focus, button:focus {
     outline: none;
 }
 
+/* canvas {
+    user-select: none;
+    user-zoom: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+} */
+
 
 
 @media (prefers-color-scheme: light) {

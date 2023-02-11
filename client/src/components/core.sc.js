@@ -12,8 +12,6 @@ export const Scene = () => {
     const [texts, setTexts] = useState([])
     const [activeText, setActiveText] = useState('What is your pain point?')
 
-    const [userId, setUserId] = useState([])
-
     const dLight = useRef()
 
     const colorsArray = [
@@ -63,10 +61,15 @@ export const Scene = () => {
 
     ws.onmessage = ({ data }) => {
         console.log('got reply!', JSON.parse(data).message)
+        const sentence = JSON.parse(data).message
+        let tempColor = `#${(Math.random() * 0xFFFFFF << 0).toString(16)}`
+        const color = tempColor.length === 7 ? tempColor : `${tempColor}f`
 
 
         setTexts([...texts, {
-            sentence: JSON.parse(data).message,
+            // color: `#${colorsArray[Math.floor(Math.random() * colorsArray.length)]}`
+            color,
+            sentence,
             pos: isMobile
                 ? [
                     Math.random() * (3 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
@@ -77,8 +80,7 @@ export const Scene = () => {
                     Math.random() * (10 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
                     (2 + Math.random() * (texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)],
                     Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-                ],
-            color: `#${colorsArray[Math.floor(Math.random() * colorsArray.length)]}`
+                ]
         }])
     }
 
@@ -136,7 +138,7 @@ export const Scene = () => {
 
         const posX = useControl('Pos X', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 14, min: -10, max: 50 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 80, min: -10, max: 100 })
 
 
         useEffect(() => {
@@ -149,7 +151,7 @@ export const Scene = () => {
 
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[posX, posY, isMobile ? 45 : 14]} fov={50} near={0.01} far={1500} makeDefault />
+                <PerspectiveCamera ref={camera} position={[posX, posY, isMobile ? 80 : 24]} fov={30} near={0.01} far={1500} makeDefault />
                 <OrbitControls ref={controls} />
             </>
         )
@@ -174,13 +176,29 @@ export const Scene = () => {
     }
 
 
-    const Text = () => {
+    const Effect = (props) => {
         const kernelSize = useControl('Kerner', { type: 'number', group: 'Effect', value: 3, min: 0, max: 5 })
         const luminanceThreshold = useControl('Threshold', { type: 'number', group: 'Effect', value: 0, min: 0, max: 2 })
         const luminanceSmoothing = useControl('Smoothing', { type: 'number', group: 'Effect', value: 0.4, min: 0, max: 2 })
         const intensity = useControl('Intensity', { type: 'number', group: 'Effect', value: 0.2, min: 0, max: 2 })
 
 
+        return (
+            isMobile
+                ? props.children
+                : <Selection>
+                    <EffectComposer>
+                        <SelectiveBloom lights={[dLight]} kernelSize={kernelSize} luminanceThreshold={luminanceThreshold} luminanceSmoothing={luminanceSmoothing} intensity={intensity} />
+                    </EffectComposer>
+                    <Select enabled>
+                        {props.children}
+                    </Select>
+                </Selection>
+        )
+    }
+
+
+    const Text = () => {
         return (
             <>
                 <Center>
@@ -189,29 +207,24 @@ export const Scene = () => {
                         <meshNormalMaterial />
                     </Text3D>
                 </Center>
-                <Selection>
-                    <EffectComposer>
-                        <SelectiveBloom lights={[dLight]} kernelSize={kernelSize} luminanceThreshold={luminanceThreshold} luminanceSmoothing={luminanceSmoothing} intensity={intensity} />
-                    </EffectComposer>
-                    <Select enabled>
-                        {texts.map((text, index) => {
-                            return (
-                                <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setActiveText(e.object.text)}>
-                                    <Center>
-                                        <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
-                                            {text.sentence}
-                                            <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
-                                        </Text3D>
-                                        {/* <mesh rotation={[0, 0, Math.PI / 2]}>
+                <Effect>
+                    {texts.map((text, index) => {
+                        return (
+                            <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setActiveText(e.object.text)}>
+                                <Center>
+                                    <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
+                                        {text.sentence}
+                                        <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
+                                    </Text3D>
+                                    {/* <mesh rotation={[0, 0, Math.PI / 2]}>
                                             <capsuleGeometry args={[0.2, 0.6, 5, 20]} />
                                             <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
                                         </mesh> */}
-                                    </Center>
-                                </Float>
-                            )
-                        })}
-                    </Select>
-                </Selection>
+                                </Center>
+                            </Float>
+                        )
+                    })}
+                </Effect>
             </>
         )
     }
