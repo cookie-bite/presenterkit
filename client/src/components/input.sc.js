@@ -34,6 +34,7 @@ export const Input = () => {
             padding: '10px 15px',
             color: 'white',
             backdropFilter: 'saturate(180%) blur(20px)',
+            '-webkit-backdrop-filter': 'saturate(180%) blur(20px)',
             backgroundColor: 'var(--thin-material)',
             transition: 'all 1s ease-out'
         },
