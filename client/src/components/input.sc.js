@@ -57,7 +57,7 @@ export const Input = () => {
 
     return (
         <div style={sty.inputView}>
-            <input style={sty.input} type="text" name="text" autoComplete='off' placeholder="Type a question..." value={text} onChange={(e) => setText(e.target.value)} />
+            <input style={sty.input} type="text" name="text" autoComplete='off' placeholder="Type a question..." value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }} />
             {text && <button style={sty.sendButton} onClick={() => send()}>
                 <img style={sty.sendButtonIcon} src="/icons/arrow-up.svg" />
             </button>}
