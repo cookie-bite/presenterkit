@@ -67,22 +67,6 @@ export const Scene = () => {
     //         if (i !== 0 && i % limiter === 0) sentence += '\n'
     //     }
     //     sentence = sentence.trim()
-
-    //     setTexts([...texts, {
-    //         sentence,
-    //         pos: stateSnap.isMobile
-    //             ? [
-    //                 Math.random() * (3 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
-    //                 (2 + Math.random() * (8 + texts.length / 2.5)) * [-1, 1][Math.floor(Math.random() * 2)],
-    //                 Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-    //             ]
-    //             : [
-    //                 Math.random() * (10 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
-    //                 (2 + Math.random() * (texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)],
-    //                 Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-    //             ],
-    //         color: `#${colorsArray[Math.floor(Math.random() * colorsArray.length)]}`
-    //     }])
     // }
 
     const hexToHsl = (hex) => {
@@ -204,6 +188,21 @@ export const Scene = () => {
     const Text = () => {
         const stateSnap = useSnapshot(state)
 
+        const wrap = (text) => {
+            let temp = 0
+            return [...text].map(c => {
+                if (c === ' ') {
+                    if (temp === 4) {
+                        temp = 0
+                        return '\n'
+                    } else {
+                        temp++
+                        return c
+                    }
+                } else return c
+            }).join('')
+        }
+
 
         return (
             <>
@@ -219,7 +218,7 @@ export const Scene = () => {
                             <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => state.activeText = e.object.text}>
                                 <Center>
                                     <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
-                                        {text.sentence}
+                                        {wrap(text.sentence)}
                                         <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
                                     </Text3D>
                                     {/* <mesh rotation={[0, 0, Math.PI / 2]}>
