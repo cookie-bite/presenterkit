@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
+import { useSnapshot } from 'valtio'
+import { STApp } from '../stores/app.store'
 
 
-const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
-
-export const Input = () => {
+export const Input = ({ ws }) => {
+    const appSnap = useSnapshot(STApp)
     const [text, setText] = useState('')
 
     const send = () => {
         if (text.trim() !== '') {
-            ws.send(JSON.stringify({ message: text, params: { room: 2 } }))
+            ws.send(JSON.stringify({ command: 'NEW_MSG', userId: appSnap.userId, userName: appSnap.userName, message: text, params: { room: 2 } }))
             setText('')
-            console.log('sent messages:', text)
         }
     }
 
@@ -41,10 +41,13 @@ export const Input = () => {
         sendButton: {
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             border: 'none',
             height: 44,
+            width: 44,
             borderRadius: 22,
             marginRight: 10,
+            padding: 0,
             backgroundColor: 'var(--system-blue)',
             transition: 'all 1s ease-out'
         },

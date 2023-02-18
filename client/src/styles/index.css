@@ -16,20 +16,20 @@ body,
 body {
     margin: 0;
     background: black;
-    font-family: 'Inter', Helvetica, Arial, sans-serif;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Helvetica, Arial, 'Inter', sans-serif;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 input, button {
-    font-family: 'Inter', Helvetica, Arial, sans-serif;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Helvetica, Arial, 'Inter', sans-serif;
 }
 
-@font-face {
+/* @font-face {
     font-family: 'Inter';
     src: url('/public/fonts/Inter.ttf') format('truetype');
-}
+} */
 
 
 

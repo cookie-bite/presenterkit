@@ -4,51 +4,65 @@ import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/
 import { useControl } from 'react-three-gui'
 import { DirectionalLightHelper } from 'three'
 import { proxy, useSnapshot } from 'valtio'
+import { STApp } from '../stores/app.store'
 
 
-const ws = new WebSocket(`ws://${window.location.hostname}:3000`)
 
-export const Scene = () => {
+export const Scene = ({ ws }) => {
+    const openingText = 'Welcome to WWDC23'
+
     const state = proxy({
         isMobile: null,
         texts: [],
-        activeText: 'Welcome to WWDC23'
+        activeText: openingText,
+        activeUser: null
     })
+
+    const questions = [
+        'What languages do you speak?',
+        'What\'s an unpopular opinion you have?',
+        'What\'s the worst movie you\'ve ever seen?',
+        'What\'s one of your favorite comfort foods?',
+        'What\'s the story behind one of your scars?',
+        'What is something you can never seem to finish?',
+        'Do you ever sing when you\'re alone? What songs?',
+        'In your group of friends, what role do you play?',
+        'What\'s your favorite piece of clothing you own?',
+        'What have you created that you are most proud of?',
+        'If you were a vegetable, what vegetable would you be?',
+        'What would you do on a free afternoon in the middle of the week?',
+        'Who is one of your best friends, and what do you love about them?',
+        'When was the last time you changed your opinion about something major?',
+        'SABAH Vll Karyera Qış Məktəbində psixologiya üzrə fəlsəfə elmlər doktoru',
+        'What incredibly strong opinion do you have that is completely unimportant in the grand scheme of things?'
+    ]
 
     const dLight = useRef()
 
-    ws.onopen = () => console.log('WebSocket Client Connected' + ws.readyState)
+    ws.onmessage = (wsData) => {
+        const data = JSON.parse(wsData.data)
+        console.log(data)
 
-    ws.onmessage = ({ data }) => {
-        console.log('got reply!', JSON.parse(data).message)
-        const sentence = JSON.parse(data).message
-        let tempColor = `#${(Math.random() * 0xFFFFFF << 0).toString(16)}`
-        const colorT = tempColor.length === 7 ? tempColor : `${tempColor}f`
-        const color = hslToHex(hexToHsl(colorT).h, hexToHsl(colorT).s  < 30 ? 100 - hexToHsl(colorT).s : hexToHsl(colorT).s, hexToHsl(colorT).l < 50 ? 100 - hexToHsl(colorT).l : hexToHsl(colorT).l)
-
-
-        state.texts = [...state.texts, {
-            color,
-            sentence,
-            pos: state.isMobile
-                ? [
-                    Math.random() * (3 + state.texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
-                    (2 + Math.random() * (8 + state.texts.length / 2.5)) * [-1, 1][Math.floor(Math.random() * 2)],
-                    Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-                ]
-                : [
-                    Math.random() * (10 + state.texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)],
-                    (2 + Math.random() * (state.texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)],
-                    Math.random() * [-1, 1][Math.floor(Math.random() * 2)] - 3
-                ]
-        }]
+        if (data.command === 'INIT_WS') {
+            STApp.userId = data.user.id
+            STApp.userName = data.user.name
+            data.texts.length && genQuest(data.texts)
+        } else if (data.command === 'NEW_MSG') {
+            state.texts = [...state.texts, {
+                color: data.message.color,
+                sentence: data.message.sentence,
+                username: data.message.username,
+                pos: state.isMobile ? data.message.pos.mobile : data.message.pos.web
+            }]
+        } else if (data.command === 'ACT_TXT') {
+            state.activeText = data.text
+            state.activeUser = data.user
+        }
     }
 
     const checkIsMobile = () => {
-        console.log('[checkIsMobile]')
         try {
-            document.createEvent('TouchEvent')
-            state.isMobile = true
+            document.createEvent('TouchEvent'); state.isMobile = true
         } catch (e) {
             state.isMobile = false
         }
@@ -69,49 +83,41 @@ export const Scene = () => {
     //     sentence = sentence.trim()
     // }
 
-    const hexToHsl = (hex) => {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-        var r = parseInt(result[1], 16)
-        var g = parseInt(result[2], 16)
-        var b = parseInt(result[3], 16)
-        r /= 255, g /= 255, b /= 255
-        var max = Math.max(r, g, b), min = Math.min(r, g, b)
-        var h, s, l = (max + min) / 2
-        if (max == min) {
-            h = s = 0 // achromatic
-        } else {
-            var d = max - min
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6
-        }
+    const genQuest = (arr) => {
+        let demo = []
 
-        h = Math.round(h * 360)
-        s = Math.round(s * 100)
-        l = Math.round(l * 100)
+        arr.map((q) => {
+            demo.push({
+                color: q.color,
+                sentence: q.sentence,
+                username: q.username,
+                pos: state.isMobile ? q.pos.mobile : q.pos.web
+            })
+        })
 
-        return { h, s, l }
-    }
-
-    const hslToHex = (h, s, l) => {
-        l /= 100
-        const a = s * Math.min(l, 1 - l) / 100
-        const f = n => {
-            const k = (n + h / 30) % 12
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
-            return Math.round(255 * color).toString(16).padStart(2, '0')   // convert to Hex and prefix "0" if needed
-        }
-        return `#${f(0)}${f(8)}${f(4)}`
+        state.texts = demo
     }
 
 
     useEffect(() => {
-        // move checkIsMobile() to App.js
         checkIsMobile()
+        // genQuest(questions)
+
+        // if (document.documentElement.requestFullscreen) {
+        //     document.documentElement.requestFullscreen()
+        // } else if (document.documentElement.webkitRequestFullscreen) {
+        //     document.documentElement.webkitRequestFullscreen()
+        // }
+
+        const onKeyUp = (e) => {
+            if (e.key === 'Escape' || e.code === 'Escape') {
+                state.activeText = openingText
+                state.activeUser = null
+                ws.send(JSON.stringify({ command: 'ACT_TXT', text: openingText, user: null }))
+            }
+        }
+        window.addEventListener('keyup', onKeyUp)
+        return () => window.removeEventListener('keyup', onKeyUp)
     }, [])
 
 
@@ -123,7 +129,7 @@ export const Scene = () => {
 
         const posX = useControl('Pos X', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 80, min: -10, max: 100 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 26, min: -10, max: 100 })
 
 
         // useEffect(() => {
@@ -132,13 +138,14 @@ export const Scene = () => {
         //     // camera.current.position.set(0, 3, 4)
         //     controls.current.target.set(0, 1, 0)
         // }, [camera, controls])
-        
-        console.log('[CamnCon] isMobile:', stateSnap.isMobile)
+
+
+        console.log(stateSnap.activeText)
 
 
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[posX, posY, state.isMobile ? 80 : 24]} fov={30} near={0.01} far={1500} makeDefault />
+                <PerspectiveCamera ref={camera} position={[posX, posY, state.isMobile ? 80 : 26]} fov={30} near={0.01} far={1500} makeDefault />
                 <OrbitControls ref={controls} />
             </>
         )
@@ -164,18 +171,12 @@ export const Scene = () => {
 
 
     const Effect = (props) => {
-        const kernelSize = useControl('Kerner', { type: 'number', group: 'Effect', value: 3, min: 0, max: 5 })
-        const luminanceThreshold = useControl('Threshold', { type: 'number', group: 'Effect', value: 0, min: 0, max: 2 })
-        const luminanceSmoothing = useControl('Smoothing', { type: 'number', group: 'Effect', value: 0.4, min: 0, max: 2 })
-        const intensity = useControl('Intensity', { type: 'number', group: 'Effect', value: 0.2, min: 0, max: 2 })
-
-
         return (
             state.isMobile
                 ? props.children
                 : <Selection>
                     <EffectComposer>
-                        <SelectiveBloom lights={[dLight]} kernelSize={kernelSize} luminanceThreshold={luminanceThreshold} luminanceSmoothing={luminanceSmoothing} intensity={intensity} />
+                        <SelectiveBloom lights={[dLight]} kernelSize={3} luminanceThreshold={0} luminanceSmoothing={0.4} intensity={0.2} />
                     </EffectComposer>
                     <Select enabled>
                         {props.children}
@@ -203,28 +204,54 @@ export const Scene = () => {
             }).join('')
         }
 
+        const setActiveText = (e) => {
+            e.stopPropagation()
+
+            if (!state.isMobile) {
+                state.activeText = e.object.text
+                state.activeUser = e.object.username
+                ws.send(JSON.stringify({ command: 'ACT_TXT', text: e.object.text, user: e.object.username }))
+            }
+        }
+
+        const clamp = (a, n, x) => { return a <= n ? n : a >= x ? x : a }
 
         return (
             <>
                 <Center>
+                    <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.05} size={0.5} position={[0, 2, 0]}>
+                        {stateSnap.activeUser}
+                        <meshNormalMaterial />
+                    </Text3D>
                     <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05}>
-                        {stateSnap.activeText}
+                        {wrap(stateSnap.activeText)}
                         <meshNormalMaterial />
                     </Text3D>
                 </Center>
                 <Effect>
                     {stateSnap.texts.map((text, index) => {
                         return (
-                            <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => state.activeText = e.object.text}>
+                            <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setActiveText(e)}>
                                 <Center>
-                                    <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
-                                        {wrap(text.sentence)}
-                                        <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
-                                    </Text3D>
-                                    {/* <mesh rotation={[0, 0, Math.PI / 2]}>
-                                            <capsuleGeometry args={[0.2, 0.6, 5, 20]} />
+                                    <Center>
+                                        <Text3D font={'/fonts/json/inter_regular.json'} text={text.sentence} username={text.username} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
+                                            {wrap(text.sentence)}
                                             <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
-                                        </mesh> */}
+                                        </Text3D>
+                                    </Center>
+
+                                    <Center>
+                                        <mesh rotation={[0, 0, Math.PI / 2]} text={text.sentence} username={text.username} >
+                                            <planeGeometry args={[0.3 * text.sentence.length / 13, clamp(4 * text.sentence.length / 17, 0, 6)]} />
+                                            {/* <meshNormalMaterial /> */}
+                                            <meshStandardMaterial opacity={0} transparent />
+                                        </mesh>
+                                    </Center>
+
+                                    {/* <mesh rotation={[0, 0, Math.PI / 2]}>
+                                        <capsuleGeometry args={[0.2, 0.6, 5, 20]} />
+                                        <meshStandardMaterial attach="material" color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
+                                    </mesh> */}
                                 </Center>
                             </Float>
                         )
