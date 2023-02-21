@@ -1,21 +1,18 @@
-import { useRef, useEffect, useState } from 'react'
-import { useHelper, OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-three/drei'
+import { useRef, useEffect } from 'react'
+import { OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-three/drei'
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 import { useControl } from 'react-three-gui'
-import { DirectionalLightHelper } from 'three'
 import { proxy, useSnapshot } from 'valtio'
 import { STApp } from '../stores/app.store'
 
 
-
-export const Scene = ({ ws }) => {
+export const Scene = ({ ws, core }) => {
     const openingText = 'Welcome to WWDC23'
 
     const state = proxy({
-        isMobile: null,
         texts: [],
         activeText: openingText,
-        activeUser: null
+        activeUser: ''
     })
 
     const questions = [
@@ -46,13 +43,17 @@ export const Scene = ({ ws }) => {
         if (data.command === 'INIT_WS') {
             STApp.userId = data.user.id
             STApp.userName = data.user.name
-            data.texts.length && genQuest(data.texts)
+            if (data.texts.length) {
+                genQuest(data.texts)
+                state.activeText = data.active.text
+                state.activeUser = data.active.user
+            }
         } else if (data.command === 'NEW_MSG') {
             state.texts = [...state.texts, {
                 color: data.message.color,
                 sentence: data.message.sentence,
                 username: data.message.username,
-                pos: state.isMobile ? data.message.pos.mobile : data.message.pos.web
+                pos: core.isMobile ? data.message.pos.mobile : data.message.pos.web
             }]
         } else if (data.command === 'ACT_TXT') {
             state.activeText = data.text
@@ -60,13 +61,13 @@ export const Scene = ({ ws }) => {
         }
     }
 
-    const checkIsMobile = () => {
-        try {
-            document.createEvent('TouchEvent'); state.isMobile = true
-        } catch (e) {
-            state.isMobile = false
-        }
-    }
+    // const checkIsMobile = () => {
+    //     try {
+    //         document.createEvent('TouchEvent'); state.isMobile = true
+    //     } catch (e) {
+    //         state.isMobile = false
+    //     }
+    // }
 
     // const genText = () => {
     //     let sentence = ''
@@ -91,7 +92,7 @@ export const Scene = ({ ws }) => {
                 color: q.color,
                 sentence: q.sentence,
                 username: q.username,
-                pos: state.isMobile ? q.pos.mobile : q.pos.web
+                pos: core.isMobile ? q.pos.mobile : q.pos.web
             })
         })
 
@@ -100,7 +101,7 @@ export const Scene = ({ ws }) => {
 
 
     useEffect(() => {
-        checkIsMobile()
+        // checkIsMobile()
         // genQuest(questions)
 
         // if (document.documentElement.requestFullscreen) {
@@ -112,8 +113,8 @@ export const Scene = ({ ws }) => {
         const onKeyUp = (e) => {
             if (e.key === 'Escape' || e.code === 'Escape') {
                 state.activeText = openingText
-                state.activeUser = null
-                ws.send(JSON.stringify({ command: 'ACT_TXT', text: openingText, user: null }))
+                state.activeUser = ''
+                ws.send(JSON.stringify({ command: 'ACT_TXT', text: openingText, user: '' }))
             }
         }
         window.addEventListener('keyup', onKeyUp)
@@ -124,8 +125,6 @@ export const Scene = ({ ws }) => {
     const CamnCon = () => {
         const camera = useRef()
         const controls = useRef()
-
-        const stateSnap = useSnapshot(state)
 
         const posX = useControl('Pos X', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
@@ -140,12 +139,9 @@ export const Scene = ({ ws }) => {
         // }, [camera, controls])
 
 
-        console.log(stateSnap.activeText)
-
-
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[posX, posY, state.isMobile ? 80 : 26]} fov={30} near={0.01} far={1500} makeDefault />
+                <PerspectiveCamera ref={camera} position={[posX, posY, core.isMobile ? 80 : 26]} fov={30} near={0.01} far={1500} makeDefault />
                 <OrbitControls ref={controls} />
             </>
         )
@@ -172,7 +168,7 @@ export const Scene = ({ ws }) => {
 
     const Effect = (props) => {
         return (
-            state.isMobile
+            core.isMobile
                 ? props.children
                 : <Selection>
                     <EffectComposer>
@@ -191,23 +187,13 @@ export const Scene = ({ ws }) => {
 
         const wrap = (text) => {
             let temp = 0
-            return [...text].map(c => {
-                if (c === ' ') {
-                    if (temp === 4) {
-                        temp = 0
-                        return '\n'
-                    } else {
-                        temp++
-                        return c
-                    }
-                } else return c
-            }).join('')
+            return [...text].map(c => { if (c === ' ') { if (temp === 4) { temp = 0; return '\n' } else temp++; return c } else return c }).join('')
         }
 
         const setActiveText = (e) => {
             e.stopPropagation()
 
-            if (!state.isMobile) {
+            if (!core.isMobile) {
                 state.activeText = e.object.text
                 state.activeUser = e.object.username
                 ws.send(JSON.stringify({ command: 'ACT_TXT', text: e.object.text, user: e.object.username }))
@@ -243,7 +229,6 @@ export const Scene = ({ ws }) => {
                                     <Center>
                                         <mesh rotation={[0, 0, Math.PI / 2]} text={text.sentence} username={text.username} >
                                             <planeGeometry args={[0.3 * text.sentence.length / 13, clamp(4 * text.sentence.length / 17, 0, 6)]} />
-                                            {/* <meshNormalMaterial /> */}
                                             <meshStandardMaterial opacity={0} transparent />
                                         </mesh>
                                     </Center>
