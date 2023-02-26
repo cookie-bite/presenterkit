@@ -6,13 +6,15 @@ import { STApp } from '../stores/app.store'
 export const Input = ({ ws }) => {
     const appSnap = useSnapshot(STApp)
     const [text, setText] = useState('')
-
+    
+    
     const send = () => {
         if (text.trim() !== '') {
-            ws.send(JSON.stringify({ command: 'NEW_MSG', userId: appSnap.userId, userName: appSnap.userName, message: text, params: { room: 2 } }))
+            ws.send(JSON.stringify({ command: 'NEW_MSG', room: 1, userID: appSnap.userID, username: appSnap.username, quest: { label: text }, params: { room: 2 } }))
             setText('')
         }
     }
+
 
     const sty = {
         inputView: {
@@ -57,6 +59,7 @@ export const Input = ({ ws }) => {
             filter: 'invert(100%)'
         }
     }
+
 
     return (
         <div style={sty.inputView}>

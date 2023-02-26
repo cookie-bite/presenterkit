@@ -1,8 +1,8 @@
-import { proxy } from "valtio"
+import { proxy } from 'valtio'
 
 
 export const STApp = proxy({
-    userId: 0,
-    userName: '',
-    isMobile: false
+    uiName: 'Board',
+    userID: 0,
+    username: ''
 })

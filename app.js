@@ -6,9 +6,10 @@ const path = require('path')
 const app = express()
 const wss = new WebSocketServer({ port: 3001 })
 
-const CLIENTS = {}
-var texts = []
-var active = { text: 'Welcome to WWDC23', user: '' }
+const rooms = {}
+
+var quests = []
+var display = { quest: 'Welcome to WWDC23', author: '' }
 
 app.use(cors())
 app.use(express.json())
@@ -54,14 +55,14 @@ const genColor = () => {
             }
             h /= 6
         }
-    
+
         h = Math.round(h * 360)
         s = Math.round(s * 100)
         l = Math.round(l * 100)
-    
+
         return { h, s, l }
     }
-    
+
     const hslToHex = (h, s, l) => {
         l /= 100
         const a = s * Math.min(l, 1 - l) / 100
@@ -77,58 +78,66 @@ const genColor = () => {
     return hslToHex(hexToHsl(color).h, hexToHsl(color).s < 30 ? 100 - hexToHsl(color).s : hexToHsl(color).s, hexToHsl(color).l < 50 ? 100 - hexToHsl(color).l : hexToHsl(color).l)
 }
 
-const send = (obj) => {
-    for (const client in CLIENTS) {
-        if (CLIENTS[client].readyState === WebSocket.OPEN) {
-            CLIENTS[client].send(JSON.stringify(obj))
+const sendAll = (room, obj) => {
+    // Object.entries(rooms[room]).forEach(([, sock]) => sock.send({ message }))
+
+    for (const client in rooms[room]) {
+        if (rooms[room][client].readyState === WebSocket.OPEN) {
+            rooms[room][client].send(JSON.stringify(obj))
         }
     }
 }
 
 
 wss.on('connection', (ws) => {
-    const userId = require('crypto').randomBytes(4).toString('hex')
-    CLIENTS[userId] = ws
-    CLIENTS[userId].username = periodicTable.splice(Math.floor(Math.random() * periodicTable.length), 1)[0]
+    const userID = require('crypto').randomBytes(4).toString('hex')
 
-    console.log('Active users:', Object.keys(CLIENTS).length, '\nPeriodic table:', periodicTable.length)
+    ws.on('message', (msg) => {
+        const data = JSON.parse(msg)
 
-    ws.on('message', (wsData) => {
-        const data = JSON.parse(wsData)
+        if (data.command === 'JOIN_ROOM') {
+            if (!rooms[data.room]) rooms[data.room] = {}
+            rooms[data.room][userID] = ws
+            rooms[data.room][userID].username = periodicTable.splice(Math.floor(Math.random() * periodicTable.length), 1)[0]
+            ws.send(JSON.stringify({ command: 'INIT_WS', quests, display, user: { id: userID, name: rooms[data.room][userID].username } }))
+            console.log(`Active users: \x1b[32m${Object.keys(rooms[1]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+        } else if (data.command === 'NEW_MSG') {
+            console.log(`[${data.username}-${data.userID}]: \x1b[33m${data.quest.label}\x1b[0m`)
 
-        if (data.command === 'NEW_MSG') {
-            console.log(`[${data.userName}-${data.userId}]: \x1b[33m${data.message}\x1b[0m`)
-
-            const newText = {
+            quests.push({
                 color: genColor(),
-                sentence: data.message,
-                username: data.userName,
+                label: data.quest.label,
+                username: data.username,
                 pos: {
-                    web: [Math.random() * (10 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)], (2 + Math.random() * (texts.length / 3)) * [-1, 1][Math.floor(Math.random() * 2)], Math.random() * 1.5 * [-1, 1][Math.floor(Math.random() * 2)] - 3.5],
-                    mobile: [Math.random() * (3 + texts.length / 5) * [-1, 1][Math.floor(Math.random() * 2)], (2 + Math.random() * (8 + texts.length / 2.5)) * [-1, 1][Math.floor(Math.random() * 2)], Math.random() * 2 * [-1, 1][Math.floor(Math.random() * 2)] - 4]
+                    web: [Math.floor(Math.random() * (10 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (quests.length / 3)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 1.5 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 3.5],
+                    mobile: [Math.floor(Math.random() * (3 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (8 + quests.length / 2.5)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 2 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 4]
                 }
-            }
+            })
 
-            texts.push(newText)
-
-            send({ command: 'NEW_MSG', message: newText, user: { id: data.userId, name: data.userName } })
+            sendAll(data.room, { command: 'NEW_MSG', message: quests.at(-1), user: { id: data.userID, name: data.username } })
         } else if (data.command === 'ACT_TXT') {
-            console.log(`Active text: \x1b[33m[${data.user ? data.user : 'Author'}] ${data.text}\x1b[0m`)
-            active = { text: data.text, user: data.user }
-            send({ command: 'ACT_TXT', text: data.text, user: data.user })
+            console.log(`Display quest: \x1b[33m[${data.display.author ? data.display.author : 'Author'}] ${data.display.quest}\x1b[0m`)
+            display = data.display
+            sendAll(data.room, { command: 'ACT_TXT', display })
         }
     })
 
     ws.on('close', () => {
-        console.log(`[${CLIENTS[userId].username}-${userId}]\x1b[31m Disconnected\x1b[0m ☠️`)
-        periodicTable.push(CLIENTS[userId].username)
-        delete CLIENTS[userId]
-        console.log('Active users:', Object.keys(CLIENTS).length, '\nPeriodic table:', periodicTable.length)
+        Object.keys(rooms).forEach((room) => {
+            if (!rooms[room][userID]) return
+
+            periodicTable.push(rooms[room][userID].username)
+            console.log(`[${rooms[room][userID].username}-${userID}]\x1b[1;31m Disconnected\x1b[0m ☠️`)
+            console.log(`Active users: \x1b[32m${Object.keys(rooms[room]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+
+            if (Object.keys(rooms[room]).length === 1) {
+                console.log(`[Room-${room}]\x1b[1;31m is closed\x1b[0m ☠️`)
+                delete rooms[room]
+            } else delete rooms[room][userID]
+        })
     })
 
     ws.on('error', console.error)
-
-    setTimeout(() => ws.send(JSON.stringify({ command: 'INIT_WS', texts, active, user: { id: userId, name: CLIENTS[userId].username } })), 500)
 })
 
 
