@@ -96,6 +96,7 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(msg)
 
         if (data.command === 'JOIN_ROOM') {
+            console.log(data)
             if (!rooms[data.room]) rooms[data.room] = {}
             rooms[data.room][userID] = ws
             rooms[data.room][userID].username = periodicTable.splice(Math.floor(Math.random() * periodicTable.length), 1)[0]

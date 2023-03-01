@@ -85,7 +85,7 @@ export const Scene = ({ ws, core }) => {
         //     document.documentElement.webkitRequestFullscreen()
         // }
 
-        joinRoom(1)
+        joinRoom(STApp.userRoom)
 
         const onKeyUp = (e) => {
             if (e.key === 'Escape') {
@@ -98,7 +98,11 @@ export const Scene = ({ ws, core }) => {
             }
 
             if (e.altKey && e.code.slice(3) === 'A') {
-                STApp.uiName = 'Input'
+                STApp.uiName = 'Admin'
+            }
+
+            if (e.altKey && e.code.slice(3) === 'B') {
+                STApp.uiName = 'Board'
             }
         }
         window.addEventListener('keyup', onKeyUp)

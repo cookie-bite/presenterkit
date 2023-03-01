@@ -1,0 +1,62 @@
+.pageView {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.headerView {
+    
+}
+
+.header {
+    color: var(--primary-label);
+}
+
+.questView {
+    display: flex;
+}
+
+.questBody {
+    display: flex;
+    flex-direction: column;
+}
+
+.questList {
+    display: flex;
+    flex-direction: column;
+}
+
+.questAuthor {
+    color: var(--primary-label);
+}
+
+.questLabel {
+    color: var(--primary-label);
+}
+
+.questBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.sendButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    height: 44px;
+    width: 44px;
+    border-radius: 22px;
+    margin-right: 10px;
+    padding: 0;
+    background-color: var(--system-blue);
+    transition: all 1s ease-out;
+}
+
+.sendButtonIcon {
+    height: 30px;
+    width: 30px;
+    filter: invert(100%);
+}

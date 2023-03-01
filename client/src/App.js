@@ -1,8 +1,11 @@
 import { Controls } from 'react-three-gui'
-import { Scene } from './components/core.sc'
-import { Input } from './components/input.sc'
 import { useSnapshot } from 'valtio'
 import { STApp } from './stores/app.store'
+
+import { Scene } from './components/core.sc'
+import { Input } from './components/input.sc'
+import { Admin } from './admin/core.admin'
+
 
 const core = {}
 try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { core.isMobile = false }
@@ -24,7 +27,8 @@ export const App = () => {
                 </Controls.Canvas>
                 {/* <Controls title='Settings' /> */}
             </Controls.Provider>
-            <Input ws={ws} core={core} uiName={'Input'}/>
+            <Input ws={ws} core={core} uiName={'Board'} />
+            <Admin ws={ws} core={core} uiName={'Admin'} />
         </UISwap>
         // <>
         //     <Controls.Provider>
