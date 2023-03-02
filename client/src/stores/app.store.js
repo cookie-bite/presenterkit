@@ -5,6 +5,6 @@ export const STApp = proxy({
     uiName: 'Board',
     userID: 0,
     username: '',
-    adminRoom: 1,
+    adminRoom: 0,
     userRoom: 1
 })

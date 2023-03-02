@@ -101,7 +101,7 @@ wss.on('connection', (ws) => {
             rooms[data.room][userID] = ws
             rooms[data.room][userID].username = periodicTable.splice(Math.floor(Math.random() * periodicTable.length), 1)[0]
             ws.send(JSON.stringify({ command: 'INIT_WS', quests, display, user: { id: userID, name: rooms[data.room][userID].username } }))
-            console.log(`Active users: \x1b[32m${Object.keys(rooms[1]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+            // console.log(`Active users: \x1b[32m${Object.keys(rooms[1]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
         } else if (data.command === 'NEW_MSG') {
             console.log(`[${data.username}-${data.userID}]: \x1b[33m${data.quest.label}\x1b[0m`)
 

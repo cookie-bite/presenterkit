@@ -187,7 +187,7 @@ export const Scene = ({ ws, core }) => {
             }
         }
 
-        const clamp = (a, n, x) => { return a <= n ? n : a >= x ? x : a }
+        const clamp = (a, n, x) => a <= n ? n : a >= x ? x : a
 
         return (
             <>

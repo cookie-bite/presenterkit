@@ -10,7 +10,7 @@ export const Input = ({ ws }) => {
     
     const send = () => {
         if (text.trim() !== '') {
-            ws.send(JSON.stringify({ command: 'NEW_MSG', room: STApp.userRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: text }, params: { room: 2 } }))
+            ws.send(JSON.stringify({ command: 'NEW_MSG', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: text } }))
             setText('')
         }
     }

@@ -14,23 +14,30 @@ export const Admin = ({ ws, core }) => {
         const data = JSON.parse(msg.data)
         console.log(data)
 
-        if (data.command === 'NEW_MSG') setQuests([...quests, { author: data.message.username, label: data.message.label }])
+        if (data.command === 'NEW_MSG') setQuests([...quests, { userID: data.user.id, author: data.message.username, label: data.message.label }])
     }
 
-    const Quest = ({ data }) => {
+    const Quest = ({ data, index }) => {
         const send = () => {
-            console.log('click')
+            ws.send(JSON.stringify({ command: 'NEW_MSG', room: STApp.userRoom, userID: data.userID, username: data.author, quest: { label: data.label } }))
+        }
+
+        const close = () => {
+            console.log('hellou')
         }
 
         return (
             <div className={sty.questView}>
                 <div className={sty.questBody}>
-                    <h2 className={sty.questAuthor}>{data.author}</h2>
-                    <p className={sty.questLabel}>{data.label}</p>
+                    <h6 className={sty.questAuthor}>{data.author}</h6>
+                    <h3 className={sty.questLabel}>{data.label}</h3>
                 </div>
                 <div className={sty.questBtn}>
-                    <button className={sty.sendButton} onClick={() => send()}>
-                        <img className={sty.sendButtonIcon} src="/icons/arrow-up.svg" />
+                    <button className={sty.button} style={{ backgroundColor: 'var(--system-blue)' }} onClick={() => send()}>
+                        <img className={sty.buttonIcon} src="/icons/arrow-up.svg" />
+                    </button>
+                    <button className={sty.button} style={{ backgroundColor: 'var(--system-red)', marginLeft: 10}} onClick={() => close()}>
+                        <img className={sty.buttonIcon} src="/icons/close.svg" />
                     </button>
                 </div>
             </div>
@@ -67,7 +74,7 @@ export const Admin = ({ ws, core }) => {
                 <h1 className={sty.header}>Admin Panel</h1>
             </div>
             <div className={sty.questList}>
-                {quests.map((quest) => { return <Quest data={quest} /> })}
+                {quests.map((quest, index) => { return <Quest index data={quest} /> })}
             </div>
         </div>
     )

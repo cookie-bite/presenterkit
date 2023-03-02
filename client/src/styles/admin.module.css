@@ -2,6 +2,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+    align-items: center;
 }
 
 .headerView {
@@ -14,6 +15,8 @@
 
 .questView {
     display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }
 
 .questBody {
@@ -24,6 +27,7 @@
 .questList {
     display: flex;
     flex-direction: column;
+    width: 50%;
 }
 
 .questAuthor {
@@ -41,7 +45,7 @@
     margin-left: 20px;
 }
 
-.sendButton {
+.button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,11 +55,9 @@
     border-radius: 22px;
     margin-right: 10px;
     padding: 0;
-    background-color: var(--system-blue);
-    transition: all 1s ease-out;
 }
 
-.sendButtonIcon {
+.buttonIcon {
     height: 30px;
     width: 30px;
     filter: invert(100%);
