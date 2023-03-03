@@ -10,7 +10,8 @@ import { Admin } from './admin/core.admin'
 const core = {}
 try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { core.isMobile = false }
 
-const ws = new WebSocket(`ws://${window.location.hostname}:3001`)
+const boardWS = new WebSocket(`ws://${window.location.hostname}:3001`)
+const adminWS = new WebSocket(`ws://${window.location.hostname}:3001`)
 
 const UISwap = (props) => {
     const appSnap = useSnapshot(STApp)
@@ -23,12 +24,12 @@ export const App = () => {
         <UISwap>
             <Controls.Provider uiName={'Board'}>
                 <Controls.Canvas shadows>
-                    <Scene ws={ws} core={core} />
+                    <Scene ws={boardWS} core={core} />
                 </Controls.Canvas>
                 {/* <Controls title='Settings' /> */}
             </Controls.Provider>
-            <Input ws={ws} core={core} uiName={'Board'} />
-            <Admin ws={ws} core={core} uiName={'Admin'} />
+            <Input ws={boardWS} core={core} uiName={'Board'} />
+            <Admin ws={adminWS} core={core} uiName={'Admin'} />
         </UISwap>
         // <>
         //     <Controls.Provider>

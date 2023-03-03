@@ -7,6 +7,15 @@ const app = express()
 const wss = new WebSocketServer({ port: 3001 })
 
 const rooms = {}
+// const rooms = {
+//     0: {
+//         user2: {}
+//     },
+//     1: {
+//         user1: {},
+//         user2: {}
+//     }
+// }
 
 var quests = []
 var display = { quest: 'Welcome to WWDC23', author: '' }

@@ -106,7 +106,10 @@ export const Scene = ({ ws, core }) => {
             }
         }
         window.addEventListener('keyup', onKeyUp)
-        return () => window.removeEventListener('keyup', onKeyUp)
+        return () => {
+            ws.close()
+            window.removeEventListener('keyup', onKeyUp)
+        }
     }, [])
 
 

@@ -18,6 +18,7 @@ export const Admin = ({ ws, core }) => {
     }
 
     const Quest = ({ data, index }) => {
+        console.log(index)
         const send = () => {
             ws.send(JSON.stringify({ command: 'NEW_MSG', room: STApp.userRoom, userID: data.userID, username: data.author, quest: { label: data.label } }))
         }
@@ -27,7 +28,7 @@ export const Admin = ({ ws, core }) => {
         }
 
         return (
-            <div className={sty.questView}>
+            <div className={sty.questView} style={{ backgroundColor: `${index % 2 === 0 ? 'var(--secondary-sb)' : 'var(--quarternary-sb)'}` }}>
                 <div className={sty.questBody}>
                     <h6 className={sty.questAuthor}>{data.author}</h6>
                     <h3 className={sty.questLabel}>{data.label}</h3>
@@ -36,7 +37,7 @@ export const Admin = ({ ws, core }) => {
                     <button className={sty.button} style={{ backgroundColor: 'var(--system-blue)' }} onClick={() => send()}>
                         <img className={sty.buttonIcon} src="/icons/arrow-up.svg" />
                     </button>
-                    <button className={sty.button} style={{ backgroundColor: 'var(--system-red)', marginLeft: 10}} onClick={() => close()}>
+                    <button className={sty.button} style={{ backgroundColor: 'var(--system-red)', marginLeft: 5 }} onClick={() => close()}>
                         <img className={sty.buttonIcon} src="/icons/close.svg" />
                     </button>
                 </div>
@@ -74,7 +75,7 @@ export const Admin = ({ ws, core }) => {
                 <h1 className={sty.header}>Admin Panel</h1>
             </div>
             <div className={sty.questList}>
-                {quests.map((quest, index) => { return <Quest index data={quest} /> })}
+                {quests.map((quest, index) => { return <Quest index={index} data={quest} /> })}
             </div>
         </div>
     )
