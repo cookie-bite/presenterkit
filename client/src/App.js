@@ -7,7 +7,7 @@ import { Input } from './components/input.sc'
 import { Admin } from './admin/core.admin'
 
 
-const core = {}
+const core = { openingText: 'Welcome to WWDC23' }
 try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { core.isMobile = false }
 
 const boardWS = new WebSocket(`ws://${window.location.hostname}:3001`)
@@ -31,14 +31,5 @@ export const App = () => {
             <Input ws={boardWS} core={core} uiName={'Board'} />
             <Admin ws={adminWS} core={core} uiName={'Admin'} />
         </UISwap>
-        // <>
-        //     <Controls.Provider>
-        //         <Controls.Canvas shadows>
-        //             <Scene ws={ws} core={core} />
-        //         </Controls.Canvas>
-        //         {/* <Controls title='Settings' /> */}
-        //     </Controls.Provider>
-        //     <Input ws={ws} core={core} />
-        // </>
     )
 }

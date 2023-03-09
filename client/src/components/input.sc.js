@@ -10,7 +10,7 @@ export const Input = ({ ws }) => {
     
     const send = () => {
         if (text.trim() !== '') {
-            ws.send(JSON.stringify({ command: 'NEW_MSG', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: text } }))
+            ws.send(JSON.stringify({ command: 'APR_REQ', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: text } }))
             setText('')
         }
     }
@@ -63,9 +63,12 @@ export const Input = ({ ws }) => {
 
     return (
         <div style={sty.inputView}>
-            <input style={sty.input} type="text" name="text" autoComplete='off' placeholder="Type a question..." value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }} />
+            <input style={sty.input} type='text' name='text' autoComplete='off' placeholder='Type a question...' value={text} 
+                onChange={(e) => setText(e.target.value)} 
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }} 
+            />
             {text && <button style={sty.sendButton} onClick={() => send()}>
-                <img style={sty.sendButtonIcon} src="/icons/arrow-up.svg" />
+                <img style={sty.sendButtonIcon} src={'/icons/arrow-up.svg'} />
             </button>}
         </div>
     )

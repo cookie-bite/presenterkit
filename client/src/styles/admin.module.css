@@ -13,6 +13,45 @@
     color: var(--primary-label);
 }
 
+.displayView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 10px;
+    width: 50%;
+}
+
+.displayAuthor {
+    color: var(--primary-label);
+}
+
+.displayLabel {
+    color: var(--primary-label);
+}
+
+.displayBottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.displayInput {
+    display: flex;
+    flex: 1;
+    height: 44px;
+    border: none;
+    font-size: 17px;
+    border-radius: 22px;
+    margin-right: 10px;
+    padding: 10px 15px;
+    color: white;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    transition: all 1s ease-out;
+}
+
 .questView {
     display: flex;
     justify-content: space-between;
@@ -53,8 +92,8 @@
     height: 44px;
     width: 44px;
     border-radius: 22px;
-    margin-right: 10px;
     padding: 0;
+    background-color: var(--system-blue);
 }
 
 .buttonIcon {

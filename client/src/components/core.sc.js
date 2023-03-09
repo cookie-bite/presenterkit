@@ -7,11 +7,10 @@ import { STApp } from '../stores/app.store'
 
 
 export const Scene = ({ ws, core }) => {
-    const openingText = 'Welcome to WWDC23'
 
     const state = proxy({
         quests: [],
-        display: { quest: openingText, author: '' }
+        display: { quest: core.openingText, author: '' }
     })
 
     const questions = [
@@ -36,7 +35,7 @@ export const Scene = ({ ws, core }) => {
     const dLight = useRef()
 
     const joinRoom = (room) => {
-        ws.send(JSON.stringify({ command: 'JOIN_ROOM', room }))
+        ws.send(JSON.stringify({ command: 'JOIN_USRM', room }))
     }
 
     ws.onmessage = (msg) => {
@@ -50,15 +49,17 @@ export const Scene = ({ ws, core }) => {
                 genQuest(data.quests)
                 state.display = { quest: data.display.quest, author: data.display.author }
             }
-        } else if (data.command === 'NEW_MSG') {
+        } else if (data.command === 'SEND_USER') {
             state.quests = [...state.quests, {
+                effect: data.message.effect,
                 color: data.message.color,
                 label: data.message.label,
                 username: data.message.username,
                 pos: core.isMobile ? data.message.pos.mobile : data.message.pos.web
             }]
-        } else if (data.command === 'ACT_TXT') {
+        } else if (data.command === 'DISP_LBL') {
             state.display = data.display
+            if (data.display.author) state.quests[data.index].effect = false
         }
     }
 
@@ -67,6 +68,7 @@ export const Scene = ({ ws, core }) => {
 
         arr.map((q) => {
             demo.push({
+                effect: q.effect,
                 color: q.color,
                 label: q.label,
                 username: q.username,
@@ -89,10 +91,10 @@ export const Scene = ({ ws, core }) => {
 
         const onKeyUp = (e) => {
             if (e.key === 'Escape') {
-                state.display = { quest: openingText, author: '' }
-                ws.send(JSON.stringify({ command: 'ACT_TXT', room: 1, display: state.display }))
+                state.display = { quest: core.openingText, author: '' }
+                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: state.display }))
             }
-            
+
             if (e.altKey && e.code.slice(3) === 'D') {
                 window.open('http://localhost:3000', '_blank')
             }
@@ -173,7 +175,70 @@ export const Scene = ({ ws, core }) => {
     }
 
 
-    const Text = () => {
+    const Quest = ({ text, index }) => {
+
+        const wrap = (text) => {
+            let temp = 0
+            return [...text].map(c => { if (c === ' ') { if (temp === 4) { temp = 0; return '\n' } else temp++; return c } else return c }).join('')
+        }
+
+        const setDisplay = (e, index) => {
+            e.stopPropagation()
+
+            if (!core.isMobile) {
+                state.display = { quest: e.object.quest, author: e.object.author }
+                state.quests[index].effect = false
+                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: state.display, index }))
+            }
+        }
+
+        const clamp = (a, n, x) => a <= n ? n : a >= x ? x : a
+
+        console.log(index, text.effect)
+
+        return (
+            <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setDisplay(e, index)}>
+                <Center>
+                    <Center>
+                        <Text3D font={'/fonts/json/inter_regular.json'} quest={text.label} author={text.username} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
+                            {wrap(text.label)}
+                            <meshStandardMaterial attach='material' color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
+                        </Text3D>
+                    </Center>
+
+                    <Center>
+                        <mesh rotation={[0, 0, Math.PI / 2]} quest={text.label} author={text.username} >
+                            <planeGeometry args={[0.3 * text.label.length / 13, clamp(4 * text.label.length / 17, 0, 6)]} />
+                            <meshStandardMaterial opacity={0} transparent />
+                        </mesh>
+                    </Center>
+
+                    {/* <mesh rotation={[0, 0, Math.PI / 2]}>
+                        <capsuleGeometry args={[0.2, 0.6, 5, 20]} />
+                    </mesh> */}
+                </Center>
+            </Float>
+        )
+    }
+
+
+    const Quests = () => {
+        const stateSnap = useSnapshot(state)
+
+
+        return (
+            <>
+                <Effect>
+                    {stateSnap.quests.map((text, index) => { return text.effect && <Quest text={text} index={index} /> })}
+                </Effect>
+
+                {stateSnap.quests.map((text, index) => { return !text.effect && <Quest text={text} index={index} /> })}
+            </>
+        )
+    }
+
+
+    const Display = () => {
         const stateSnap = useSnapshot(state)
 
         const wrap = (text) => {
@@ -181,57 +246,18 @@ export const Scene = ({ ws, core }) => {
             return [...text].map(c => { if (c === ' ') { if (temp === 4) { temp = 0; return '\n' } else temp++; return c } else return c }).join('')
         }
 
-        const setActiveText = (e) => {
-            e.stopPropagation()
-
-            if (!core.isMobile) {
-                state.display = { quest: e.object.quest, author: e.object.author }
-                ws.send(JSON.stringify({ command: 'ACT_TXT', room: 1, display: state.display }))
-            }
-        }
-
-        const clamp = (a, n, x) => a <= n ? n : a >= x ? x : a
 
         return (
-            <>
-                <Center>
-                    <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03} position={[0, 2, 0]}>
-                        {stateSnap.display.author}
-                        <meshNormalMaterial />
-                    </Text3D>
-                    <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
-                        {wrap(stateSnap.display.quest)}
-                        <meshNormalMaterial />
-                    </Text3D>
-                </Center>
-                <Effect>
-                    {stateSnap.quests.map((text, index) => {
-                        return (
-                            <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setActiveText(e)}>
-                                <Center>
-                                    <Center>
-                                        <Text3D font={'/fonts/json/inter_regular.json'} quest={text.label} author={text.username} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
-                                            {wrap(text.label)}
-                                            <meshStandardMaterial attach='material' color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
-                                        </Text3D>
-                                    </Center>
-
-                                    <Center>
-                                        <mesh rotation={[0, 0, Math.PI / 2]} quest={text.label} author={text.username} >
-                                            <planeGeometry args={[0.3 * text.label.length / 13, clamp(4 * text.label.length / 17, 0, 6)]} />
-                                            <meshStandardMaterial opacity={0} transparent />
-                                        </mesh>
-                                    </Center>
-
-                                    {/* <mesh rotation={[0, 0, Math.PI / 2]}>
-                                        <capsuleGeometry args={[0.2, 0.6, 5, 20]} />
-                                    </mesh> */}
-                                </Center>
-                            </Float>
-                        )
-                    })}
-                </Effect>
-            </>
+            <Center>
+                <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03} position={[0, 2, 0]}>
+                    {stateSnap.display.author}
+                    <meshNormalMaterial />
+                </Text3D>
+                <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
+                    {wrap(stateSnap.display.quest)}
+                    <meshNormalMaterial />
+                </Text3D>
+            </Center>
         )
     }
 
@@ -240,7 +266,8 @@ export const Scene = ({ ws, core }) => {
         <>
             <CamnCon />
             <Light />
-            <Text />
+            <Display />
+            <Quests />
         </>
     )
 }

@@ -17,7 +17,18 @@ const rooms = {}
 //     }
 // }
 
+// const rooms = {
+//     0: {
+//         user3: {}
+//     },
+//     1: {
+//         user1: {}
+//     }
+// }
+
 var quests = []
+var queue = []
+
 var display = { quest: 'Welcome to WWDC23', author: '' }
 
 app.use(cors())
@@ -87,12 +98,15 @@ const genColor = () => {
     return hslToHex(hexToHsl(color).h, hexToHsl(color).s < 30 ? 100 - hexToHsl(color).s : hexToHsl(color).s, hexToHsl(color).l < 50 ? 100 - hexToHsl(color).l : hexToHsl(color).l)
 }
 
-const sendAll = (room, obj) => {
+const sendRooms = (ids, obj) => {
     // Object.entries(rooms[room]).forEach(([, sock]) => sock.send({ message }))
-
-    for (const client in rooms[room]) {
-        if (rooms[room][client].readyState === WebSocket.OPEN) {
-            rooms[room][client].send(JSON.stringify(obj))
+    
+    let IDs = Number.isInteger(ids) ? [ids] : ids
+    for (let id in IDs) {
+        for (const client in rooms[IDs[id]]) {
+            if (rooms[IDs[id]][client].readyState === WebSocket.OPEN) {
+                rooms[IDs[id]][client].send(JSON.stringify(obj))
+            }
         }
     }
 }
@@ -103,32 +117,48 @@ wss.on('connection', (ws) => {
 
     ws.on('message', (msg) => {
         const data = JSON.parse(msg)
-
-        if (data.command === 'JOIN_ROOM') {
+        if (data.command === 'JOIN_ADRM') {
+            console.log(data)
+            if (!rooms[data.room]) rooms[data.room] = {}
+            rooms[data.room][userID] = ws
+            ws.send(JSON.stringify({ command: 'INIT_WS', queue, display, user: { id: userID } }))
+            console.log(`Active admins: \x1b[32m${Object.keys(rooms[0]).length}\x1b[0m`)
+        } else if (data.command === 'JOIN_USRM') {
             console.log(data)
             if (!rooms[data.room]) rooms[data.room] = {}
             rooms[data.room][userID] = ws
             rooms[data.room][userID].username = periodicTable.splice(Math.floor(Math.random() * periodicTable.length), 1)[0]
             ws.send(JSON.stringify({ command: 'INIT_WS', quests, display, user: { id: userID, name: rooms[data.room][userID].username } }))
-            // console.log(`Active users: \x1b[32m${Object.keys(rooms[1]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
-        } else if (data.command === 'NEW_MSG') {
+            console.log(`Active users: \x1b[32m${Object.keys(rooms[1]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+        } else if (data.command === 'APR_REQ') {
             console.log(`[${data.username}-${data.userID}]: \x1b[33m${data.quest.label}\x1b[0m`)
 
-            quests.push({
-                color: genColor(),
-                label: data.quest.label,
-                username: data.username,
-                pos: {
-                    web: [Math.floor(Math.random() * (10 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (quests.length / 3)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 1.5 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 3.5],
-                    mobile: [Math.floor(Math.random() * (3 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (8 + quests.length / 2.5)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 2 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 4]
-                }
-            })
+            queue.push({ userID: data.userID, author: data.username,  label: data.quest.label })
 
-            sendAll(data.room, { command: 'NEW_MSG', message: quests.at(-1), user: { id: data.userID, name: data.username } })
-        } else if (data.command === 'ACT_TXT') {
+            sendRooms(data.room, { command: 'APR_REQ', quest: queue.at(-1), user: { id: data.userID, name: data.username } })
+        } else if (data.command === 'SEND_USER') {
+            console.log(`[${data.username}-${data.userID}]: \x1b[33m${data.quest.label}\x1b[0m`)
+
+            queue.splice(data.quest.index, 1)
+            if (data.aprReq) {
+                quests.push({
+                    effect: true,
+                    color: genColor(),
+                    label: data.quest.label,
+                    username: data.username,
+                    pos: {
+                        web: [Math.floor(Math.random() * (10 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (quests.length / 3)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 1.5 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 3.5],
+                        mobile: [Math.floor(Math.random() * (3 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor((2 + Math.random() * (8 + quests.length / 2.5)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)], Math.floor(Math.random() * 2 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 4]
+                    }
+                })
+
+                sendRooms(data.room, { command: 'SEND_USER', message: quests.at(-1), user: { id: data.userID, name: data.username } })
+            }
+        } else if (data.command === 'DISP_LBL') {
             console.log(`Display quest: \x1b[33m[${data.display.author ? data.display.author : 'Author'}] ${data.display.quest}\x1b[0m`)
             display = data.display
-            sendAll(data.room, { command: 'ACT_TXT', display })
+            if (data.display.author) quests[data.index].effect = false
+            sendRooms(data.room, { command: 'DISP_LBL', display, index: data.index })
         }
     })
 
