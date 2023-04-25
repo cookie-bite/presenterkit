@@ -1,0 +1,414 @@
+/* Input */
+
+.inputView {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.input {
+    display: flex;
+    flex: 1;
+    height: 36px;
+    border: none;
+    font-size: 17px;
+    border-radius: 22px;
+    border: 1px solid var(--nonopaque-separator);
+    margin: 16px 16px 16px 62px;
+    padding: 10px 15px;
+    color: var(--primary-label);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+}
+
+.inputBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    margin-right: 16px;
+    margin-left: -6px;
+    background-color: transparent;
+}
+
+.inputBtnIc {
+    height: 36px;
+    width: 36px;
+}
+
+
+
+
+/* Modal */
+
+.modalView {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    overflow: hidden;
+
+    /* modal effect */
+    background-color: var(--thin-material);
+    margin-top: 30px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.sceneCornerBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 1;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    background-color: transparent;
+}
+
+.sceneCornerCloseBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 19px;
+    left: 16px;
+    z-index: 1;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    background-color: var(--primary-fill);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.sceneCornerBtnIc {
+    height: 30px;
+    width: 30px;
+}
+
+.cornerBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 10px;
+    right: 16px;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    background-color: var(--primary-fill);
+}
+
+.cornerBtnIc {
+    height: 20px;
+    width: 20px;
+    filter: invert(100%);
+}
+
+
+
+/* Share Modal */
+
+.shareModal {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.modalTop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalIcon {
+    height: 100px;
+    width: 100px;
+    margin-top: 30px;
+}
+
+.modalAnim {
+    height: 120px;
+    width: 120px;
+}
+
+.modalLabel {
+    text-align: center;
+    font-size: 34px;
+    margin-top: 15px;
+}
+
+.modalDesc {
+    color: var(--secondary-label);
+    font-size: 22px;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.modalBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalText {
+    font-size: 22px;
+    font-weight: 400;
+    width: 95%;
+    text-align: center;
+}
+
+.modalBottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.modalFootnote {
+    color: var(--secondary-label);
+    font-size: 15px;
+    font-weight: 400;
+    text-align: center;
+    width: 80%;
+    margin-bottom: 30px;
+}
+
+.modalBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 80%;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 500;
+    background-color: var(--system-blue);
+}
+
+
+
+
+/* Quest Modal */
+
+.questModal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 16px;
+    border: 0 solid var(--nonopaque-separator);
+    border-bottom-width: 1px;
+    background-color: var(--thin-material);
+}
+
+.modalHeaderLabel {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.questList {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.questListItem {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.questListItemSbtl {
+    font-size: 17px;
+    font-weight: 600;
+    opacity: 0.4;
+    margin-bottom: 4px;
+}
+
+.questListItemTtl {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.questListEmpty {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 0 30px 0;
+}
+
+.questListEmptyTtl {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.questListEmptySbtl {
+    color: var(--secondary-label);
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 6px;
+}
+
+
+
+
+/* Menu */
+
+.menuBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.menuView {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    width: 70%;
+    bottom: 62px;
+    left: 16px;
+    border-radius: 14px;
+    background-color: var(--thin-material);
+    overflow: hidden;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.menuTopList {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 10px;
+    background-color: var(--regular-material);
+}
+
+.menuTopListIcView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background-color: var(--tertiary-fill);
+}
+
+.menuTopListIc {
+    width: 30px;
+    height: 30px;
+    filter: invert(100%);
+}
+
+.menuTopListBody {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    margin-left: 10px;
+}
+
+.menuTopListBodyText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.menuTopListTtl {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.menuTopListSbtl {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--secondary-label);
+}
+
+.menuTopListIndView {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.menuTopListInd {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--system-green);
+}
+
+.menuList {
+    margin-top: 10px;
+    background-color: var(--regular-material);
+}
+
+.menuListItem {
+    display: flex;
+    height: 44px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border: 0 solid var(--nonopaque-separator);
+    border-bottom-width: 1px;
+}
+
+.menuListItemLabel {
+    font-size: 17px;
+    font-weight: 400;
+}
+
+.menuListItemInput {
+    border: none;
+    width: 150px;
+    background-color: transparent;
+    text-align: right;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--secondary-label);
+}
+
+.menuListItemInd {
+    height: 24px;
+    width: 24px;
+    border-radius: 12px;
+    background-color: var(--system-yellow);
+}
+
+.menuListItemIc {
+    height: 24px;
+    width: 24px;
+    filter: invert(100%);
+}
+
+.menuListItem:nth-last-child(1) {
+    border-bottom-color: transparent;
+}

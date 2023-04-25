@@ -1,10 +1,9 @@
-import { Controls } from 'react-three-gui'
-import { useSnapshot } from 'valtio'
-import { STApp } from './stores/app.store'
-
-import { Scene } from './components/core.sc'
-import { Input } from './components/input.sc'
+import { Scene } from './scene/core.sc'
+import { Screen } from './screen/core.screen'
 import { Admin } from './admin/core.admin'
+import { Interface } from './interface/core.ui'
+
+import './styles/index.css'
 
 
 const core = { openingText: 'Welcome to WWDC23' }
@@ -13,23 +12,14 @@ try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { cor
 const boardWS = new WebSocket(`ws://${window.location.hostname}:3001`)
 const adminWS = new WebSocket(`ws://${window.location.hostname}:3001`)
 
-const UISwap = (props) => {
-    const appSnap = useSnapshot(STApp)
-    return props.children.filter(c => c.props.uiName === appSnap.uiName)
-}
-
 
 export const App = () => {
     return (
-        <UISwap>
-            <Controls.Provider uiName={'Board'}>
-                <Controls.Canvas shadows>
-                    <Scene ws={boardWS} core={core} />
-                </Controls.Canvas>
-                {/* <Controls title='Settings' /> */}
-            </Controls.Provider>
-            <Input ws={boardWS} core={core} uiName={'Board'} />
-            <Admin ws={adminWS} core={core} uiName={'Admin'} />
-        </UISwap>
+        <>
+            <Scene uiName={'Board'} ws={boardWS} core={core} />
+            {!core.isMobile && <Screen ws={boardWS} />}
+            {!core.isMobile && <Admin ws={adminWS} core={core} uiName={'Admin'} />}
+            {core.isMobile && <Interface ws={boardWS} core={core} uiName={'Board'} />}
+        </>
     )
 }

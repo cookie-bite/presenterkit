@@ -1,65 +1,51 @@
 import { useRef, useEffect } from 'react'
 import { OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-three/drei'
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
-import { useControl } from 'react-three-gui'
-import { proxy, useSnapshot } from 'valtio'
-import { STApp } from '../stores/app.store'
+import { useControl, Controls } from 'react-three-gui'
+import { useSnapshot } from 'valtio'
+import { STApp, STScene, STScreen } from '../stores/app.store'
 
 
 export const Scene = ({ ws, core }) => {
 
-    const state = proxy({
-        quests: [],
-        display: { quest: core.openingText, author: '' }
-    })
-
-    const questions = [
-        'What languages do you speak?',
-        'What\'s an unpopular opinion you have?',
-        'What\'s the worst movie you\'ve ever seen?',
-        'What\'s one of your favorite comfort foods?',
-        'What\'s the story behind one of your scars?',
-        'What is something you can never seem to finish?',
-        'Do you ever sing when you\'re alone? What songs?',
-        'In your group of friends, what role do you play?',
-        'What\'s your favorite piece of clothing you own?',
-        'What have you created that you are most proud of?',
-        'If you were a vegetable, what vegetable would you be?',
-        'What would you do on a free afternoon in the middle of the week?',
-        'Who is one of your best friends, and what do you love about them?',
-        'When was the last time you changed your opinion about something major?',
-        'SABAH Vll Karyera Qış Məktəbində psixologiya üzrə fəlsəfə elmlər doktoru',
-        'What incredibly strong opinion do you have that is completely unimportant in the grand scheme of things?'
-    ]
-
     const dLight = useRef()
 
     const joinRoom = (room) => {
-        ws.send(JSON.stringify({ command: 'JOIN_USRM', room }))
+        setTimeout(() => ws.send(JSON.stringify({ command: 'JOIN_USRM', room })), 500)
     }
 
     ws.onmessage = (msg) => {
         const data = JSON.parse(msg.data)
         console.log(data)
 
-        if (data.command === 'INIT_WS') {
+        if (data.command === 'INIT_USER') {
             STApp.userID = data.user.id
             STApp.username = data.user.name
+            STApp.roomActivity = data.roomActivity
+            STScreen.host.ip = data.ip
             if (data.quests.length) {
                 genQuest(data.quests)
-                state.display = { quest: data.display.quest, author: data.display.author }
+                STScene.display = { quest: data.display.quest, author: data.display.author }
             }
         } else if (data.command === 'SEND_USER') {
-            state.quests = [...state.quests, {
-                effect: data.message.effect,
-                color: data.message.color,
-                label: data.message.label,
-                username: data.message.username,
-                pos: core.isMobile ? data.message.pos.mobile : data.message.pos.web
-            }]
+            STScene.quests.push({
+                effect: data.quest.effect,
+                color: data.quest.color,
+                label: data.quest.label,
+                username: data.quest.username,
+                pos: core.isMobile ? data.quest.pos.mob : data.quest.pos.web
+            })
         } else if (data.command === 'DISP_LBL') {
-            state.display = data.display
-            if (data.display.author) state.quests[data.index].effect = false
+            STScene.display = data.display
+            if (data.display.author) STScene.quests[data.index].effect = false
+        } else if (data.command === 'SHR_INFO') {
+            STScene.share = data.share
+            STApp.share = { isActive: true, data: data.share }
+        } else if (data.command === 'SEND_TYP') {
+            if (data.isTyping) { STScene.indicators[data.userID] = { username: data.username, pos: core.isMobile ? data.pos.mob : data.pos.web, color: data.color } }
+            else delete STScene.indicators[data.userID]
+        } else if (data.command === 'ROOM_ACTY') {
+            STApp.roomActivity = data.roomActivity
         }
     }
 
@@ -72,47 +58,51 @@ export const Scene = ({ ws, core }) => {
                 color: q.color,
                 label: q.label,
                 username: q.username,
-                pos: core.isMobile ? q.pos.mobile : q.pos.web
+                pos: core.isMobile ? q.pos.mob : q.pos.web
             })
         })
 
-        state.quests = demo
+        STScene.quests = demo
     }
 
 
     useEffect(() => {
-        // if (document.documentElement.requestFullscreen) {
-        //     document.documentElement.requestFullscreen()
-        // } else if (document.documentElement.webkitRequestFullscreen) {
-        //     document.documentElement.webkitRequestFullscreen()
-        // }
-
         joinRoom(STApp.userRoom)
 
         const onKeyUp = (e) => {
             if (e.key === 'Escape') {
-                state.display = { quest: core.openingText, author: '' }
-                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: state.display }))
+                STScene.display = { quest: core.openingText, author: '' }
+                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: STScene.display }))
             }
 
-            if (e.altKey && e.code.slice(3) === 'D') {
+            if (e.altKey && e.code.slice(3) === 'L') {
                 window.open('http://localhost:3000', '_blank')
             }
 
             if (e.altKey && e.code.slice(3) === 'A') {
-                STApp.uiName = 'Admin'
+                STApp.uiName = STApp.uiName === 'Board' ? 'Admin' : 'Board'
             }
 
-            if (e.altKey && e.code.slice(3) === 'B') {
-                STApp.uiName = 'Board'
+            if (e.altKey && e.code.slice(3) === 'C') {
+                STScreen.controls.isActive = !STScreen.controls.isActive
             }
         }
         window.addEventListener('keyup', onKeyUp)
         return () => {
-            ws.close()
+            // ws.close()
             window.removeEventListener('keyup', onKeyUp)
         }
     }, [])
+
+
+    const Canvas = ({ children }) => {
+        return (
+            <Controls.Provider>
+                <Controls.Canvas shadows>{children}</Controls.Canvas>
+                {false && <Controls title='Settings' />}
+            </Controls.Provider>
+        )
+    }
 
 
     const CamnCon = () => {
@@ -142,9 +132,11 @@ export const Scene = ({ ws, core }) => {
 
 
     const Light = () => {
+        const sceneSnap = useSnapshot(STScene)
+
         // useHelper(dLight, DirectionalLightHelper, 0.5, 'teal')
-        const dLightIntensity = useControl('D Intensity', { type: 'number', group: 'Light', value: 1, min: 0.01, max: 1 })
-        const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 1, min: 0.01, max: 2 })
+        const dLightIntensity = useControl('D Intensity', { type: 'number', group: 'Light', value: 1, min: 0, max: 1 })
+        const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 1, min: 0, max: 2 })
 
         const posX = useControl('Pos X', { type: 'number', group: 'Light', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Light', value: 5, min: -10, max: 10 })
@@ -152,8 +144,8 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <>
-                <ambientLight intensity={aLightIntensity} />
-                <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={dLightIntensity} />
+                <ambientLight intensity={sceneSnap.display.quest === core.openingText ? aLightIntensity : 0.04} />
+                <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={sceneSnap.display.quest === core.openingText ? dLightIntensity : 0} />
             </>
         )
     }
@@ -176,6 +168,7 @@ export const Scene = ({ ws, core }) => {
 
 
     const Quest = ({ text, index }) => {
+        const sceneSnap = useSnapshot(STScene)
 
         const wrap = (text) => {
             let temp = 0
@@ -186,15 +179,14 @@ export const Scene = ({ ws, core }) => {
             e.stopPropagation()
 
             if (!core.isMobile) {
-                state.display = { quest: e.object.quest, author: e.object.author }
-                state.quests[index].effect = false
-                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: state.display, index }))
+                STScene.display = { quest: e.object.quest, author: e.object.author }
+                STScene.quests[index].effect = false
+                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: STScene.display, index }))
             }
         }
 
         const clamp = (a, n, x) => a <= n ? n : a >= x ? x : a
 
-        console.log(index, text.effect)
 
         return (
             <Float floatIntensity={2} speed={1} position={text.pos} key={index} onClick={(e) => setDisplay(e, index)}>
@@ -202,7 +194,7 @@ export const Scene = ({ ws, core }) => {
                     <Center>
                         <Text3D font={'/fonts/json/inter_regular.json'} quest={text.label} author={text.username} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
                             {wrap(text.label)}
-                            <meshStandardMaterial attach='material' color={text.color} emissive={text.color} emissiveIntensity={1} toneMapped={false} />
+                            <meshStandardMaterial attach='material' color={text.color} emissive={text.color} emissiveIntensity={sceneSnap.display.quest === core.openingText ? 1 : 0} toneMapped={false} />
                         </Text3D>
                     </Center>
 
@@ -223,23 +215,23 @@ export const Scene = ({ ws, core }) => {
 
 
     const Quests = () => {
-        const stateSnap = useSnapshot(state)
+        const sceneSnap = useSnapshot(STScene)
 
 
         return (
             <>
                 <Effect>
-                    {stateSnap.quests.map((text, index) => { return text.effect && <Quest text={text} index={index} /> })}
+                    {sceneSnap.quests.map((text, index) => { return text.effect && <Quest text={text} index={index} /> })}
                 </Effect>
 
-                {stateSnap.quests.map((text, index) => { return !text.effect && <Quest text={text} index={index} /> })}
+                {sceneSnap.quests.map((text, index) => { return !text.effect && <Quest text={text} index={index} /> })}
             </>
         )
     }
 
 
     const Display = () => {
-        const stateSnap = useSnapshot(state)
+        const sceneSnap = useSnapshot(STScene)
 
         const wrap = (text) => {
             let temp = 0
@@ -250,24 +242,47 @@ export const Scene = ({ ws, core }) => {
         return (
             <Center>
                 <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03} position={[0, 2, 0]}>
-                    {stateSnap.display.author}
+                    {sceneSnap.display.author}
                     <meshNormalMaterial />
                 </Text3D>
                 <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
-                    {wrap(stateSnap.display.quest)}
+                    {wrap(sceneSnap.display.quest)}
                     <meshNormalMaterial />
                 </Text3D>
             </Center>
         )
     }
 
+    const Indicators = () => {
+        const sceneSnap = useSnapshot(STScene)
+
+
+        return (
+            <>
+                {Object.keys(sceneSnap.indicators).map((key, index) => {
+                    return (
+                        <Float floatIntensity={2} speed={1} position={sceneSnap.indicators[key].pos} key={index}>
+                            <Center>
+                                <Text3D font={'/fonts/json/inter_regular.json'} size={0.3} bevelEnabled={false} bevelSize={0.05} height={0.06} >
+                                    {sceneSnap.indicators[key].username + '. . .'}
+                                    <meshStandardMaterial attach='material' color={sceneSnap.indicators[key].color} emissive={sceneSnap.indicators[key].color} emissiveIntensity={1} toneMapped={false} />
+                                </Text3D>
+                            </Center>
+                        </Float>
+                    )
+                })}
+            </>
+        )
+    }
+
 
     return (
-        <>
+        <Canvas>
             <CamnCon />
             <Light />
             <Display />
             <Quests />
-        </>
+            <Indicators />
+        </Canvas>
     )
 }
