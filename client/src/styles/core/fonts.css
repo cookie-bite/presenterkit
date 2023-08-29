@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('/public/fonts/Inter.ttf') format('truetype');
+}
+
+*,
+/* *:before, */
+*:after {
+    font-family: 'Inter', -apple-system, system-ui, BlinkMacSystemFont, Helvetica, sans-serif;
+}
+
+body {
+    font-family: 'Inter', -apple-system, system-ui, BlinkMacSystemFont, Helvetica, sans-serif;
+}

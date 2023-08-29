@@ -1,0 +1,774 @@
+/* Entry View */
+
+.entryPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.entryView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.entryLogo {
+    font-size: 40px;
+    max-width: 24ch;
+    background-image: linear-gradient(111.6deg, rgba(73, 235, 221, 1) -0%, rgba(83, 222, 219, 1) 7.1%, rgba(105, 191, 217, 1) 13.4%, rgba(127, 157, 214, 1) 18%, rgba(155, 113, 208, 1) 23.9%, rgba(178, 73, 201, 1) 28.8%, rgba(200, 45, 192, 1) 33.3%, rgba(213, 42, 180, 1) 38%, rgba(232, 44, 145, 1) 44.2%, rgba(239, 45, 128, 1) 52.4%, rgba(249, 66, 107, 1) 59.7%, rgba(252, 105, 98, 1) 67.3%, rgba(252, 105, 98, 1) 74.4%, rgba(254, 145, 92, 1) 82.2%, rgba(255, 189, 86, 1) 88.2%, rgba(254, 227, 80, 1) 92.8%, rgba(254, 248, 75, 1) 98.4%);
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+}
+
+.entryTtl {
+    font-size: 20px;
+    font-weight: 400;
+    margin-top: 30px;
+}
+
+.entryInputView {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-top: 40px;
+    background-color: var(--thin-material);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.entryInput {
+    background-color: transparent;
+    border: none;
+    padding: 6px 10px;
+}
+
+.entryInputBtn {
+    height: 28px;
+    width: 28px;
+    margin-right: 1px;
+    background-color: transparent;
+}
+
+.cooldown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 40px 10px;
+}
+
+.cooldownIc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #FF453A24, #FF453A2B);
+}
+
+.cooldownLbl {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+}
+
+.cooldownTtl {
+    text-align: center;
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.cooldownSbtl {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 400;
+    margin-top: 5px;
+    color: var(--tertiary-label);
+}
+
+.cooldownTimer {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--system-red);
+    opacity: 0.6;
+}
+
+
+
+
+/* Controls View */
+
+.screenBtns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    border-radius: 32px;
+    padding: 10px 5px;
+    bottom: 10px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--ultrathin-material);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.screenBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44px;
+    width: 44px;
+    border-radius: 22px;
+    margin: 0 5px;
+    background-color: transparent;
+}
+
+.screenBtnActive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44px;
+    width: 44px;
+    border-radius: 22px;
+    margin: 0 5px;
+    background-color: var(--white);
+}
+
+.screenBtn:hover {
+    background-color: var(--primary-fill);
+}
+
+
+
+
+/* QR View */
+
+.qrView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: transparent;
+}
+
+.qrLbl {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.qrBg {
+    display: flex;
+    padding: 6px;
+    border-radius: 8px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    cursor: pointer;
+}
+
+
+
+
+/* Panel View */
+
+.panelView {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    min-width: 15%;
+    width: 300px;
+    height: calc(100% - 40px);
+    border-radius: 14px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    overflow: hidden;
+}
+
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: 0 solid var(--nonopaque-separator);
+    border-bottom-width: 1px;
+    padding: 10px 16px;
+}
+
+.panelLblView {
+    display: flex;
+    align-items: center;
+}
+
+.panelLbl {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.panelCountBg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-right: 10px;
+    background-color: var(--tertiary-fill);
+}
+
+.panelCountLbl {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--system-green);
+}
+
+.panelBtns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+}
+
+.panelBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: var(--primary-fill);
+}
+
+.panelEmpty {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.panelEmptyTtl {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.panelEmptySbtl {
+    color: var(--secondary-label);
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 6px;
+    cursor: pointer;
+}
+
+
+
+
+/* Quest Panel View */
+
+.questList {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px 0 0 16px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.questListItem {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+
+.questListItem:hover {
+    opacity: 0.6;
+}
+
+.questListItemSbtl {
+    font-size: 17px;
+    font-weight: 500;
+    opacity: 0.4;
+    margin-bottom: 4px;
+}
+
+.questListItemTtl {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+
+
+/* Input View */
+
+.inputView {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    padding: 16px;
+    border-bottom-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+}
+
+.msgColor {
+    height: 26px;
+    min-width: 26px;
+    margin-right: 10px;
+    margin-bottom: 1px;
+    border-radius: 13px;
+    background-color: var(--system-yellow);
+    transition: all .3s ease-in-out;
+    cursor: pointer;
+}
+
+.input {
+    display: flex;
+    width: 100%;
+    min-width: 150px;
+    font-size: 15px;
+    line-height: 18px;
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 0 1px 1px var(--nonopaque-separator);
+    padding: 5px 15px;
+    color: var(--primary-label);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    resize: none;
+}
+
+.inputBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    margin-left: 9px;
+    margin-bottom: -1px;
+    background-color: transparent;
+}
+
+
+
+
+/* Users Panel View */
+
+.userList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 20px 0 0 16px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.userListItem {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.userListItemAvatarView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    margin-right: 10px;
+}
+
+.userListItemAvatarLbl {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.userListItemLblView {
+    display: flex;
+    align-items: center;
+}
+
+.userListItemInput {
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 600;
+    width: 100%;
+    height: 30px;
+    border-radius: 8px;
+    transition: all .3s ease-in-out;
+}
+
+.userListItemInput:focus {
+    padding: 0 10px;
+    background-color: var(--primary-fill);
+    transition: all .3s ease-in-out;
+}
+
+.userListItemLbl {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.userListItemEdit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    margin-left: 10px;
+    border-radius: 12px;
+    background-color: var(--secondary-fill);
+    cursor: pointer;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid var(--nonopaque-separator);
+    background-color: var(--regular-material);
+}
+
+.userInfoBody {
+    display: flex;
+    align-items: center;
+    /* opacity: 0;
+    animation: in-out 10s ease-in-out; */
+}
+
+@keyframes in-out {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.userInfoIcView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+}
+
+.userInfoIc {
+    height: 24px;
+    width: 24px;
+}
+
+.userInfoLbl {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary-label);
+    margin-left: 10px;
+}
+
+
+
+
+/* Presenter */
+
+.slides {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.slideUploadBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 52px;
+    width: 52px;
+    border-radius: 26px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+}
+
+.slidesLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 230px;
+    height: 100%;
+    padding: 5px 10px;
+    margin-right: 10px;
+    border-radius: 14px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.slidesLeft::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.slidePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: var(--primary-fill);
+    cursor: pointer;
+}
+
+.slidePreviewImg {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.slideUpload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100px;
+    margin: 5px 10px;
+    border-radius: 10px;
+    background-color: var(--primary-fill);
+}
+
+.slidesRight {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    border-radius: 14px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    overflow: hidden;
+}
+
+.slidesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background-color: var(--thin-material);
+}
+
+.slidesHeaderMiddle {
+    display: flex;
+    align-items: center;
+}
+
+.slidesTopBody {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 60px);
+}
+
+.slidePages {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 136px;
+    border-radius: 10px;
+    background-color: var(--thin-material);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.slidePage {
+    display: flex;
+    align-items: flex-end;
+    margin: 10px 5px;
+    padding: 5px;
+    border-radius: 8px;
+    background-color: var(--primary-fill);
+}
+
+.slidePageNumber {
+    width: 25px;
+    text-align: right;
+    margin-right: 5px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.slidePageImg {
+    height: 90px;
+    border-radius: 6px;
+}
+
+.activeSlide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background-color: var(--thin-material);
+    overflow: hidden;
+}
+
+.activePage {
+    height: 90%;
+    cursor: pointer;
+}
+
+.activePageImg {
+    height: 100%;
+}
+
+.slideControls {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.slideControlsBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    margin: 0 12px;
+    background-color: transparent;
+}
+
+.slideControlsLbl {
+    width: 8ch;
+    text-align: center;
+}
+
+.theatrePresenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--black);
+}
+
+.theatrePresenterView {
+    height: 100%;
+    position: relative;
+}
+
+.theatrePresenterImg {
+    height: 100%;
+}
+
+.theatrePresenterBtn {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+
+
+
+/* Slides */
+
+.theatre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 12px 0 8px 16px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.theatreItem {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+.theatreItemImg {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.theatreItem:hover > .theatreItemBtns {
+    opacity: 1;
+    transition: opacity .3s ease-in-out;
+}
+
+.theatreItemBtns {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    height: 100%;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+}
+
+.theatreItemBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+    border-radius: 20px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--tertiary-fill);
+}
+
+.theatreItemLive {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
