@@ -6,7 +6,6 @@ import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Controls = ({ core }) => {
-    const desktopSnap = useSnapshot(STDesktop)
     const adminSnap = useSnapshot(STAdmin)
     const appSnap = useSnapshot(STApp)
     
@@ -16,7 +15,7 @@ export const Controls = ({ core }) => {
     }
 
     const resizeWindow = () => {
-        if (desktopSnap.isFullscreen) {
+        if (appSnap.isFullscreen) {
             if (document.exitFullscreen) { document.exitFullscreen() }
             else if (document.webkitExitFullscreen) { document.webkitExitFullscreen() }
         } else {
@@ -24,7 +23,7 @@ export const Controls = ({ core }) => {
             else if (document.documentElement.webkitEnterFullscreen) { document.documentElement.webkitEnterFullscreen() }
         }
 
-        STDesktop.isFullscreen = !desktopSnap.isFullscreen
+        STApp.isFullscreen = !appSnap.isFullscreen
     }
 
     const cmpr = (screen) => {
@@ -56,7 +55,7 @@ export const Controls = ({ core }) => {
                 <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--black' : '--white' }/>
             </button>}
             {!core.isPresenter && <button className={sty.screenBtn} onClick={() => resizeWindow()}>
-                <Icon name={desktopSnap.isFullscreen ? 'contract' : 'expand'} size={30} color='--white'/>
+                <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color='--white'/>
             </button>}
             <button className={sty.screenBtn} onClick={() => STDesktop.controls.isActive = false}>
                 <Icon name='close' size={30} color='--system-red'/>

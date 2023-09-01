@@ -117,7 +117,7 @@ export const Header = ({ ws }) => {
                     </div>
                 }
                 <button className={sty.searchBtn} onClick={() => toggleSearch()}>
-                    <Icon name={adminSnap.showSearch ? 'close' : 'add'} size={20} color='--white' />
+                    <Icon name={adminSnap.showSearch ? 'close' : 'add'} size={20} color='--primary-tint' />
                 </button>
             </div>
         </div>

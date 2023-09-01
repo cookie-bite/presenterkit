@@ -24,7 +24,7 @@ export const QRScreen = () => {
         <div className={sty.qrView}>
             <h2 className={sty.qrLbl} style={{ fontSize: desktopSnap.qr.expand ? 24 : 20, marginBottom: desktopSnap.qr.expand ? 10 : 6 }}>Join chat</h2>
             <div className={sty.qrBg} style={{ padding: desktopSnap.qr.expand ? 8 : 6, borderRadius: desktopSnap.qr.expand ? 10 : 8 }} onClick={() => STDesktop.qr.expand = !desktopSnap.qr.expand}>
-                <QRCode value={`http://${appSnap.host.ip}:${appSnap.host.port}`} size={desktopSnap.qr.expand ? 200 : 120} bgColor={'#00000000'} fgColor={'#ffffff'} />
+                <QRCode value={`http://${appSnap.host.ip}:${appSnap.host.port1}`} size={desktopSnap.qr.expand ? 200 : 120} bgColor={'#00000000'} fgColor={'#ffffff'} />
             </div>
         </div>
     )

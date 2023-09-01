@@ -17,7 +17,7 @@ export const Quests = () => {
                         {sceneSnap.quests.length !== 0 && <div className={sty.modalCountBg}>
                             <h1 className={sty.modalCount}>{sceneSnap.quests.length}</h1>
                         </div>}
-                        <h3 className={sty.modalHeaderLbl}>Questions</h3>
+                        <h3 className={sty.modalHeaderLbl}>Messages</h3>
                     </div>
                     <button className={sty.modalHeadBtn} onClick={() => STApp.uiName = ''}>
                         <Icon name='close' size={20} color='--white' />

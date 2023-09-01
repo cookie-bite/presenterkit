@@ -58,10 +58,7 @@ export const Users = ({ ws }) => {
                                 : <h2 className={sty.userListItemLbl}>{user.username}</h2>
                             }
                             {index === 0 && <div className={sty.userListItemEdit} onClick={() => toggleInput()}>
-                                {showEdit
-                                    ? <Icon name='checkmark' size={14} color='--system-blue' />
-                                    : <Icon name='pencil' size={14} color='--system-blue' />
-                                }
+                                <Icon name={showEdit ? 'checkmark' : 'pencil'} size={14} color='--primary-tint' />
                             </div>}
                         </div>
                     </div>

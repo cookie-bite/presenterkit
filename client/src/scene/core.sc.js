@@ -14,7 +14,7 @@ export const Scene = ({ ws, core }) => {
     useEffect(() => {
         const onKeyUp = (e) => {
             if (e.altKey && e.code.slice(3) === 'N') {
-                window.open(`http://${STApp.host.ip}:${STApp.host.port}`, '_blank')
+                window.open(`http://${STApp.host.ip}:${STApp.host.port1}`, '_blank')
             }
 
             if (STApp.showEntry) return

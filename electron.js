@@ -3,7 +3,7 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
 
-const server = fork(`${path.join(__dirname, 'app.js')}`)
+const server = fork(`${path.join(__dirname, 'api.js')}`)
 
 function createWindow() {
     const win = new BrowserWindow({

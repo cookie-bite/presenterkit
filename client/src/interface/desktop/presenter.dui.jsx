@@ -7,7 +7,6 @@ import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Presenter = ({ ws }) => {
-    const desktopSnap = useSnapshot(STDesktop)
     const appSnap = useSnapshot(STApp)
 
     const inputRef = useRef()
@@ -26,7 +25,7 @@ export const Presenter = ({ ws }) => {
             STDesktop.slideFile = file
             formData.append('file', file, file.name)
 
-            fetch('http://localhost:5000/slide', { method: 'post', body: formData })
+            fetch(`http://localhost:${appSnap.host.port2}/slide`, { method: 'post', body: formData })
                 .then((res) => res.json())
                 .then((res) => {
                     if (res.success) {
@@ -64,7 +63,7 @@ export const Presenter = ({ ws }) => {
     }
 
     const deleteSlide = () => {
-        fetch('http://localhost:5000/slide', { method: 'delete', headers: { 'Content-type': 'application/json' }, body: JSON.stringify({ name: appSnap.slides[appSnap.activeSlide.index].name }) })
+        fetch(`http://localhost:${appSnap.host.port2}/slide`, { method: 'delete', headers: { 'Content-type': 'application/json' }, body: JSON.stringify({ name: appSnap.slides[appSnap.activeSlide.index].name }) })
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
@@ -72,9 +71,6 @@ export const Presenter = ({ ws }) => {
                     STApp.slides.splice(appSnap.activeSlide.index, 1)
                     if (appSnap.activeSlide.index === appSnap.slides.length - 1) {
                         STApp.activeSlide.index = appSnap.activeSlide.index - 1
-                    }
-                    if (appSnap.slides.length === 1) {
-                        STDesktop.showSlides = false
                     }
                 }
             })
@@ -107,13 +103,13 @@ export const Presenter = ({ ws }) => {
         const onKeyUp = (e) => {
             if (e.key === 'ArrowLeft' && appSnap.slides.length) changePage('<')
             if (e.key === 'ArrowRight' && appSnap.slides.length) changePage('>')
-            if (e.key === 'ArrowUp' && desktopSnap.showSlides && !appSnap.showTheatre) changeSlide(appSnap.activeSlide.index - 1)
-            if (e.key === 'ArrowDown' && desktopSnap.showSlides && !appSnap.showTheatre) changeSlide(appSnap.activeSlide.index + 1)
+            if (e.key === 'ArrowUp' && !appSnap.showTheatre) changeSlide(appSnap.activeSlide.index - 1)
+            if (e.key === 'ArrowDown' && !appSnap.showTheatre) changeSlide(appSnap.activeSlide.index + 1)
             if (e.key === 'Escape') appSnap.showTheatre ? toggleTheatre('off') : STApp.uiName = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
-    }, [appSnap.activeSlide, desktopSnap.showSlides, appSnap.showTheatre])
+    }, [appSnap.activeSlide, appSnap.showTheatre])
 
 
     return (
@@ -122,56 +118,49 @@ export const Presenter = ({ ws }) => {
                 {appSnap.slides.length === 0
                     ? <button className={sty.slideUploadBtn} onClick={() => openFile()}>
                         <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                        <Icon name='add' size={30} color='--system-yellow' />
+                        <Icon name='add' size={30} color='--primary-tint' />
                     </button>
                     : <>
-                        {desktopSnap.showSlides && <div className={sty.slidesLeft}>
+                        <div className={sty.slidesLeft}>
                             {appSnap.slides.map((slide, index) => {
                                 return (
                                     <div
                                         key={index}
                                         className={sty.slidePreview}
-                                        style={{ backgroundColor: index === appSnap.activeSlide.index ? 'var(--primary-tint)' : 'var(--primary-fill)' }}
+                                        style={{ border: index === appSnap.activeSlide.index ? '5px solid var(--system-gray2)' : 'none' }}
                                         onClick={() => changeSlide(index)}>
-                                        <img className={sty.slidePreviewImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[index].name}/1.png`} />
+                                        <img className={sty.slidePreviewImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[index].name}/1.png`} />
                                     </div>
                                 )
                             })}
-                            <div className={sty.slideUpload}>
-                                <button className={sty.slideUploadBtn} onClick={() => openFile()}>
-                                    <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                                    <Icon name='add' size={30} color='--system-yellow' />
-                                </button>
-                            </div>
-                        </div>}
+                            <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
+                                <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
+                                <Icon name='add' size={26} color='--primary-tint' />
+                            </button>
+                        </div>
                         <div className={sty.slidesRight}>
                             <div className={sty.slidesHeader}>
-                                <button className={sty.slideControlsBtn} style={{ margin: 0 }} onClick={() => STDesktop.showSlides = !desktopSnap.showSlides}>
-                                    <Icon name='add-circle-o' size={30} color='--system-yellow' />
-                                </button>
                                 <div className={sty.slidesHeaderMiddle}>
                                     <button className={sty.slideControlsBtn} onClick={() => toggleTheatre('on')}>
-                                        <Icon name='tv-o' size={25} color='--system-yellow' />
+                                        <Icon name='tv-o' size={25} color='--primary-tint' />
                                     </button>
                                     <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
                                         <Icon name='trash-o' size={25} color='--system-red' />
                                     </button>
                                 </div>
-                                <button className={sty.slideControlsBtn} style={{ margin: 0 }} onClick={() => STApp.uiName = ''}>
-                                    <Icon name='close-circle-o' size={30} color='--system-yellow' />
-                                </button>
                             </div>
                             <div className={sty.activeSlide}>
+                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png)` }}></div>
                                 <div className={sty.activePage} onClick={() => previewTheatre()}>
-                                    <img className={sty.activePageImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
+                                    <img className={sty.activePageImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
                                 </div>
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
-                                        <Icon name='chevron-back' size={25} color='--system-yellow' />
+                                        <Icon name='chevron-back' size={25} color='--primary-tint' />
                                     </button>
                                     <h3 className={sty.slideControlsLbl}>{`${appSnap.activeSlide.page} / ${pageCount}`}</h3>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('>')}>
-                                        <Icon name='chevron-forward' size={25} color='--system-yellow' />
+                                        <Icon name='chevron-forward' size={25} color='--primary-tint' />
                                     </button>
                                 </div>
                             </div>
@@ -182,12 +171,12 @@ export const Presenter = ({ ws }) => {
                                             key={index}
                                             className={sty.slidePage}
                                             style={{
-                                                backgroundColor: (index + 1) === appSnap.activeSlide.page ? 'var(--primary-tint)' : 'var(--primary-fill)',
+                                                backgroundColor: (index + 1) === appSnap.activeSlide.page ? 'var(--system-gray2)' : 'var(--tertiary-fill)',
                                                 margin: index === 0 ? '10px 5px 10px 10px' : index === pageCount - 1 ? '10px 10px 10px 5px' : '10px 5px'
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}
                                             onClick={() => { STApp.activeSlide.page = (index + 1) }}>
-                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${index + 1}.png`} />
+                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${index + 1}.png`} />
                                         </div>
                                     )
                                 })}
@@ -199,7 +188,7 @@ export const Presenter = ({ ws }) => {
 
             {appSnap.showTheatre &&
                 <div className={sty.theatrePresenter}>
-                    <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
+                    <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
                     <button className={sty.theatrePresenterBtn} style={{ left: 0, display: appSnap.activeSlide.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                     <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                 </div>

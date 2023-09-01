@@ -8,7 +8,7 @@ import { Mobile } from './interface/mobile/core.mui'
 const core = { openingText: 'Welcome to WWDC23', isPresenter: window.location.hostname === 'localhost' }
 try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { core.isMobile = false }
 
-const ws = new WebSocket(`ws://${window.location.hostname}:5001`) // on production: 3001
+const ws = new WebSocket(`ws://${window.location.hostname}:50001`)  // on production: 3001
 
 
 export const App = () => {

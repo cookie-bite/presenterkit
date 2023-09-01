@@ -53,14 +53,14 @@ export const Controls = ({ ws }) => {
                 <Icon name='tv' size={18} color='--white' />
             </div>}
             <button className={sty.controlsMenuBtn} style={{ opacity: appSnap.uiName === 'Menu' ? 0 : 1 }} onClick={() => STApp.uiName = 'Menu'}>
-                <Icon name='ellipsis-horizontal-circle' size={30} color='--system-blue' />
+                <Icon name='ellipsis-horizontal-circle' size={30} color='--primary-tint' />
             </button>
             <textarea className={sty.controlsInput} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' value={text}
                 ref={textareaRef}
                 onChange={(e) => typing(e)}
             />
             {text && <button className={sty.controlsInputBtn} onClick={() => send()}>
-                <Icon name='arrow-up-circle-o' size={35} color='--system-blue' />
+                <Icon name='arrow-up-circle-o' size={35} color='--primary-tint' />
             </button>}
         </div>
     )

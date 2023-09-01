@@ -28,7 +28,6 @@ export const Messages = ({ ws }) => {
     return (
         <div className={sty.pageBg}>
             <div className={sty.page} style={{ width: 800 }}>
-                <h2 className={sty.pageTitle}>Messages</h2>
                 <div className={sty.switchTabs}>
                     <div className={sty.switchTab}
                         style={{ backgroundColor: adminSnap.activeCheckTab === 'Pass' ? 'var(--white)' : 'transparent' }}

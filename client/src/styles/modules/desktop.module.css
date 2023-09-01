@@ -339,7 +339,6 @@
     margin-right: 10px;
     margin-bottom: 1px;
     border-radius: 13px;
-    background-color: var(--system-yellow);
     transition: all .3s ease-in-out;
     cursor: pointer;
 }
@@ -548,9 +547,7 @@
     align-items: center;
     justify-content: center;
     margin: 5px 0;
-    padding: 5px;
     border-radius: 10px;
-    background-color: var(--primary-fill);
     cursor: pointer;
 }
 
@@ -559,15 +556,17 @@
     border-radius: 6px;
 }
 
-.slideUpload {
+.slideUploadBtnSml {
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: 100%;
-    min-height: 100px;
-    margin: 5px 10px;
-    border-radius: 10px;
-    background-color: var(--primary-fill);
+    align-items: center;
+    min-height: 40px;
+    width: 40px;
+    margin: 5px 0 20px;
+    border-radius: 20px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
 }
 
 .slidesRight {
@@ -586,7 +585,7 @@
 .slidesHeader {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     height: 50px;
     padding: 10px;
     margin-bottom: 10px;
@@ -623,6 +622,7 @@
     padding: 5px;
     border-radius: 8px;
     background-color: var(--primary-fill);
+    cursor: pointer;
 }
 
 .slidePageNumber {
@@ -643,11 +643,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 10px;
-    background-color: var(--thin-material);
+    background-repeat: no-repeat;
+    background-size: cover;
     overflow: hidden;
+}
+
+.activeSlideBg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: saturate(200%) brightness(40%) blur(100px);
+    -webkit-filter: saturate(200%) brightness(40%) blur(100px);
+    transition: all .3s ease-in-out;
 }
 
 .activePage {

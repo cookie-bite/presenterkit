@@ -120,8 +120,22 @@ export const Shares = ({ ws }) => {
 
     return (
         <div className={sty.pageBg}>
-            <div className={sty.page} style={{ justifyContent: 'space-between' }}>
-                <h2 className={sty.pageTitle}>Share</h2>
+            <div className={sty.page}>
+                <div className={sty.shareSaves}>
+                    {appSnap.shares.map((share, index) => {
+                        return (
+                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={() => switchShare(index)}>
+                                <h3 className={sty.shareSaveLbl} style={{ color: index === appSnap.activeShare ? 'var(--primary-label)' : 'var(--secondary-label)' }}>{share.body ? share.body : 'Empty'}</h3>
+                                {appSnap.shares.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={(e) => closeShare(e, index)}>
+                                    <Icon name='close' size={20} color='--system-red' />
+                                </button>}
+                            </div>
+                        )
+                    })}
+                    <button className={sty.urlBtn} onClick={() => addShare()}>
+                        <Icon name='add' size={20} color='--primary-tint' />
+                    </button>
+                </div>
                 <div className={sty.share}>
                     <div className={sty.shareBody}>
                         <textarea className={sty.shareInput} value={body} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Body'
@@ -155,6 +169,7 @@ export const Shares = ({ ws }) => {
                             return (
                                 <input className={sty.shareInput} style={{ marginBottom: 15, color: 'var(--system-blue)' }} key={index} value={url.link} type='text' name='text' autoComplete='off' placeholder='Url'
                                     ref={(ref) => urlsRef[index] = ref}
+                                    autoFocus={true}
                                     onChange={(e) => setUrl(e.target.value, index)}
                                     onKeyDown={(e) => deleteUrl(e, index)}
                                     onBlur={() => saveShare('urls', urls)}
@@ -165,21 +180,6 @@ export const Shares = ({ ws }) => {
                             <Icon name='add' size={20} color='--white' />
                         </button>}
                     </div>
-                </div>
-                <div className={sty.shareSaves}>
-                    {appSnap.shares.map((share, index) => {
-                        return (
-                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={() => switchShare(index)}>
-                                <h3 className={sty.shareSaveLbl} style={{ color: index === appSnap.activeShare ? 'var(--primary-label)' : 'var(--secondary-label)' }}>{share.body ? share.body : 'Empty'}</h3>
-                                {appSnap.shares.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={(e) => closeShare(e, index)}>
-                                    <Icon name='close' size={20} color='--system-red' />
-                                </button>}
-                            </div>
-                        )
-                    })}
-                    <button className={sty.urlBtn} onClick={() => addShare()}>
-                        <Icon name='add' size={20} color='--white' />
-                    </button>
                 </div>
             </div>
         </div>

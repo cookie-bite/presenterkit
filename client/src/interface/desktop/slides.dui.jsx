@@ -12,7 +12,7 @@ export const Slides = () => {
 
 
     const downloadPdf = (file) => {
-        window.open(`http://${appSnap.host.ip}:5000/uploads/pdfs/${file}.pdf`, '_blank')
+        window.open(`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/pdfs/${file}.pdf`, '_blank')
     }
 
     const playSlide = (index) => {
@@ -23,7 +23,7 @@ export const Slides = () => {
     }
 
     const exitSlide = () => {
-        if (appSnap.showTheatre) {
+        if (STApp.showTheatre) {
             STApp.showTheatre = false
         } else {
             STApp.uiName = ''
@@ -65,7 +65,7 @@ export const Slides = () => {
                         {appSnap.slides.map((slide, index) => {
                             return (
                                 <div className={sty.theatreItem} key={index} onClick={() => playSlide(index)}>
-                                    <img className={sty.theatreItemImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${slide.name}/${appSnap.activeSlide.index === index ? appSnap.activeSlide.page : 1}.png`} />
+                                    <img className={sty.theatreItemImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${slide.name}/${appSnap.activeSlide.index === index ? appSnap.activeSlide.page : 1}.png`} />
                                     <div className={sty.theatreItemBtns}>
                                         <button className={sty.theatreItemBtn} onClick={() => downloadPdf(slide.name)}>
                                             <Icon name='arrow-down' size={24} color='--system-blue' />
@@ -91,13 +91,13 @@ export const Slides = () => {
                 <div className={sty.theatrePresenter}>
                     {appSnap.activeSlide.index === appSnap.playSlide.index
                         ? <div className={sty.theatrePresenterView}>
-                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
+                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
                             <div className={sty.theatreItemLive}>
                                 <Icon name='radio-button-on' size={20} color='--system-red' />
                             </div>
                         </div>
                         : <>
-                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.playSlide.index].name}/${appSnap.playSlide.page}.png`} />
+                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.playSlide.index].name}/${appSnap.playSlide.page}.png`} />
                             <button className={sty.theatrePresenterBtn} style={{ left: 0, display: appSnap.playSlide.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                             <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                         </>

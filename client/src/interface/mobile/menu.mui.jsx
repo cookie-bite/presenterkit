@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STMobile, STApp } from '../../stores/app.store'
+import { STApp } from '../../stores/app.store'
 import { genColor } from '../../utilities/core.utils'
 import { Icon } from '../../components/core.cmp'
 
@@ -10,7 +10,6 @@ import sty from '../../styles/modules/mobile.module.css'
 export const Menu = ({ ws }) => {
     const [username, setUsername] = useState('')
 
-    const mobileSnap = useSnapshot(STMobile)
     const appSnap = useSnapshot(STApp)
 
 
@@ -23,7 +22,7 @@ export const Menu = ({ ws }) => {
     }
 
     const resizeWindow = () => {
-        if (mobileSnap.isFullscreen) {
+        if (appSnap.isFullscreen) {
             if (document.exitFullscreen) { document.exitFullscreen() }
             else if (document.webkitExitFullscreen) { document.webkitExitFullscreen() }
         } else {
@@ -31,7 +30,7 @@ export const Menu = ({ ws }) => {
             else if (document.documentElement.webkitEnterFullscreen) { document.documentElement.webkitEnterFullscreen() }
         }
 
-        STMobile.isFullscreen = !mobileSnap.isFullscreen
+        STApp.isFullscreen = !appSnap.isFullscreen
     }
 
     const submitUser = () => {
@@ -80,7 +79,7 @@ export const Menu = ({ ws }) => {
 
                 <div className={sty.menuList}>
                     <div className={sty.menuListItem} onClick={() => openScreen('Quests') }>
-                        <h5 className={sty.menuListItemLabel}>Questions</h5>
+                        <h5 className={sty.menuListItemLabel}>Messages</h5>
                         <Icon name='chatbubble' size={24} color='--white' />
                     </div>
                     <div className={sty.menuListItem} onClick={() => openScreen('Shares') }>
@@ -95,8 +94,8 @@ export const Menu = ({ ws }) => {
 
                 <div className={sty.menuList}>
                     <div className={sty.menuListItem} onClick={() => resizeWindow()}>
-                        <h5 className={sty.menuListItemLabel} >{`${mobileSnap.isFullscreen ? 'Exit' : 'Enter'} Full screen`}</h5>
-                        <Icon name={mobileSnap.isFullscreen ? 'contract' : 'expand'} size={24} color='--white' />
+                        <h5 className={sty.menuListItemLabel} >{`${appSnap.isFullscreen ? 'Exit' : 'Enter'} Full screen`}</h5>
+                        <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={24} color='--white' />
                     </div>
                 </div>
             </div>

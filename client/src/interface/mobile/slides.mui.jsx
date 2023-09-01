@@ -12,7 +12,7 @@ export const Slides = () => {
 
 
     const downloadPdf = (file) => {
-        window.open(`http://${appSnap.host.ip}:5000/uploads/pdfs/${file}.pdf`, '_blank')
+        window.open(`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/pdfs/${file}.pdf`, '_blank')
     }
 
     const playSlide = (index) => {
@@ -40,10 +40,10 @@ export const Slides = () => {
     return (
         appSnap.showTheatre
             ? <div className={sty.theatre}
-                style={{ backgroundImage: `url(http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png)` }}
+                style={{ backgroundImage: `url(http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png)` }}
                 onClick={() => toggleCloseBtn()}
             >
-                {mobileSnap.showCloseBtn && <button className={sty.theatreCloseBtn} onClick={() => STApp.uiName = ''}>
+                {mobileSnap.showCloseBtn && <button className={sty.theatreCloseBtn} onClick={() => STApp.showTheatre = false}>
                     <Icon name='close' size={20} color='--white' />
                 </button>}
             </div>
@@ -54,7 +54,7 @@ export const Slides = () => {
                             ? <>
                                 <div className={sty.modalLblView}>
                                     <button className={sty.modalHeadBtn} onClick={() => STApp.showPages = false}>
-                                        <Icon name='chevron-back' size={20} color='--system-blue' />
+                                        <Icon name='chevron-back' size={20} color='--primary-tint' />
                                     </button>
                                 </div>
                                 {appSnap.activeSlide.index === appSnap.playSlide.index
@@ -65,7 +65,7 @@ export const Slides = () => {
                                     : <h3 className={sty.slidePageCount}>{`${appSnap.slides[appSnap.playSlide.index].pageCount} pages`}</h3>
                                 }
                                 <button className={sty.modalHeadBtn} onClick={() => downloadPdf(appSnap.slides[appSnap.playSlide.index].name)}>
-                                    <Icon name='arrow-down' size={20} color='--system-blue' />
+                                    <Icon name='arrow-down' size={20} color='--primary-tint' />
                                 </button>
                             </>
                             : <>
@@ -86,7 +86,7 @@ export const Slides = () => {
                                 return (
                                     <div key={index} className={sty.slidePage} onClick={() => { STApp.activeSlide.page = (index + 1) }}
                                         style={{ backgroundColor: appSnap.activeSlide.index === appSnap.playSlide.index && appSnap.activeSlide.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
-                                        <img className={sty.slidePageImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${appSnap.slides[appSnap.playSlide.index].name}/${index + 1}.png`} />
+                                        <img className={sty.slidePageImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.playSlide.index].name}/${index + 1}.png`} />
                                         <h5 className={sty.slidePageNumber}>{index + 1}</h5>
                                     </div>
                                 )
@@ -98,7 +98,7 @@ export const Slides = () => {
                                     {appSnap.slides.map((slide, index) => {
                                         return (
                                             <div className={sty.slideItem} key={index} onClick={() => playSlide(index)}>
-                                                <img className={sty.slideItemImg} src={`http://${appSnap.host.ip}:5000/uploads/imgs/${slide.name}/${appSnap.activeSlide.index === index ? appSnap.activeSlide.page : 1}.png`} />
+                                                <img className={sty.slideItemImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${slide.name}/${appSnap.activeSlide.index === index ? appSnap.activeSlide.page : 1}.png`} />
                                                 {appSnap.activeSlide.index === index && <div className={sty.slideItemLive}>
                                                     <Icon name='radio-button-on' size={20} color='--system-red' />
                                                 </div>}

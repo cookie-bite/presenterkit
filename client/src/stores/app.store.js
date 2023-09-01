@@ -2,7 +2,7 @@ import { proxy } from 'valtio'
 
 
 export const STApp = proxy({
-    host: { ip: '', port: '3000' },
+    host: { ip: '', port1: '3000', port2: '50000' },  // on production: 3000, 3000
     uiName: '',
     userID: '',
     username: '',
@@ -22,7 +22,8 @@ export const STApp = proxy({
     showTheatre: false,
     hasCooldown: false,
     cooldown: 0,
-    showEdit: false
+    showEdit: false,
+    isFullscreen: false
 })
 
 export const STScene = proxy({
@@ -33,7 +34,6 @@ export const STScene = proxy({
 
 export const STDesktop = proxy({
     controls: { isActive: true },
-    isFullscreen: false,
     panel: { position: localStorage.getItem('PANEL_POS') ? localStorage.getItem('PANEL_POS') : `${localStorage.setItem('PANEL_POS', 'right') === undefined && 'right'}` },
     qr: { expand: false },
     showSlides: false
@@ -41,7 +41,6 @@ export const STDesktop = proxy({
 
 export const STMobile = proxy({
     menu: { isActive: false },
-    isFullscreen: false,
     showCloseBtn: true
 })
 
