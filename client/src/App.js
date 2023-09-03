@@ -25,7 +25,7 @@ export const App = () => {
             STApp.slides = res.slides
             STApp.shares = res.shares
             STScene.display = res.display
-            
+
             if (core.isPresenter) {
                 STAdmin.queue = res.queue
                 STAdmin.config.forwarding = res.config.forwarding
@@ -58,6 +58,7 @@ export const App = () => {
             if (res.isAdmin) {
                 STAdmin.queue = res.queue
                 STAdmin.config.forwarding = res.config.forwarding
+                if (res.config.hasOwnProperty('forwarding')) STAdmin.activeCheckTab = res.config.forwarding ? 'Stop' : 'Pass'
             }
         } else if (res.command === 'SEND_USER') {
             STScene.quests.push({
@@ -106,6 +107,7 @@ export const App = () => {
             else STAdmin.queue.splice(res.index, 1)
         } else if (res.command === 'UPDT_CNFG') {
             STAdmin.config[res.name] = res.updateTo
+            if (res.name === 'forwarding') STAdmin.activeCheckTab = res.updateTo.is ? 'Stop' : 'Pass'
         } else if (res.command === 'UPDT_STTS') {
             STAdmin.userList = res.userList
         } else if (res.command === 'CLDW_USER') {

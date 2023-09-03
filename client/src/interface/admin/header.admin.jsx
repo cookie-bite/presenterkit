@@ -15,7 +15,7 @@ export const Header = ({ ws }) => {
 
 
     const SearchList = () => {
-        let results = adminSnap.userList.filter((user) => !user.isAdmin && !user.isInLobby && user.username.includes(term.trim()))
+        let results = adminSnap.userList.filter((user) => !user.isAdmin && !user.isInLobby && user.username.toLowerCase().includes(term.trim().toLowerCase()))
         let exactResults = results.filter((user) => user.username.startsWith(term.trim()))
         let finalResults = [...new Set([...exactResults, ...results])]
 
