@@ -34,7 +34,7 @@ export const Admin = ({ ws, core }) => {
             <Header ws={ws} />
             <UISwap>
                 <Messages ws={ws} uiName={'Messages'} />
-                <Shares ws={ws} uiName={'Share'} />
+                <Shares ws={ws} uiName={'Shares'} />
             </UISwap>
         </div>
     )

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { STApp } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
@@ -36,22 +37,30 @@ export const Entry = ({ ws, core }) => {
 
                 console.clear()
                 console.log(Math.ceil((cldw - Date.now()) / (1000)))
-                
+
                 if (time === 0) {
                     clearInterval(interval)
                     if (appSnap.username) STApp.showEntry = false
                     else STApp.hasCooldown = false
                 } else if (appSnap.cooldown !== time) STApp.cooldown = time
-                
+
             }, 1000)
         }
     }, [])
 
 
     return (
-        <div className={sty.entryPage}>
+        <motion.div className={sty.entryPage}
+            exit={{ opacity: 0 }}
+            transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.4 }}
+        >
             {appSnap.hasCooldown
-                ? <div className={sty.cooldown}>
+                ? <motion.div className={sty.cooldown}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ ease: 'easeInOut', duration: 0.3 }}
+                >
                     <div className={sty.cooldownIc}>
                         <Icon name='timer-o' size={30} color='--system-red' />
                     </div>
@@ -60,8 +69,12 @@ export const Entry = ({ ws, core }) => {
                         <h3 className={sty.cooldownSbtl}>for inappropriate action</h3>
                     </div>
                     <h2 className={sty.cooldownTimer}>{appSnap.cooldown} min</h2>
-                </div>
-                : <div className={sty.entryView}>
+                </motion.div>
+                : <motion.div className={sty.entryView}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.2 }}
+                >
                     <h1 className={sty.entryLogo}>SeeQuest</h1>
                     <div className={sty.entryInputView}>
                         <input className={sty.entryInput} autoFocus={true} placeholder='Username' value={username}
@@ -72,8 +85,8 @@ export const Entry = ({ ws, core }) => {
                             <Icon name='arrow-forward-circle-o' size={28} color='--system-blue' />
                         </button>
                     </div>
-                </div>
+                </motion.div>
             }
-        </div>
+        </motion.div>
     )
 }

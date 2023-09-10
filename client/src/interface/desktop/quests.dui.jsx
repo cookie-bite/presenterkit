@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion, useAnimation } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { STScene, STApp } from '../../stores/app.store'
 import { Panel } from '../../components/core.cmp'
@@ -21,6 +22,9 @@ export const Quests = ({ ws, core }) => {
     const [text, setText] = useState('')
     const [isTyping, setIsTyping] = useState(false)
 
+    const inputHeight = useAnimation()
+    const sendBtn = useAnimation()
+
 
     const setDisplay = (quest, index) => {
         STScene.display = { quest: quest.label, author: quest.username }
@@ -40,7 +44,8 @@ export const Quests = ({ ws, core }) => {
                 while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
                 ws.send(JSON.stringify({ command: 'APR_REQ', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: temp, color: appSnap.userColor } }))
             }
-            inputRef.current.style.height = 'inherit'
+            sendBtn.start({ scale: 0, marginLeft: '0px' })
+            inputHeight.start({ height: '28px', 'min-width': '232px' })
             setText('')
         }
     }
@@ -49,8 +54,18 @@ export const Quests = ({ ws, core }) => {
         if (e.target.value.length < 141 && inputRef.current.pass) {
             setText(e.target.value)
             inputRef.current.style.height = 'inherit'
-            inputRef.current.style.height = e.target.scrollHeight < 83 ? `${e.target.scrollHeight}px` : '82px'
-            inputRef.current.style.padding = e.target.scrollHeight < 83 ? '5px 15px' : '5px 0 5px 15px'
+            let inputStyle = { height: e.target.scrollHeight < 83 ? e.target.scrollHeight : 82 }
+            if (e.target.value.length === 1) {
+                inputStyle['min-width'] = '193px'
+                inputHeight.start(inputStyle)
+                sendBtn.start({ scale: 1 })
+            } else if (e.target.value.length > 1) {
+                inputHeight.start(inputStyle)
+            } else if (!e.target.value) {
+                inputStyle['min-width'] = '232px'
+                sendBtn.start({ scale: 0 })
+                inputHeight.start(inputStyle)
+            }
         }
 
         if (!isTyping) {
@@ -104,14 +119,20 @@ export const Quests = ({ ws, core }) => {
             }
             <div className={sty.inputView}>
                 <div className={sty.msgColor} style={{ backgroundColor: appSnap.userColor }} onClick={() => STApp.userColor = genColor()}></div>
-                <textarea className={sty.input} value={text} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' pass='true'
+                <motion.textarea className={sty.input} value={text} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' pass='true'
                     ref={inputRef}
+                    animate={inputHeight}
+                    transition={{ ease: 'easeInOut', duration: 0.3 }}
                     onChange={(e) => typing(e)}
                     onKeyDown={(e) => onKeyDown(e)}
                 />
-                {text && <button className={sty.inputBtn} onClick={() => send()}>
+                <motion.button className={sty.inputBtn}
+                    animate={sendBtn}
+                    transition={{ ease: 'easeInOut', duration: 0.3 }}
+                    onClick={() => send()}
+                >
                     <Icon name='arrow-up-circle-o' size={30} color='--primary-tint' />
-                </button>}
+                </motion.button>
             </div>
         </Panel>
     )

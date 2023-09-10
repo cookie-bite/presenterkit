@@ -57,7 +57,3 @@ input::placeholder {
 input::selection, textarea::selection {
     background-color: var(--primary-fill);
 }
-
-/* textarea::-webkit-scrollbar {
-    display: none;
-} */

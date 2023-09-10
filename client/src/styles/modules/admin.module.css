@@ -85,6 +85,20 @@
     margin: 10px;
     border-radius: 15px;
     background-color: transparent;
+    transition: all .3s ease-in-out;
+}
+
+.tabBtnActive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    margin: 10px;
+    border-radius: 15px;
+    filter: invert(100%);
+    background-color: var(--black);
+    transition: all .3s ease-in-out;
 }
 
 .moderators {
@@ -218,6 +232,20 @@
     margin-left: 5px;
     border-radius: 15px;
     background-color: var(--tertiary-fill);
+    transition: all .3s ease-in-out;
+}
+
+.searchBtnActive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    margin-left: 5px;
+    border-radius: 15px;
+    background-color: var(--tertiary-fill);
+    transform: rotate(-45deg);
+    transition: all .3s ease-in-out;
 }
 
 
@@ -254,29 +282,6 @@
 
 
 /* Messages */
-
-.switchTabs {
-    display: flex;
-    padding: 4px;
-    border: 1px solid var(--nonopaque-separator);
-    border-radius: 10px;
-    background-color: var(--quarternary-fill);
-    z-index: 1;
-}
-
-.switchTab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.switchTabLbl {
-    font-size: 12px;
-    font-weight: 500;
-}
 
 .msgList {
     display: flex;

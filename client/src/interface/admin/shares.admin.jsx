@@ -96,7 +96,7 @@ export const Shares = ({ ws }) => {
     }
 
     const sendShare = () => {
-        STApp.shares[appSnap.activeShare].urls = STApp.shares[appSnap.activeShare].urls.filter(u => u.link)
+        STApp.shares[appSnap.activeShare].urls = STApp.shares[appSnap.activeShare].urls.filter(u => STApp.shares[appSnap.activeShare].urls.length === 1 ? u : u.link)
         STApp.shares[appSnap.activeShare].isShared = true
         console.log(STApp.shares)
         ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STApp.shares, activeShare: appSnap.activeShare }))
@@ -111,7 +111,7 @@ export const Shares = ({ ws }) => {
         setBody(STApp.shares[STApp.activeShare].body)
         setUrls(STApp.shares[STApp.activeShare].urls)
     }, [STApp.activeShare])
-    
+
     useEffect(() => {
         textareaRef.current.style.height = 'inherit'
         textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'

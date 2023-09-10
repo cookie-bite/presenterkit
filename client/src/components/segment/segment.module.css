@@ -1,0 +1,37 @@
+.segments {
+    display: flex;
+    padding: 4px;
+    border: 1px solid var(--nonopaque-separator);
+    border-radius: 10px;
+    background-color: var(--quarternary-fill);
+    z-index: 1;
+}
+
+.segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.segmentBg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    background-color: var(--white);
+}
+
+.segmentLbl {
+    position: relative;
+    line-height: 24px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+    z-index: 1;
+}

@@ -79,7 +79,6 @@ export const Presenter = ({ ws }) => {
     const toggleTheatre = (mode) => {
         if (mode === 'on') {
             STApp.showTheatre = !appSnap.showTheatre
-            STDesktop.controls.isActive = false
             STApp.activeSlide.page = 1
             sendActiveSlide(true)
         } else if (mode === 'off') {
@@ -90,7 +89,6 @@ export const Presenter = ({ ws }) => {
 
     const previewTheatre = () => {
         STApp.showTheatre = true
-        STDesktop.controls.isActive = false
         sendActiveSlide(true)
     }
 

@@ -1,6 +1,7 @@
+import { motion } from 'framer-motion'
 import { Icon } from '../../components/core.cmp'
 import { useSnapshot } from 'valtio'
-import { STAdmin, STDesktop, STApp } from '../../stores/app.store'
+import { STAdmin, STApp } from '../../stores/app.store'
 
 import sty from '../../styles/modules/desktop.module.css'
 
@@ -8,7 +9,7 @@ import sty from '../../styles/modules/desktop.module.css'
 export const Controls = ({ core }) => {
     const adminSnap = useSnapshot(STAdmin)
     const appSnap = useSnapshot(STApp)
-    
+
 
     const toggleScreen = (screen) => {
         STApp.uiName = appSnap.uiName === screen ? '' : screen
@@ -32,34 +33,40 @@ export const Controls = ({ core }) => {
 
 
     return (
-        <div className={sty.screenBtns}>
-            {core.isPresenter && <button className={sty[cmpr('Remote') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Remote')}>
-                <Icon name='phone-o' size={28} color={cmpr('Remote') ? '--black' : '--white' }/>
-            </button>}
-            <button className={sty[cmpr('QRScreen') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('QRScreen')}>
-                <Icon name='qr' size={26} color={cmpr('QRScreen') ? '--black' : '--white' }/>
-            </button>
-            <button className={sty[cmpr('Quests') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Quests')}>
-                <Icon name='chatbubble-o' size={30} color={cmpr('Quests') ? '--black' : '--white' }/>
-            </button>
-            <button className={sty[cmpr('Users') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Users')}>
-                <Icon name='people' size={30} color={cmpr('Users') ? '--black' : '--white' }/>
-            </button>
-            {core.isPresenter && <button className={sty[cmpr('Presenter') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Presenter')}>
-                <Icon name='albums' size={30} color={cmpr('Presenter') ? appSnap.showTheatre ? '--system-purple' : '--black' : '--white' }/>
-            </button>}
-            {!core.isPresenter && <button className={sty[cmpr('Slides') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Slides')}>
-                <Icon name='albums' size={30} color={cmpr('Slides') ? appSnap.showTheatre ? '--system-purple' : '--black' : '--white' }/>
-            </button>}
-            {(core.isPresenter || adminSnap.isAdmin) && <button className={sty[cmpr('Admin') ? 'screenBtnActive' : 'screenBtn']} onClick={() => toggleScreen('Admin')}>
-                <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--black' : '--white' }/>
-            </button>}
-            {!core.isPresenter && <button className={sty.screenBtn} onClick={() => resizeWindow()}>
-                <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color='--white'/>
-            </button>}
-            <button className={sty.screenBtn} onClick={() => STDesktop.controls.isActive = false}>
-                <Icon name='close' size={30} color='--system-red'/>
-            </button>
+        <div className={sty.controlsHitSlop}>
+            <motion.div className={sty.controls}
+                initial={{ y: 15 }}
+                animate={{ y: 0 }}
+                transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
+            >
+                {core.isPresenter && <button className={sty[cmpr('Remote') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Remote')}>
+                    <Icon name='phone-o' size={28} color='--white' />
+                </button>}
+                <button className={sty[cmpr('QRScreen') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('QRScreen')}>
+                    <Icon name='qr' size={26} color='--white' />
+                </button>
+                <button className={sty[cmpr('Quests') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Quests')}>
+                    <Icon name='chatbubble-o' size={30} color='--white' />
+                </button>
+                <button className={sty[cmpr('Users') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Users')}>
+                    <Icon name='people' size={30} color='--white' />
+                </button>
+                {!core.isPresenter && <button className={sty[cmpr('Shares') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Shares')}>
+                    <Icon name='paper-plane' size={26} color='--white' />
+                </button>}
+                {core.isPresenter && <button className={sty[cmpr('Presenter') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Presenter')}>
+                    <Icon name='albums' size={30} color='--white' />
+                </button>}
+                {!core.isPresenter && <button className={sty[cmpr('Slides') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Slides')}>
+                    <Icon name='albums' size={30} color='--white' />
+                </button>}
+                {(core.isPresenter || adminSnap.isAdmin) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
+                    <Icon name='person-circle-o' size={33} color='--white' />
+                </button>}
+                {!core.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
+                    <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color='--white' />
+                </button>}
+            </motion.div>
         </div>
     )
 }

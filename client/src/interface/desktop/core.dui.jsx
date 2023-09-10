@@ -9,6 +9,7 @@ import { Presenter } from './presenter.dui'
 import { Slides } from './slides.dui'
 import { Admin } from '../admin/core.admin'
 import { Controls } from './controls.dui'
+import { AnimatePresence } from 'framer-motion'
 
 
 export const Desktop = ({ ws, core }) => {
@@ -18,18 +19,23 @@ export const Desktop = ({ ws, core }) => {
 
     return (
         <>
-            {appSnap.showEntry
-                ? <Entry ws={ws} core={core} />
-                : <>
+            <AnimatePresence mode='wait'>
+                {appSnap.showEntry && <Entry ws={ws} core={core} />}
+            </AnimatePresence>
+
+            <AnimatePresence mode='wait'>
+                {!appSnap.showEntry && <>
                     {appSnap.uiName === 'QRScreen' && <QRScreen />}
                     {appSnap.uiName === 'Users' && <Users ws={ws} />}
                     {appSnap.uiName === 'Quests' && <Quests ws={ws} core={core} />}
-                    {appSnap.uiName === 'Presenter' && <Presenter ws={ws}/>}
+                    {appSnap.uiName === 'Presenter' && <Presenter ws={ws} />}
                     {appSnap.uiName === 'Slides' && <Slides />}
                     {appSnap.uiName === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
                     {desktopSnap.controls.isActive && <Controls core={core} />}
                 </>
-            }
+                }
+            </AnimatePresence>
+
         </>
     )
 }

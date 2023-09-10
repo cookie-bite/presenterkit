@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { STAdmin, STApp, STScene } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
@@ -20,7 +21,10 @@ export const Header = ({ ws }) => {
         let finalResults = [...new Set([...exactResults, ...results])]
 
         return (
-            <div className={sty.searchList}>
+            <motion.div className={sty.searchList}
+                exit={{ opacity: 0 }}
+                transition={{ ease: 'easeInOut', duration: 0.2 }}
+            >
                 {finalResults.length
                     ? <>
                         {finalResults.map((user, index) => {
@@ -38,7 +42,7 @@ export const Header = ({ ws }) => {
                         <h3 className={sty.emptySearchLbl}>No Users</h3>
                     </div>
                 }
-            </div>
+            </motion.div>
         )
     }
 
@@ -70,6 +74,11 @@ export const Header = ({ ws }) => {
     }
 
 
+    useEffect(() => {
+        return () => STAdmin.showSearch = false
+    }, [])
+
+
     return (
         <div className={sty.header}>
             <div className={sty.headline}>
@@ -83,41 +92,56 @@ export const Header = ({ ws }) => {
                 </button>
             </div>
             <div className={sty.tabs}>
-                <button className={sty.tabBtn} style={adminSnap.uiName === 'Messages' ? { backgroundColor: 'var(--white)' } : null} onClick={() => navigate('Messages')}>
-                    <Icon name='chatbubble-o' size={22} color={adminSnap.uiName === 'Messages' ? '--black' : '--white'} />
+                <button className={adminSnap.uiName === 'Messages' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Messages')}>
+                    <Icon name='chatbubble-o' size={22} color='--white' />
                 </button>
-                <button className={sty.tabBtn} style={adminSnap.uiName === 'Share' ? { backgroundColor: 'var(--white)' } : null} onClick={() => navigate('Share')}>
-                    <Icon name='paper-plane-o' size={22} color={adminSnap.uiName === 'Share' ? '--black' : '--white'} />
+                <button className={adminSnap.uiName === 'Shares' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Shares')}>
+                    <Icon name='paper-plane-o' size={22} color='--white' />
                 </button>
             </div>
             <div className={sty.moderators}>
-                {adminSnap.userList.map((user, index) => {
-                    return (
-                        user.isAdmin && <div className={sty.moderator} onClick={() => toggleModerator(user)} key={index}>
-                            <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)`, cursor: user.isPresenter ? 'default' : 'pointer' }}>
-                                <h1 className={sty.moderatorLbl} style={{ color: user.userColor }}>{user.username.charAt()}</h1>
-                            </div>
-                            {adminSnap.activeAdmin === user.userID && <div className={sty.activeModerator}>
-                                <h5 className={sty.activeModeratorLbl}>{user.username}</h5>
-                                <button onClick={() => updateStatus(user.userID, false)}>
-                                    <Icon name='person-remove' size={15} color='--system-red' />
-                                </button>
-                            </div>}
-                        </div>
-                    )
-                })}
-                {adminSnap.showSearch &&
-                    <div className={sty.searchBar}>
-                        <input className={sty.searchInput} type='text' name='term' autoComplete='off' placeholder='Add moderator' value={term}
+                <AnimatePresence>
+                    {adminSnap.userList.map((user, index) => {
+                        return (
+                            user.isAdmin && <motion.div className={sty.moderator} key={index}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ ease: 'easeInOut', duration: 0.3 }}
+                                onClick={() => toggleModerator(user)}
+                            >
+                                <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)`, cursor: user.isPresenter ? 'default' : 'pointer' }}>
+                                    <h1 className={sty.moderatorLbl} style={{ color: user.userColor }}>{user.username.charAt()}</h1>
+                                </div>
+                                {adminSnap.activeAdmin === user.userID && <div className={sty.activeModerator}>
+                                    <h5 className={sty.activeModeratorLbl}>{user.username}</h5>
+                                    <button onClick={() => updateStatus(user.userID, false)}>
+                                        <Icon name='person-remove' size={15} color='--system-red' />
+                                    </button>
+                                </div>}
+                            </motion.div>
+                        )
+                    })}
+                </AnimatePresence>
+                <AnimatePresence>
+                    {adminSnap.showSearch && <motion.div className={sty.searchBar}>
+                        <motion.input className={sty.searchInput} type='text' name='term' autoComplete='off' placeholder='Add moderator' value={term}
+                            initial={{ opacity: 0, borderWidth: 0, width: 0, padding: 0, margin: 0 }}
+                            animate={{ opacity: 1, borderWidth: 1, width: 220, padding: '10px 15px', margin: '0 5px' }}
+                            exit={{ opacity: 0, borderWidth: 0, width: 0, padding: 0, margin: 0 }}
+                            transition={{ ease: 'easeOut', duration: 0.4 }}
                             onChange={(e) => setTerm(e.target.value)}
                             onFocus={() => STAdmin.showSearchList = true}
                             onBlur={() => setTimeout(() => STAdmin.showSearchList = false, 150)}
                         />
-                        {adminSnap.showSearchList && <SearchList /> }
-                    </div>
-                }
-                <button className={sty.searchBtn} onClick={() => toggleSearch()}>
-                    <Icon name={adminSnap.showSearch ? 'close' : 'add'} size={20} color='--primary-tint' />
+                        <AnimatePresence>
+                            {adminSnap.showSearchList && <SearchList />}
+                        </AnimatePresence>
+                    </motion.div>
+                    }
+                </AnimatePresence>
+                <button className={adminSnap.showSearch ? sty.searchBtnActive : sty.searchBtn} onClick={() => toggleSearch()}>
+                    <Icon name='add' size={20} color='--primary-tint' />
                 </button>
             </div>
         </div>

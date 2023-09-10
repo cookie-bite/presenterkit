@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { STApp } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
@@ -55,9 +56,17 @@ export const Entry = ({ ws, core }) => {
 
 
     return (
-        <div className={sty.entryPage}>
+        <motion.div className={sty.entryPage}
+            exit={{ opacity: 0 }}
+            transition={{ ease: 'easeInOut', duration: core.isPresenter ? 0 : 0.5 }}
+        >
             {appSnap.hasCooldown
-                ? <div className={sty.cooldown}>
+                ? <motion.div className={sty.cooldown}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ ease: 'easeInOut', duration: 0.3 }}
+                >
                     <div className={sty.cooldownIc}>
                         <Icon name='timer-o' size={30} color='--system-red' />
                     </div>
@@ -66,8 +75,12 @@ export const Entry = ({ ws, core }) => {
                         <h3 className={sty.cooldownSbtl}>for inappropriate action</h3>
                     </div>
                     <h2 className={sty.cooldownTimer}>{appSnap.cooldown} min</h2>
-                </div>
-                : <div className={sty.entryView}>
+                </motion.div>
+                : <motion.div className={sty.entryView}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.2 }}
+                >
                     <h1 className={sty.entryLogo}>SeeQuest</h1>
                     <div className={sty.entryInputView}>
                         <input className={sty.entryInput} placeholder='Username' value={username} autoFocus={true}
@@ -78,8 +91,8 @@ export const Entry = ({ ws, core }) => {
                             <Icon name='arrow-forward-circle-o' size={28} color='--system-blue' />
                         </button>
                     </div>
-                </div>
+                </motion.div>
             }
-        </div>
+        </motion.div>
     )
 }
