@@ -100,7 +100,7 @@ export const Quests = ({ ws, core }) => {
 
 
     return (
-        <Panel label={'Messages'} count={sceneSnap.quests.length}>
+        <Panel show={appSnap.uiName === 'Quests'} label={'Messages'} count={sceneSnap.quests.length}>
             {sceneSnap.quests.length
                 ? <div className={sty.questList}>
                     {sceneSnap.quests.map((quest, index) => {

@@ -286,6 +286,7 @@
 .msgList {
     display: flex;
     flex-direction: column;
+    height: 100%;
     margin-top: 20px;
     overflow-x: hidden;
     overflow-y: auto;

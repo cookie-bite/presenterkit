@@ -97,6 +97,7 @@ export const App = () => {
 
         if (res.command === 'APR_REQ') {
             STAdmin.queue.push({
+                id: res.quest.id,
                 userID: res.quest.userID,
                 author: res.quest.author,
                 label: res.quest.label,

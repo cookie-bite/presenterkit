@@ -26,10 +26,10 @@ export const Desktop = ({ ws, core }) => {
             <AnimatePresence mode='wait'>
                 {!appSnap.showEntry && <>
                     {appSnap.uiName === 'QRScreen' && <QRScreen />}
-                    {appSnap.uiName === 'Users' && <Users ws={ws} />}
-                    {appSnap.uiName === 'Quests' && <Quests ws={ws} core={core} />}
-                    {appSnap.uiName === 'Presenter' && <Presenter ws={ws} />}
+                    <Users ws={ws} />
+                    <Quests ws={ws} core={core} />
                     {appSnap.uiName === 'Slides' && <Slides />}
+                    {appSnap.uiName === 'Presenter' && <Presenter ws={ws} />}
                     {appSnap.uiName === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
                     {desktopSnap.controls.isActive && <Controls core={core} />}
                 </>

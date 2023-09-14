@@ -220,10 +220,10 @@ wss.on('connection', (ws) => {
             console.log(`[${req.username}-${req.userID}]: \x1b[33m${req.quest.label}\x1b[0m`)
 
             if (config.forwarding.is) {
-                queue.push({ userID: req.userID, author: req.username, label: req.quest.label, color: req.quest.color })
+                queue.push({ id: genRandom(4), userID: req.userID, author: req.username, label: req.quest.label, color: req.quest.color })
                 sendRooms(adminRoom, { command: 'APR_REQ', quest: queue.at(-1), user: { id: req.userID, name: req.username } })
             } else {
-                quests.push({ effect: true, pos: genPos(), color: req.quest.color, label: req.quest.label, username: req.username })
+                quests.push({ id: genRandom(4), color: req.quest.color, label: req.quest.label, username: req.username, effect: true, pos: genPos() })
                 sendRooms(userRoom, { command: 'SEND_USER', quest: quests.at(-1), user: { id: req.userID, name: req.username } })
             }
         } else if (req.command === 'SEND_USER') {

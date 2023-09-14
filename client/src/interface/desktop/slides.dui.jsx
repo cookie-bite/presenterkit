@@ -59,7 +59,7 @@ export const Slides = () => {
 
     return (
         <>
-            <Panel label={'Slides'} count={appSnap.slides.length}>
+            <Panel label={'Slides'} count={appSnap.slides.length} show={true}>
                 {appSnap.slides.length
                     ? <div className={sty.theatre}>
                         {appSnap.slides.map((slide, index) => {

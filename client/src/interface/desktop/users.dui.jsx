@@ -78,7 +78,7 @@ export const Users = ({ ws }) => {
 
 
     return (
-        <Panel label={'Users'} count={appSnap.userList.length}>
+        <Panel show={appSnap.uiName === 'Users'} label={'Users'} count={appSnap.userList.length}>
             <div className={sty.userList}>
                 <UserList />
             </div>
