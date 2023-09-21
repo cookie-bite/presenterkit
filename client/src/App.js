@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { STApp, STScene, STAdmin } from './stores/app.store'
 
 import { Scene } from './scene/core.sc'
@@ -120,6 +121,17 @@ export const App = () => {
             STApp.showEntry = true
         }
     }
+
+
+    useEffect(() => {
+        const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']
+        let s = 0
+        setInterval(() => {
+            console.clear()
+            console.log(s, 'ws state:', states[ws.readyState])
+            s++
+        }, 1000)
+    }, [])
 
 
     return (

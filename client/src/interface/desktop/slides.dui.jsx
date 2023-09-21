@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
-import { STApp, STDesktop } from '../../stores/app.store'
+import { STApp } from '../../stores/app.store'
 import { Panel } from '../../components/panel.cmp'
 import { Icon } from '../../components/core.cmp'
 
@@ -17,7 +17,6 @@ export const Slides = () => {
 
     const playSlide = (index) => {
         if (appSnap.playSlide.index !== index) STApp.playSlide.page = 1
-        STDesktop.controls.isActive = false
         STApp.playSlide.index = index
         STApp.showTheatre = true
     }
@@ -50,7 +49,7 @@ export const Slides = () => {
         const onKeyUp = (e) => {
             if (e.key === 'ArrowLeft') changePage('<')
             if (e.key === 'ArrowRight') changePage('>')
-            if (e.key === 'Escape') exitSlide()
+            if (e.key === 'Escape' && STApp.uiName === 'Slides') exitSlide()
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
@@ -59,7 +58,7 @@ export const Slides = () => {
 
     return (
         <>
-            <Panel label={'Slides'} count={appSnap.slides.length} show={true}>
+            <Panel show={appSnap.uiName === 'Slides'} label={'Slides'} count={appSnap.slides.length}>
                 {appSnap.slides.length
                     ? <div className={sty.theatre}>
                         {appSnap.slides.map((slide, index) => {
@@ -69,9 +68,6 @@ export const Slides = () => {
                                     <div className={sty.theatreItemBtns}>
                                         <button className={sty.theatreItemBtn} onClick={() => downloadPdf(slide.name)}>
                                             <Icon name='arrow-down' size={24} color='--system-blue' />
-                                        </button>
-                                        <button className={sty.theatreItemBtn} onClick={() => playSlide(index)}>
-                                            <Icon name='tv-o' size={24} color='--system-green' />
                                         </button>
                                     </div>
                                     {appSnap.activeSlide.index === index && <div className={sty.theatreItemLive}>

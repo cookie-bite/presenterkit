@@ -189,6 +189,23 @@
     transition: all .3s ease-in-out;
 }
 
+.controlsTooltip {
+    display: none;
+    position: absolute;
+    top: 0;
+    transform: translateY(calc(-100% - 15px));
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--primary-label);
+    text-wrap: nowrap;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--nonopaque-separator);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+}
+
 
 
 
@@ -241,6 +258,7 @@
     min-width: 15%;
     width: 300px;
     height: calc(100% - 40px);
+    margin: 0 20px;
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -377,6 +395,10 @@
 }
 
 .msgColor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
     height: 26px;
     min-width: 26px;
     margin-right: 10px;
@@ -384,6 +406,26 @@
     border-radius: 13px;
     transition: all .3s ease-in-out;
     cursor: pointer;
+}
+
+.msgColor:hover > .msgColorPrvw {
+    display: flex;
+}
+
+.msgColorPrvw {
+    display: none;
+    position: absolute;
+    top: 0;
+    transform: translateY(calc(-100% - 8px));
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--primary-label);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--nonopaque-separator);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
 }
 
 .input {
@@ -400,6 +442,7 @@
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--thin-material);
     resize: none;
+    transition: color .3s ease-in-out;
 }
 
 .input::-webkit-scrollbar {
@@ -729,11 +772,29 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     height: 30px;
     width: 30px;
     border-radius: 15px;
     margin: 0 12px;
     background-color: transparent;
+}
+
+.presenterTooltip {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    transform: translateY(calc(100% + 5px));
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--primary-label);
+    text-wrap: nowrap;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--nonopaque-separator);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
 }
 
 .slideControlsLbl {

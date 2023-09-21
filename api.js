@@ -10,7 +10,7 @@ const fs = require('fs-extra')
 const app = express()
 const wss = new WebSocketServer({ port: 50001 })  // on production: 3001
 
-const ip = os.networkInterfaces()[Object.keys(os.networkInterfaces())[0]][1].address  // on OSX: [3][1]
+const ip = os.networkInterfaces()[Object.keys(os.networkInterfaces())[process.platform === 'darwin' ? 3 : 0]][1].address
 const adminRoom = 0
 const userRoom = 1
 

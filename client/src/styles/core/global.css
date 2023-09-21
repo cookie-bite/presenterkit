@@ -57,3 +57,7 @@ input::placeholder {
 input::selection, textarea::selection {
     background-color: var(--primary-fill);
 }
+
+*:hover > .tooltip {
+    display: flex;
+}

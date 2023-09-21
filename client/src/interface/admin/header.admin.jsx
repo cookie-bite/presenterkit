@@ -94,9 +94,11 @@ export const Header = ({ ws }) => {
             <div className={sty.tabs}>
                 <button className={adminSnap.uiName === 'Messages' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Messages')}>
                     <Icon name='chatbubble-o' size={22} color='--white' />
+                    <div className={`tooltip ${sty.headerTooltip}`}>Messages</div>
                 </button>
                 <button className={adminSnap.uiName === 'Shares' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Shares')}>
                     <Icon name='paper-plane-o' size={22} color='--white' />
+                    <div className={`tooltip ${sty.headerTooltip}`}>Shares</div>
                 </button>
             </div>
             <div className={sty.moderators}>

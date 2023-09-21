@@ -141,9 +141,11 @@ export const Presenter = ({ ws }) => {
                                 <div className={sty.slidesHeaderMiddle}>
                                     <button className={sty.slideControlsBtn} onClick={() => toggleTheatre('on')}>
                                         <Icon name='tv-o' size={25} color='--primary-tint' />
+                                        <div className={`tooltip ${sty.presenterTooltip}`}>Play</div>
                                     </button>
                                     <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
                                         <Icon name='trash-o' size={25} color='--system-red' />
+                                        <div className={`tooltip ${sty.presenterTooltip}`}>Remove</div>
                                     </button>
                                 </div>
                             </div>

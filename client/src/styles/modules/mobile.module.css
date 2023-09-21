@@ -184,6 +184,7 @@
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--thin-material);
     resize: none;
+    transition: color .3s ease-in-out;
 }
 
 .controlsInput::-webkit-scrollbar {

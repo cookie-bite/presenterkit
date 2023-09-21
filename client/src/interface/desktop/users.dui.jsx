@@ -70,7 +70,7 @@ export const Users = ({ ws }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape') STApp.uiName = ''
+            if (e.key === 'Escape' && STApp.uiName === 'Users') STApp.uiName = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)

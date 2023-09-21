@@ -23,10 +23,6 @@ export const Scene = ({ ws, core }) => {
                 STScene.display = { quest: core.openingText, author: '' }
                 ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: STScene.display }))
             }
-
-            if (e.altKey && e.code.slice(3) === 'C') {
-                STDesktop.controls.isActive = !STDesktop.controls.isActive
-            }
         }
         window.addEventListener('keyup', onKeyUp)
         return () => {

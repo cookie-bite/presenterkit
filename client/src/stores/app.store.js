@@ -33,7 +33,6 @@ export const STScene = proxy({
 })
 
 export const STDesktop = proxy({
-    controls: { isActive: true },
     panel: { position: localStorage.getItem('PANEL_POS') ? localStorage.getItem('PANEL_POS') : `${localStorage.setItem('PANEL_POS', 'right') === undefined && 'right'}` },
     qr: { expand: false },
     showSlides: false

@@ -126,6 +126,7 @@ export const Controls = ({ ws }) => {
                     </motion.button>}
                 </AnimatePresence>
                 <motion.textarea className={sty.controlsInput} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' value={text}
+                    style={{ color: appSnap.userColor }}
                     ref={inputRef}
                     animate={inputHeight}
                     transition={{ ease: 'easeInOut', duration: 0.3 }}

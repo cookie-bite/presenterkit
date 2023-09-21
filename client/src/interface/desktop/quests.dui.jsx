@@ -92,7 +92,7 @@ export const Quests = ({ ws, core }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape') STApp.uiName = ''
+            if (e.key === 'Escape' && STApp.uiName === 'Quests') STApp.uiName = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
@@ -118,8 +118,14 @@ export const Quests = ({ ws, core }) => {
                 </div>
             }
             <div className={sty.inputView}>
-                <div className={sty.msgColor} style={{ backgroundColor: appSnap.userColor }} onClick={() => STApp.userColor = genColor()}></div>
+                <div className={sty.msgColor}
+                    style={{ backgroundColor: appSnap.userColor }}
+                    onClick={() => STApp.userColor = genColor()}
+                >
+                    {!text && <div className={sty.msgColorPrvw} style={{ color: appSnap.userColor }}>Aa</div>}
+                </div>
                 <motion.textarea className={sty.input} value={text} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' pass='true'
+                    style={{ color: appSnap.userColor }}
                     ref={inputRef}
                     animate={inputHeight}
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
