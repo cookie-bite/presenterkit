@@ -48,7 +48,7 @@ export const Presenter = ({ ws }) => {
         }
         STApp.activeSlide.page = toPage
         pagesRef[toPage - 1].scrollIntoView()
-        if (appSnap.showTheatre) sendActiveSlide(true)
+        if (appSnap.showTheatre) sendSlideUpdate(true, true)
     }
 
     const changeSlide = (to) => {
@@ -80,20 +80,20 @@ export const Presenter = ({ ws }) => {
         if (mode === 'on') {
             STApp.showTheatre = !appSnap.showTheatre
             STApp.activeSlide.page = 1
-            sendActiveSlide(true)
+            sendSlideUpdate(true)
         } else if (mode === 'off') {
             STApp.showTheatre = false
-            sendActiveSlide(false)
+            sendSlideUpdate(false)
         }
     }
 
     const previewTheatre = () => {
         STApp.showTheatre = true
-        sendActiveSlide(true)
+        sendSlideUpdate(true)
     }
 
-    const sendActiveSlide = (status) => {
-        ws.send(JSON.stringify({ command: 'UPDT_SLDS', room: STApp.userRoom, activeSlide: status ? STApp.activeSlide : {} }))
+    const sendSlideUpdate = (isStarted, pageUpdate = false) => {
+        ws.send(JSON.stringify({ command: 'UPDT_SLDS', room: STApp.userRoom, isStarted, pageUpdate, activeSlide: isStarted ? STApp.activeSlide : {} }))
     }
 
 

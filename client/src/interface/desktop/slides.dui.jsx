@@ -83,7 +83,7 @@ export const Slides = () => {
                     </div>}
             </Panel>
 
-            {appSnap.showTheatre &&
+            {appSnap.uiName === 'Slides' && appSnap.showTheatre &&
                 <div className={sty.theatrePresenter}>
                     {appSnap.activeSlide.index === appSnap.playSlide.index
                         ? <div className={sty.theatrePresenterView}>

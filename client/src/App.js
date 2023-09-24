@@ -4,6 +4,7 @@ import { STApp, STScene, STAdmin } from './stores/app.store'
 import { Scene } from './scene/core.sc'
 import { Desktop } from './interface/desktop/core.dui'
 import { Mobile } from './interface/mobile/core.mui'
+import { Alert } from './components/core.cmp'
 
 
 const core = { openingText: 'Welcome to WWDC23', isPresenter: window.location.hostname === 'localhost' }
@@ -60,6 +61,18 @@ export const App = () => {
                 STAdmin.queue = res.queue
                 STAdmin.config.forwarding = res.config.forwarding
                 if (res.config.hasOwnProperty('forwarding')) STAdmin.activeCheckTab = res.config.forwarding ? 'Stop' : 'Pass'
+                Alert.show({
+                    icon: { name: 'person-circle-o', color: '--system-blue' },
+                    title: 'You are a moderator now',
+                    buttons: [{ label: 'Open', onClick: () => STApp.uiName = 'Admin' }],
+                    duration: 5000
+                })
+            } else {
+                Alert.show({
+                    icon: { name: 'person-circle-o', color: '--system-red' },
+                    title: 'You are no longer a moderator',
+                    duration: 5000
+                })
             }
         } else if (res.command === 'SEND_USER') {
             STScene.quests.push({
@@ -91,7 +104,21 @@ export const App = () => {
                 if (res.slidesUpdate) STApp.slides = res.slides
                 else {
                     STApp.activeSlide = res.activeSlide
-                    if (!res.activeSlide.hasOwnProperty('index')) STApp.showTheatre = false
+                    if (res.isStarted && !res.pageUpdate) {
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--system-green' },
+                            title: 'Presenter shares slide now',
+                            buttons: [{ label: 'Open', onClick: () => { STApp.showTheatre = true, STApp.uiName = 'Slides' } }],
+                            duration: 5000
+                        })
+                    } else if (!res.isStarted) {
+                        STApp.showTheatre = false
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--system-red' },
+                            title: 'Presenter finished slide sharing',
+                            duration: 5000
+                        })
+                    }
                 }
             }
         }
@@ -124,13 +151,13 @@ export const App = () => {
 
 
     useEffect(() => {
-        const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']
-        let s = 0
-        setInterval(() => {
-            console.clear()
-            console.log(s, 'ws state:', states[ws.readyState])
-            s++
-        }, 1000)
+        // const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']
+        // let s = 0
+        // setInterval(() => {
+        //     console.clear()
+        //     console.log(s, 'ws state:', states[ws.readyState])
+        //     s++
+        // }, 1000)
     }, [])
 
 

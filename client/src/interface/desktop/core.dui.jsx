@@ -9,6 +9,7 @@ import { Quests } from './quests.dui'
 import { Slides } from './slides.dui'
 import { Presenter } from './presenter.dui'
 import { Admin } from '../admin/core.admin'
+import { Alert } from '../../components/core.cmp'
 import { Controls } from './controls.dui'
 
 
@@ -30,6 +31,7 @@ export const Desktop = ({ ws, core }) => {
                     <Slides />
                     {appSnap.uiName === 'Presenter' && <Presenter ws={ws} />}
                     {appSnap.uiName === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
+                    <Alert.Container />
                     <Controls core={core} />
                 </>
                 }

@@ -1,3 +1,72 @@
+export const getColor = (color) => {
+    const colors = {
+        '--primary-label': '#FFFFFF',
+        '--secondary-label': '#EBEBF599',
+        '--tertiary-label': '#EBEBF54D',
+        '--quarternary-label': '#EBEBF52E',
+        '--placeholder-text': '#EBEBF54C',
+
+        '--primary-tint': '#0A84FF',
+
+        '--primary-fill': '#7878805C',
+        '--secondary-fill': '#78788052',
+        '--tertiary-fill': '#7676803E',
+        '--quarternary-fill': '#7474802E',
+
+        '--thick-material': '#202020EC',
+        '--regular-material': '#252525C8',
+        '--thin-material': '#2525259A',
+        '--ultrathin-material': '#46464680',
+
+        '--material-seperator': '#FFFFFF4D',
+
+        '--opaque-separator': '#38383A',
+        '--nonopaque-separator': '#545458A6',
+
+        '--primary-sb': '#000000',
+        '--secondary-sb': '#1C1C1E',
+        '--tertiary-sb': '#2C2C2E',
+        '--quarternary-sb': '#3A3A3C',
+
+        '--primary-gb': '#000000',
+        '--secondary-gb': '#1C1C1E',
+        '--tertiary-gb': '#2C2C2E',
+        '--quarternary-gb': '#3A3A3C',
+
+        '--system-gray1': '#8E8E93',
+        '--system-gray2': '#636366',
+        '--system-gray3': '#48484A',
+        '--system-gray4': '#3A3A3C',
+        '--system-gray5': '#2C2C2E',
+        '--system-gray6': '#1C1C1E',
+
+        '--link': '#0984FFFF',
+
+        '--dark-text': '#000000FF',
+        '--light-text': '#FFFFFF99',
+
+        '--black': '#000000',
+        '--white': '#FFFFFF',
+
+        '--system-blue': '#0A84FF',
+        '--system-green': '#30D158',
+        '--system-indigo': '#5E5CE6',
+        '--system-orange': '#FF9F0A',
+        '--system-pink': '#FF375F',
+        '--system-purple': '#BF5AF2',
+        '--system-red': '#FF453A',
+        '--system-teal': '#64D2FF',
+        '--system-yellow': '#FFD60A',
+
+        '--d1': '#64D2FF',
+        '--d2': '#BF5AF2',
+        '--d3': '#FFD60A',
+    }
+
+    return colors.hasOwnProperty(color) ? colors[color] : `${color}`
+}
+
+
 export const genColor = () => {
     const hexToHsl = (hex) => {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -40,17 +109,6 @@ export const genColor = () => {
 
     const color = `#${(Math.random() * 0xFFFFFF << 0).toString(16).padEnd(6, 'f')}`
     return hslToHex(hexToHsl(color).h, hexToHsl(color).s < 30 ? 100 - hexToHsl(color).s : hexToHsl(color).s, hexToHsl(color).l < 50 ? 100 - hexToHsl(color).l : hexToHsl(color).l)
-}
-
-
-export const clamp = (a, n, x) => {
-    return a <= n ? n : a >= x ? x : a
-}
-
-
-export const wrap = (text, count = 4) => {
-    let temp = 0
-    return [...text].map(c => { if (c === ' ') { if (temp === count) { temp = 0; return '\n' } else temp++; return c } else return c }).join('')
 }
 
 
@@ -125,6 +183,18 @@ export const genQuest = (type = 'long') => {
         }
     )
 }
+
+
+export const clamp = (a, n, x) => {
+    return a <= n ? n : a >= x ? x : a
+}
+
+
+export const wrap = (text, count = 4) => {
+    let temp = 0
+    return [...text].map(c => { if (c === ' ') { if (temp === count) { temp = 0; return '\n' } else temp++; return c } else return c }).join('')
+}
+
 
 export const isValidUrl = (url) => {
     return (new RegExp('^(https?:\\/\\/)?' + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + '((\\d{1,3}\\.){3}\\d{1,3}))' + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + '(\\?[;&a-z\\d%_.~+=-]*)?' + '(\\#[-a-z\\d_]*)?$', 'i')).test(url)

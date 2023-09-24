@@ -10,7 +10,7 @@ const fs = require('fs-extra')
 const app = express()
 const wss = new WebSocketServer({ port: 50001 })  // on production: 3001
 
-const ip = os.networkInterfaces()[Object.keys(os.networkInterfaces())[process.platform === 'darwin' ? 3 : 0]][1].address
+const ip = os.networkInterfaces()[Object.keys(os.networkInterfaces())[process.platform === 'darwin' ? 4 : 0]][1].address
 const adminRoom = 0
 const userRoom = 1
 
@@ -275,7 +275,7 @@ wss.on('connection', (ws) => {
             sendRooms(adminRoom, { command: 'UPDT_CNFG', name: req.config.name, updateTo: config[req.config.name] })
         } else if (req.command === 'UPDT_SLDS') {
             activeSlide = req.activeSlide
-            sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: false, activeSlide })
+            sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide })
         }
     })
 
