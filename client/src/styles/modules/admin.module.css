@@ -81,10 +81,10 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    height: 30px;
-    width: 30px;
+    height: 34px;
+    width: 34px;
     margin: 10px;
-    border-radius: 15px;
+    border-radius: 17px;
     background-color: transparent;
     transition: all .3s ease-in-out;
 }
@@ -94,30 +94,12 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    height: 30px;
-    width: 30px;
+    height: 34px;
+    width: 34px;
     margin: 10px;
-    border-radius: 15px;
-    filter: invert(100%);
-    background-color: var(--black);
+    border-radius: 17px;
+    background-color: var(--system-gray3);
     transition: all .3s ease-in-out;
-}
-
-.headerTooltip {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    transform: translateY(calc(100% + 5px));
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--primary-label);
-    text-wrap: nowrap;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 1px solid var(--nonopaque-separator);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
 }
 
 .moderators {

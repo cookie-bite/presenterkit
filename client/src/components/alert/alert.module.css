@@ -13,6 +13,7 @@
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--thin-material);
+    z-index: 1;
 }
 
 .alertIc {

@@ -1,4 +1,4 @@
-const { fork } = require('child_process')
+const { fork, spawn } = require('child_process')
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
@@ -17,6 +17,8 @@ function createWindow() {
 
     // win.loadURL(app.isPackaged ? `file://${path.join(__dirname, '..', 'build', 'index.html')}` : 'http://localhost:3000')
     win.loadURL('http://localhost:3000')
+
+    // Toggle Hotspot
 }
 
 app.on('ready', createWindow)

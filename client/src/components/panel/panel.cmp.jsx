@@ -1,10 +1,10 @@
 import { useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STDesktop, STApp } from '../stores/app.store'
-import { Icon } from './core.cmp'
+import { STDesktop, STApp } from '../../stores/app.store'
+import { Icon } from '../core.cmp'
 
-import sty from '../styles/modules/desktop.module.css'
+import sty from './panel.module.css'
 
 
 export const Panel = ({ children, show, label, count }) => {
@@ -58,9 +58,6 @@ export const Panel = ({ children, show, label, count }) => {
                         <h1 className={sty.panelLbl}>{label}</h1>
                     </div>
                     <div className={sty.panelBtns}>
-                        {/* <button className={sty.panelBtn} onClick={() => changePos(desktopSnap.panel.position === 'right' ? 'left' : 'right')}>
-                            <Icon name={desktopSnap.panel.position === 'right' ? 'chevron-back' : 'chevron-forward'} size={20} color='--white' />
-                        </button> */}
                         <button className={sty.panelBtn} style={{ marginLeft: 10 }} onClick={() => STApp.uiName = ''}>
                             <Icon name='close' size={20} color='--white' />
                         </button>

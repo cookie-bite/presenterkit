@@ -1,3 +1,4 @@
+const { spawn } = require('child_process')
 const { WebSocket, WebSocketServer } = require('ws')
 const pdf2img = require('pdf-img-convert')
 const express = require('express')
@@ -159,9 +160,19 @@ const getSlides = () => {
     })
 }
 
+const initHotspot = () => {
+    var child = spawn('powershell.exe', ['-File', 'hotspot-check.ps1'])
+    child.stdout.on('data', (data) => {
+        spawn('powershell.exe', ['-File', 'hotspot.ps1'])
+        if (data.toString().trim() === 'On') spawn('powershell.exe', ['-File', 'hotspot.ps1'])
+    })
+}
+
 const init = () => {
-    console.clear()
+    initHotspot()
     getSlides()
+
+    console.clear()
     console.log(`\x1b[33mApp running on 🔥\n\n\x1b[36m  http://localhost:${PORT}  \x1b[0m\n`); wss.on('error', console.error)
 }
 

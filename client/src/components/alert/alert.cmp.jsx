@@ -11,18 +11,22 @@ const STAlert = proxy({
     title: '',
     subtitle: '',
     buttons: [],
-    showAlert: false
+    show: false
 })
 
 
-const show = ({ icon, title, subtitle, buttons, duration = 3000 } = {}) => {
-    // duration = ((title.length + subtitle.length) * 110)
+const show = ({ icon, title, subtitle, buttons, duration } = {}) => {
+    duration = duration || ((title.length) * 110) + (Number(Boolean(icon)) * 1300) + (Number(Boolean(buttons)) * 1700)
+    const delay = 500
+    STAlert.show = false
+
     STAlert.icon = icon
     STAlert.title = title
     STAlert.subtitle = subtitle
     STAlert.buttons = buttons
-    STAlert.showAlert = true
-    if (duration) setTimeout(() => STAlert.showAlert = false, duration)
+    setTimeout(() => STAlert.show = true, delay)
+
+    setTimeout(() => STAlert.show = false, duration + delay)
 }
 
 
@@ -30,9 +34,15 @@ const Container = () => {
     const alertSnap = useSnapshot(STAlert)
 
 
+    const handleOnClick = (onClick) => {
+        onClick()
+        STAlert.show = false
+    }
+
+
     return (
-        <AnimatePresence>
-            {alertSnap.showAlert && <motion.div className={sty.alert}
+        <AnimatePresence mode='wait'>
+            {alertSnap.show && <motion.div className={sty.alert}
                 initial={{ y: '-100%', x: '-50%' }}
                 animate={{ y: 21, x: '-50%' }}
                 exit={{ y: '-100%', x: '-50%' }}
@@ -48,7 +58,7 @@ const Container = () => {
                 {alertSnap.buttons && <div className={sty.alertBtns}>
                     {alertSnap.buttons.map((btn, index) => {
                         return (
-                            <button className={sty.alertBtn} onClick={btn.onClick} key={index}>{btn.label}</button>
+                            <button className={sty.alertBtn} onClick={() => handleOnClick(btn.onClick)} key={index}>{btn.label}</button>
                         )
                     })}
                 </div>}

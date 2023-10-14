@@ -40,40 +40,40 @@ export const Controls = ({ core }) => {
                 transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
             >
                 {core.isPresenter && <button className={sty[cmpr('Remote') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Remote')}>
-                    <Icon name='phone-o' size={28} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Remote</div>
+                    <Icon name='phone-o' size={28} color={cmpr('Remote') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Remote</div>
                 </button>}
                 <button className={sty[cmpr('QRScreen') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('QRScreen')}>
-                    <Icon name='qr' size={26} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>QR</div>
+                    <Icon name='qr' size={26} color={cmpr('QRScreen') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>QR</div>
                 </button>
                 <button className={sty[cmpr('Quests') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Quests')}>
-                    <Icon name='chatbubble-o' size={30} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Messages</div>
+                    <Icon name='chatbubble-o' size={30} color={cmpr('Quests') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Messages</div>
                 </button>
                 <button className={sty[cmpr('Users') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Users')}>
-                    <Icon name='people' size={30} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Users</div>
+                    <Icon name='people' size={30} color={cmpr('Users') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Users</div>
                 </button>
                 {!core.isPresenter && <button className={sty[cmpr('Shares') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Shares')}>
-                    <Icon name='paper-plane' size={26} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Shares</div>
+                    <Icon name='paper-plane' size={26} color={cmpr('Shares') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Shares</div>
                 </button>}
                 {core.isPresenter && <button className={sty[cmpr('Presenter') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Presenter')}>
-                    <Icon name='albums' size={30} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Presenter</div>
+                    <Icon name='albums' size={30} color={cmpr('Presenter') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Presenter</div>
                 </button>}
                 {!core.isPresenter && <button className={sty[cmpr('Slides') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Slides')}>
-                    <Icon name='albums' size={30} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Slides</div>
+                    <Icon name='albums' size={30} color={cmpr('Slides') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Slides</div>
                 </button>}
                 {(core.isPresenter || adminSnap.isAdmin) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
-                    <Icon name='person-circle-o' size={33} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>Admin</div>
+                    <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>Admin</div>
                 </button>}
                 {!core.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
-                    <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color='--white' />
-                    <div className={`tooltip ${sty.controlsTooltip}`}>{appSnap.isFullscreen ? 'Exit' : 'Full screen'}</div>
+                    <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color={appSnap.isFullscreen ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>{appSnap.isFullscreen ? 'Exit' : 'Full screen'}</div>
                 </button>}
             </motion.div>
         </div>

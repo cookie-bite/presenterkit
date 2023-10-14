@@ -1,4 +1,4 @@
-import { getColor } from '../utilities/core.utils'
+import { getColor } from '../../utilities/core.utils'
 
 
 export const Icon = ({ name, size = 20, color = '--white', style }) => {

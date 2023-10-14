@@ -1,7 +1,7 @@
-import { Icon } from './icon.cmp'
-import { Panel } from './panel.cmp'
-import { Segment } from './segment/segment.cmp'
 import { Alert } from './alert/alert.cmp'
+import { Icon } from './icon/icon.cmp'
+import { Panel } from './panel/panel.cmp'
+import { Segment } from './segment/segment.cmp'
 
 
-export { Icon, Panel, Segment, Alert }
+export { Alert, Icon, Panel, Segment }

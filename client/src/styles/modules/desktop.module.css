@@ -1,4 +1,4 @@
-/* Entry View */
+/* Entry */
 
 .entryPage {
     display: flex;
@@ -171,10 +171,6 @@
     transition: all .3s ease-in-out;
 }
 
-.controlsBtn:hover {
-    background-color: var(--primary-fill);
-}
-
 .controlsBtnActive {
     display: flex;
     justify-content: center;
@@ -183,27 +179,9 @@
     min-width: 44px;
     border-radius: 22px;
     margin: 0 -5px;
-    filter: invert(100%);
-    background-color: var(--black);
+    background-color: var(--system-gray3);
     transform: scale(0);
     transition: all .3s ease-in-out;
-}
-
-.controlsTooltip {
-    display: none;
-    position: absolute;
-    top: 0;
-    transform: translateY(calc(-100% - 15px));
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--primary-label);
-    text-wrap: nowrap;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 1px solid var(--nonopaque-separator);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
 }
 
 
@@ -247,77 +225,7 @@
 
 
 
-
-/* Panel View */
-
-.panelView {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 20px;
-    min-width: 15%;
-    width: 300px;
-    height: calc(100% - 40px);
-    margin: 0 20px;
-    border-radius: 14px;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
-    overflow: hidden;
-}
-
-.panelHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    border: 0 solid var(--nonopaque-separator);
-    border-bottom-width: 1px;
-    padding: 10px 16px;
-}
-
-.panelLblView {
-    display: flex;
-    align-items: center;
-}
-
-.panelLbl {
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.panelCountBg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 6px;
-    padding: 2px 10px;
-    margin-right: 10px;
-    background-color: var(--tertiary-fill);
-}
-
-.panelCountLbl {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--system-green);
-}
-
-.panelBtns {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: transparent;
-}
-
-.panelBtn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
-    background-color: var(--primary-fill);
-}
+/* Panel */
 
 .panelEmpty {
     display: flex;
@@ -344,7 +252,7 @@
 
 
 
-/* Quest Panel View */
+/* Quest Panel */
 
 .questList {
     display: flex;
@@ -382,7 +290,7 @@
 
 
 
-/* Input View */
+/* Input */
 
 .inputView {
     display: flex;
@@ -465,7 +373,7 @@
 
 
 
-/* Users Panel View */
+/* Users Panel */
 
 .userList {
     display: flex;
@@ -778,23 +686,6 @@
     border-radius: 15px;
     margin: 0 12px;
     background-color: transparent;
-}
-
-.presenterTooltip {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    transform: translateY(calc(100% + 5px));
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--primary-label);
-    text-wrap: nowrap;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 1px solid var(--nonopaque-separator);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
 }
 
 .slideControlsLbl {

@@ -12,6 +12,10 @@ try { document.createEvent('TouchEvent'); core.isMobile = true } catch (e) { cor
 
 const ws = new WebSocket(`ws://${window.location.hostname}:50001`)  // on production: 3001
 
+window.addEventListener('resize', (event) => {
+    if (window.innerHeight === window.screen.height && window.innerWidth === window.screen.width) STApp.isFullscreen = true
+    else STApp.isFullscreen = false
+})
 
 export const App = () => {
 
@@ -64,14 +68,12 @@ export const App = () => {
                 Alert.show({
                     icon: { name: 'person-circle-o', color: '--system-blue' },
                     title: 'You are a moderator now',
-                    buttons: [{ label: 'Open', onClick: () => STApp.uiName = 'Admin' }],
-                    duration: 5000
+                    buttons: [{ label: 'Open', onClick: () => STApp.uiName = 'Admin' }]
                 })
             } else {
                 Alert.show({
                     icon: { name: 'person-circle-o', color: '--system-red' },
-                    title: 'You are no longer a moderator',
-                    duration: 5000
+                    title: 'You are no longer a moderator'
                 })
             }
         } else if (res.command === 'SEND_USER') {
@@ -108,15 +110,13 @@ export const App = () => {
                         Alert.show({
                             icon: { name: 'tv-o', color: '--system-green' },
                             title: 'Presenter shares slide now',
-                            buttons: [{ label: 'Open', onClick: () => { STApp.showTheatre = true, STApp.uiName = 'Slides' } }],
-                            duration: 5000
+                            buttons: [{ label: 'Open', onClick: () => { STApp.showTheatre = true, STApp.uiName = 'Slides' } }]
                         })
                     } else if (!res.isStarted) {
                         STApp.showTheatre = false
                         Alert.show({
                             icon: { name: 'tv-o', color: '--system-red' },
-                            title: 'Presenter finished slide sharing',
-                            duration: 5000
+                            title: 'Presenter finished slide sharing'
                         })
                     }
                 }

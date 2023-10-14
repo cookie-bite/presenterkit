@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import { motion } from 'framer-motion'
+
 import sty from './segment.module.css'
 
 

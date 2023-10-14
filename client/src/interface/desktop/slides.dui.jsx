@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
 import { STApp } from '../../stores/app.store'
-import { Panel } from '../../components/panel.cmp'
-import { Icon } from '../../components/core.cmp'
+import { Icon, Panel } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 

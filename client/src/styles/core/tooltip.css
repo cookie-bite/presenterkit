@@ -1,0 +1,28 @@
+.tooltip {
+    display: none;
+    position: absolute;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--primary-label);
+    text-wrap: nowrap;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--nonopaque-separator);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+}
+
+*:hover > .tooltip {
+    display: flex;
+}
+
+.tooltipTop {
+    top: 0;
+    transform: translateY(calc(-100% - 5px));
+}
+
+.tooltipBottom {
+    bottom: 0;
+    transform: translateY(calc(100% + 5px));
+}

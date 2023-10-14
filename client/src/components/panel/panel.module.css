@@ -1,0 +1,68 @@
+.panelView {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    min-width: 15%;
+    width: 300px;
+    height: calc(100% - 40px);
+    margin: 0 20px;
+    border-radius: 14px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    overflow: hidden;
+}
+
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: 0 solid var(--nonopaque-separator);
+    border-bottom-width: 1px;
+    padding: 10px 16px;
+}
+
+.panelLblView {
+    display: flex;
+    align-items: center;
+}
+
+.panelLbl {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.panelCountBg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-right: 10px;
+    background-color: var(--tertiary-fill);
+}
+
+.panelCountLbl {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--system-green);
+}
+
+.panelBtns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+}
+
+.panelBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: var(--primary-fill);
+}
