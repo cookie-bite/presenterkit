@@ -20,7 +20,7 @@
         "start:build": "cd client && npm run build && cd .. && node api",
         "build:node": "cd client && npm install && npm run build && cd .. && node api",
         "build:react": "cd client && npm run build",
-        "electron:start": "wait-on http://127.0.0.1:3000 && electron .",
+        "electron:start": "wait-on http://127.0.0.1:50000 && electron .",
         "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
         "electron:build": "npm run build:react && electron-builder",
         "kill:process": "kill -9 $(lsof -ti:3000)"

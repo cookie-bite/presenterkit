@@ -3,7 +3,7 @@ import { OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 import { useControl, Controls } from 'react-three-gui'
 import { useSnapshot } from 'valtio'
-import { STApp, STScene, STDesktop } from '../stores/app.store'
+import { STApp, STScene } from '../stores/app.store'
 import { clamp, wrap } from '../utilities/core.utils'
 
 
