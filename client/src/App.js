@@ -25,7 +25,7 @@ export const App = () => {
         console.log(res)
 
         if (res.command === 'INIT_USER') {
-            STApp.host.ip = res.ip
+            STApp.host.ip = res.ip.address
             STApp.userID = res.user.id
             STApp.roomActivity = res.roomActivity
             STApp.slides = res.slides

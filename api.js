@@ -11,7 +11,7 @@ const fs = require('fs-extra')
 const app = express()
 const wss = new WebSocketServer({ port: 50001 })  // on production: 3001
 
-const ip = os.networkInterfaces()[Object.keys(os.networkInterfaces())[process.platform === 'darwin' ? 4 : 0]][1].address
+const ip = { address: '', all: [] }
 const adminRoom = 0
 const userRoom = 1
 
@@ -160,6 +160,20 @@ const getSlides = () => {
     })
 }
 
+const initIpAddress = () => {
+    const ips = []
+
+    Object.keys(os.networkInterfaces()).forEach((interface) => {
+        console.log(interface)
+        os.networkInterfaces()[interface].forEach((ip) => {
+            if (ip.family === 'IPv4' && !/^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(ip.address)) ips.push(ip.address)
+        })
+    })
+
+    ip.address = ips[0]
+    ip.all = ips
+}
+
 const initHotspot = () => {
     var child = spawn('powershell.exe', ['-File', 'hotspot-check.ps1'])
     child.stdout.on('data', (data) => {
@@ -169,7 +183,7 @@ const initHotspot = () => {
 }
 
 const init = () => {
-    initHotspot()
+    initIpAddress()
     getSlides()
 
     console.clear()
