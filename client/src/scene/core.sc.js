@@ -2,9 +2,10 @@ import { useRef, useEffect } from 'react'
 import { OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-three/drei'
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 import { useControl, Controls } from 'react-three-gui'
+import { gsap } from 'gsap'
 import { useSnapshot } from 'valtio'
 import { STApp, STScene } from '../stores/app.store'
-import { clamp, wrap } from '../utilities/core.utils'
+import { clamp, wrap, genColor } from '../utilities/core.utils'
 
 
 export const Scene = ({ ws, core }) => {
@@ -42,7 +43,7 @@ export const Scene = ({ ws, core }) => {
     }
 
 
-    const CamnCon = () => {
+    const CamCon = () => {
         const camera = useRef()
         const controls = useRef()
 
@@ -50,6 +51,11 @@ export const Scene = ({ ws, core }) => {
         const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
         const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 26, min: -10, max: 100 })
 
+        const orbitOptions = {
+            maxPolarAngle: Math.PI / 2,
+            maxAzimuthAngle: Math.PI / 4,
+            minAzimuthAngle: -Math.PI / 4
+        }
 
         // useEffect(() => {
         //     if (!controls.current || !camera.current) return
@@ -72,8 +78,8 @@ export const Scene = ({ ws, core }) => {
         const sceneSnap = useSnapshot(STScene)
 
         // useHelper(dLight, DirectionalLightHelper, 0.5, 'teal')
-        const dLightIntensity = useControl('D Intensity', { type: 'number', group: 'Light', value: 1, min: 0, max: 1 })
-        const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 1, min: 0, max: 2 })
+        const dLightIntensity = useControl('D Intensity', { type: 'number', group: 'Light', value: 0.7, min: 0, max: 1 })
+        const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 0.4, min: 0, max: 2 })
 
         const posX = useControl('Pos X', { type: 'number', group: 'Light', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Light', value: 5, min: -10, max: 10 })
@@ -81,8 +87,11 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <>
-                <ambientLight intensity={sceneSnap.display.quest === core.openingText ? aLightIntensity : 0.04} />
-                <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={sceneSnap.display.quest === core.openingText ? dLightIntensity : 0} />
+                <color attach='background' args={['#141622']} />
+                <ambientLight intensity={aLightIntensity} />
+                <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={dLightIntensity} />
+                {/* <ambientLight intensity={sceneSnap.display.quest === core.openingText ? aLightIntensity : 0.04} /> */}
+                {/* <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={sceneSnap.display.quest === core.openingText ? dLightIntensity : 0} /> */}
             </>
         )
     }
@@ -161,20 +170,29 @@ export const Scene = ({ ws, core }) => {
 
 
     const Display = () => {
+        const appSnap = useSnapshot(STApp)
         const sceneSnap = useSnapshot(STScene)
+
+        const users = 21 || appSnap.userList.length
+        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
+
+        const posY = useControl('Pos Y', { type: 'number', group: 'Display', value: 2.7 + 0.65 * rows, min: 0, max: 10 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Display', value: 0, min: 0, max: 10 })
 
 
         return (
-            <Center>
-                <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03} position={[0, 2, 0]}>
-                    {sceneSnap.display.author}
-                    <meshNormalMaterial />
-                </Text3D>
-                <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
-                    {wrap(sceneSnap.display.quest, 4)}
-                    <meshNormalMaterial />
-                </Text3D>
-            </Center>
+            <group position={[0, posY, posZ]}>
+                <Center>
+                    <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03}>
+                        {sceneSnap.display.author}
+                        <meshNormalMaterial />
+                    </Text3D>
+                    <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
+                        {wrap(sceneSnap.display.quest, 4)}
+                        <meshNormalMaterial />
+                    </Text3D>
+                </Center>
+            </group>
         )
     }
 
@@ -202,13 +220,102 @@ export const Scene = ({ ws, core }) => {
     }
 
 
+    const User = ({ user, position }) => {
+        const userRef = useRef()
+        const lightRef = useRef()
+        const bubbleRef = useRef()
+
+        const lod = 32
+        const haveQuest = Math.round(Math.random())
+
+
+        const color = genColor()
+        const Material = () => <meshStandardMaterial color={color || user.userColor} metalness={0.2} roughness={0} />
+
+
+        return (
+            <Float position={position} speed={2} floatIntensity={0} rotationIntensity={0}
+                onPointerEnter={() => {
+                    document.body.style.cursor = 'pointer'
+                    gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
+                    gsap.to(lightRef.current, { duration: 0.5, distance: 10 })
+                    gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1.2, y: 1.2, z: 1.2 })
+                    gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 0.84, b: 0.04 })
+                }}
+                onPointerLeave={() => {
+                    document.body.style.cursor = 'default'
+                    gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
+                    gsap.to(lightRef.current, { duration: 0.5, distance: 1 })
+                    gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1, y: 1, z: 1 })
+                    gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 1, b: 1 })
+                }}
+            >
+                <group ref={userRef}>
+                    {haveQuest && <group position={[0, 0.8, 0]}>
+                        <Float speed={10} floatIntensity={0.8} rotationIntensity={0}>
+                            <mesh ref={bubbleRef}>
+                                <sphereGeometry args={[0.1, lod, lod]} />
+                                <meshStandardMaterial color={'#ffffff'} metalness={0.2} roughness={0} />
+                            </mesh>
+                            <pointLight ref={lightRef} color={'#ffd60a'} distance={1} intensity={8} />
+                        </Float>
+                    </group>}
+                    <mesh position={[0, 0, 0]}>
+                        <sphereGeometry args={[0.5, lod, lod]} />
+                        <Material />
+                    </mesh>
+                    <mesh position={[0, -1.5, 0]}>
+                        <sphereGeometry args={[0.8, lod, lod, , , , Math.PI / 2]} />
+                        <Material />
+                    </mesh>
+                    <mesh position={[0, -1.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                        <circleGeometry args={[0.8, lod]} />
+                        <Material />
+                    </mesh>
+                </group>
+            </Float>
+        )
+    }
+
+
+    const Users = () => {
+        const appSnap = useSnapshot(STApp)
+
+        const users = 21 || appSnap.userList.length
+        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
+
+        let row = 0
+        let rowIndex = -1
+        let userCount = 7
+
+
+        return (
+            Array(users).fill().map((user, index) => {
+                if (index >= userCount) { row += 1; userCount += 7 + 2 * row; rowIndex = 0; } else rowIndex++
+
+                const pos = (x) => {
+                    return [
+                        /* Pos X */ +(1.2 * (x % 2 ? -x - 1 : x)).toFixed(3),
+                        /* Pos Y */ +(-2 - 0.65 * (rows - 1) + 1.3 * row).toFixed(3),
+                        /* Pos Z */ +(8 - Math.sqrt((8 + 2 * row) ** 2 - (x === 0 || x % 2 ? x : x - 1) ** 2)).toFixed(3)
+                    ]
+                }
+
+
+                return <User user={user} position={pos(rowIndex)} key={index} />
+            })
+        )
+    }
+
+
     return (
         <Canvas>
-            <CamnCon />
+            <CamCon />
             <Light />
             <Display />
-            <Quests />
-            <Indicators />
+            {/* <Quests /> */}
+            {/* <Indicators /> */}
+            <Users />
         </Canvas>
     )
 }
