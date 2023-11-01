@@ -37,24 +37,29 @@ export const Scene = ({ ws, core }) => {
         return (
             <Controls.Provider>
                 <Controls.Canvas shadows>{children}</Controls.Canvas>
-                {false && <Controls title='Settings' />}
+                {true && <Controls title='Settings' />}
             </Controls.Provider>
         )
     }
 
 
     const CamCon = () => {
+        const appSnap = useSnapshot(STApp)
+
         const camera = useRef()
         const controls = useRef()
 
         const posX = useControl('Pos X', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 26, min: -10, max: 100 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 25, min: -10, max: 100 })
+
+        const users = 16 || appSnap.userList.length
+        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
 
         const orbitOptions = {
-            maxPolarAngle: Math.PI / 2,
-            maxAzimuthAngle: Math.PI / 4,
-            minAzimuthAngle: -Math.PI / 4
+            // maxPolarAngle: Math.PI / 2,
+            // maxAzimuthAngle: Math.PI / 4,
+            // minAzimuthAngle: -Math.PI / 4
         }
 
         // useEffect(() => {
@@ -67,8 +72,8 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[posX, posY, core.isMobile ? 80 : 26]} fov={30} near={0.01} far={1500} makeDefault />
-                <OrbitControls ref={controls} />
+                <PerspectiveCamera ref={camera} position={[posX, posY, core.isMobile ? 80 : posZ]} fov={30} near={0.01} far={1500} makeDefault />
+                <OrbitControls ref={controls} {...orbitOptions} />
             </>
         )
     }
@@ -173,7 +178,7 @@ export const Scene = ({ ws, core }) => {
         const appSnap = useSnapshot(STApp)
         const sceneSnap = useSnapshot(STScene)
 
-        const users = 21 || appSnap.userList.length
+        const users = 16 || appSnap.userList.length
         const rows = Math.ceil(Math.sqrt(users + 9) - 3)
 
         const posY = useControl('Pos Y', { type: 'number', group: 'Display', value: 2.7 + 0.65 * rows, min: 0, max: 10 })
@@ -227,29 +232,37 @@ export const Scene = ({ ws, core }) => {
 
         const lod = 32
         const haveQuest = Math.round(Math.random())
-
-
         const color = genColor()
+
+
+        const onPointerOver = (event) => {
+            event.stopPropagation()
+            document.body.style.cursor = 'pointer'
+            gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
+            if (haveQuest) {
+                gsap.to(lightRef.current, { duration: 0.5, distance: 10 })
+                gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1.2, y: 1.2, z: 1.2 })
+                gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 0.84, b: 0.04 })
+            }
+        }
+
+        const onPointerOut = (event) => {
+            event.stopPropagation()
+            document.body.style.cursor = 'default'
+            gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
+            if (haveQuest) {
+                gsap.to(lightRef.current, { duration: 0.5, distance: 1 })
+                gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1, y: 1, z: 1 })
+                gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 1, b: 1 })
+            }
+        }
+
+
         const Material = () => <meshStandardMaterial color={color || user.userColor} metalness={0.2} roughness={0} />
 
 
         return (
-            <Float position={position} speed={2} floatIntensity={0} rotationIntensity={0}
-                onPointerEnter={() => {
-                    document.body.style.cursor = 'pointer'
-                    gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
-                    gsap.to(lightRef.current, { duration: 0.5, distance: 10 })
-                    gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1.2, y: 1.2, z: 1.2 })
-                    gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 0.84, b: 0.04 })
-                }}
-                onPointerLeave={() => {
-                    document.body.style.cursor = 'default'
-                    gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
-                    gsap.to(lightRef.current, { duration: 0.5, distance: 1 })
-                    gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1, y: 1, z: 1 })
-                    gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 1, b: 1 })
-                }}
-            >
+            <group position={position} onPointerOver={(e) => onPointerOver(e)} onPointerOut={(e) => onPointerOut(e)}>
                 <group ref={userRef}>
                     {haveQuest && <group position={[0, 0.8, 0]}>
                         <Float speed={10} floatIntensity={0.8} rotationIntensity={0}>
@@ -260,6 +273,10 @@ export const Scene = ({ ws, core }) => {
                             <pointLight ref={lightRef} color={'#ffd60a'} distance={1} intensity={8} />
                         </Float>
                     </group>}
+                    <mesh position={[0, -0.7, 0]}>
+                        <cylinderGeometry args={[0.5, 0.9, 2.4, lod]} />
+                        <meshStandardMaterial opacity={0} transparent />
+                    </mesh>
                     <mesh position={[0, 0, 0]}>
                         <sphereGeometry args={[0.5, lod, lod]} />
                         <Material />
@@ -273,7 +290,7 @@ export const Scene = ({ ws, core }) => {
                         <Material />
                     </mesh>
                 </group>
-            </Float>
+            </group>
         )
     }
 
@@ -281,7 +298,7 @@ export const Scene = ({ ws, core }) => {
     const Users = () => {
         const appSnap = useSnapshot(STApp)
 
-        const users = 21 || appSnap.userList.length
+        const users = 16 || appSnap.userList.length
         const rows = Math.ceil(Math.sqrt(users + 9) - 3)
 
         let row = 0
