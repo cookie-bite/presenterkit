@@ -57,3 +57,9 @@ input::placeholder {
 input::selection, textarea::selection {
     background-color: var(--primary-fill);
 }
+
+/* react-three-gui */
+
+.hufbEg {
+    color: var(--black);
+}

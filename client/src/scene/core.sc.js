@@ -1,15 +1,19 @@
 import { useRef, useEffect } from 'react'
-import { OrbitControls, PerspectiveCamera, Float, Text3D, Center } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, Float, Text3D, Center, Environment, Lightformer, useHelper } from '@react-three/drei'
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 import { useControl, Controls } from 'react-three-gui'
 import { gsap } from 'gsap'
 import { useSnapshot } from 'valtio'
 import { STApp, STScene } from '../stores/app.store'
 import { clamp, wrap, genColor } from '../utilities/core.utils'
+import { SpotLightHelper } from 'three'
 
 
 export const Scene = ({ ws, core }) => {
     const dLight = useRef()
+
+    const users = 21
+    const rows = Math.ceil(Math.sqrt(users + 9) - 3)
 
 
     useEffect(() => {
@@ -44,17 +48,15 @@ export const Scene = ({ ws, core }) => {
 
 
     const CamCon = () => {
-        const appSnap = useSnapshot(STApp)
-
         const camera = useRef()
         const controls = useRef()
 
-        const posX = useControl('Pos X', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
-        const posY = useControl('Pos Y', { type: 'number', group: 'Pos', value: 0, min: -10, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Pos', value: 25, min: -10, max: 100 })
+        const camPos = (row) => {
+            if (row === 1) return 24
+            return camPos(row - 1) + (row / 2) + 1
+        }
 
-        const users = 16 || appSnap.userList.length
-        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
+        const posZ = useControl('Pos Z', { type: 'number', group: 'CamCon', value: camPos(rows), min: 24, max: 50 })
 
         const orbitOptions = {
             // maxPolarAngle: Math.PI / 2,
@@ -72,7 +74,7 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[posX, posY, core.isMobile ? 80 : posZ]} fov={30} near={0.01} far={1500} makeDefault />
+                <PerspectiveCamera ref={camera} position={[0, 0, core.isMobile ? 80 : posZ]} fov={30} near={0.01} far={1500} makeDefault />
                 <OrbitControls ref={controls} {...orbitOptions} />
             </>
         )
@@ -80,24 +82,38 @@ export const Scene = ({ ws, core }) => {
 
 
     const Light = () => {
-        const sceneSnap = useSnapshot(STScene)
-
-        // useHelper(dLight, DirectionalLightHelper, 0.5, 'teal')
-        const dLightIntensity = useControl('D Intensity', { type: 'number', group: 'Light', value: 0.7, min: 0, max: 1 })
+        // useHelper(dLight, SpotLightHelper, 0.5, 'teal')
+        
         const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 0.4, min: 0, max: 2 })
 
-        const posX = useControl('Pos X', { type: 'number', group: 'Light', value: 0, min: -10, max: 10 })
-        const posY = useControl('Pos Y', { type: 'number', group: 'Light', value: 5, min: -10, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Light', value: 4, min: -10, max: 10 })
+        // useEffect(() => dLight.current.lookAt([0, 5, 0]), [])
+
 
         return (
             <>
                 <color attach='background' args={['#141622']} />
                 <ambientLight intensity={aLightIntensity} />
-                <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={dLightIntensity} />
-                {/* <ambientLight intensity={sceneSnap.display.quest === core.openingText ? aLightIntensity : 0.04} /> */}
-                {/* <directionalLight ref={dLight} castShadow color={'white'} position={[posX, posY, posZ]} intensity={sceneSnap.display.quest === core.openingText ? dLightIntensity : 0} /> */}
+                <spotLight ref={dLight} position={[0, 10, 0]} />
             </>
+        )
+    }
+
+
+    const Env = () => {
+        const intensity = useControl('Intensity', { type: 'number', group: 'Former', value: 1, min: 0, max: 20 })
+
+        const posX = useControl('Pos X', { type: 'number', group: 'Former', value: -5, min: -10, max: 10 })
+        const posY = useControl('Pos Y', { type: 'number', group: 'Former', value: 30, min: -10, max: 50 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Former', value: 1, min: -10, max: 10 })
+
+        const sclX = useControl('Scl X', { type: 'number', group: 'Former', value: 60, min: 0, max: 200 })
+        const sclY = useControl('Scl Y', { type: 'number', group: 'Former', value: 60, min: 0, max: 200 })
+
+
+        return (
+            <Environment resolution={256}>
+                <Lightformer form={'circle'} intensity={intensity} position={[posX, posY, posZ]} rotation={[-Math.PI / 2, 0, 0]} scale={[sclX, sclY, 0]} target={[0, 0, 0]} />
+            </Environment>
         )
     }
 
@@ -108,7 +124,7 @@ export const Scene = ({ ws, core }) => {
                 ? props.children
                 : <Selection>
                     <EffectComposer>
-                        <SelectiveBloom lights={[dLight]} kernelSize={3} luminanceThreshold={0} luminanceSmoothing={0.4} intensity={0.2} />
+                        <SelectiveBloom lights={[dLight]} kernelSize={2} luminanceThreshold={0} luminanceSmoothing={0.4} intensity={0.2} />
                     </EffectComposer>
                     <Select enabled>
                         {props.children}
@@ -175,29 +191,27 @@ export const Scene = ({ ws, core }) => {
 
 
     const Display = () => {
-        const appSnap = useSnapshot(STApp)
         const sceneSnap = useSnapshot(STScene)
-
-        const users = 16 || appSnap.userList.length
-        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
 
         const posY = useControl('Pos Y', { type: 'number', group: 'Display', value: 2.7 + 0.65 * rows, min: 0, max: 10 })
         const posZ = useControl('Pos Z', { type: 'number', group: 'Display', value: 0, min: 0, max: 10 })
 
 
         return (
-            <group position={[0, posY, posZ]}>
-                <Center>
-                    <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03}>
-                        {sceneSnap.display.author}
-                        <meshNormalMaterial />
-                    </Text3D>
-                    <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled bevelSize={0.05} height={0.05}>
-                        {wrap(sceneSnap.display.quest, 4)}
-                        <meshNormalMaterial />
-                    </Text3D>
-                </Center>
-            </group>
+            <Effect>
+                <group position={[0, posY, posZ]}>
+                    <Center>
+                        <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03}>
+                            {sceneSnap.display.author}
+                            <meshNormalMaterial />
+                        </Text3D>
+                        <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.05} height={0.05}>
+                            {wrap(sceneSnap.display.quest, 4)}
+                            <meshStandardMaterial attach='material' color={'#fff'} emissive={'#fff'} emissiveIntensity={1} toneMapped={false} />
+                        </Text3D>
+                    </Center>
+                </group>
+            </Effect>
         )
     }
 
@@ -296,11 +310,6 @@ export const Scene = ({ ws, core }) => {
 
 
     const Users = () => {
-        const appSnap = useSnapshot(STApp)
-
-        const users = 16 || appSnap.userList.length
-        const rows = Math.ceil(Math.sqrt(users + 9) - 3)
-
         let row = 0
         let rowIndex = -1
         let userCount = 7
@@ -329,6 +338,7 @@ export const Scene = ({ ws, core }) => {
         <Canvas>
             <CamCon />
             <Light />
+            <Env />
             <Display />
             {/* <Quests /> */}
             {/* <Indicators /> */}
