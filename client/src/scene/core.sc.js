@@ -41,7 +41,7 @@ export const Scene = ({ ws, core }) => {
         return (
             <Controls.Provider>
                 <Controls.Canvas shadows>{children}</Controls.Canvas>
-                {true && <Controls title='Settings' />}
+                {false && <Controls title='Settings' />}
             </Controls.Provider>
         )
     }
@@ -51,17 +51,15 @@ export const Scene = ({ ws, core }) => {
         const camera = useRef()
         const controls = useRef()
 
-        const camPos = (row) => {
-            if (row === 1) return 24
-            return camPos(row - 1) + (row / 2) + 1
-        }
-
-        const posZ = useControl('Pos Z', { type: 'number', group: 'CamCon', value: camPos(rows), min: 24, max: 50 })
-
         const orbitOptions = {
             // maxPolarAngle: Math.PI / 2,
             // maxAzimuthAngle: Math.PI / 4,
             // minAzimuthAngle: -Math.PI / 4
+        }
+
+        const camPos = (row) => {
+            if (row === 1) return 24
+            return camPos(row - 1) + (row / 2) + 1
         }
 
         // useEffect(() => {
@@ -74,7 +72,7 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <>
-                <PerspectiveCamera ref={camera} position={[0, 0, core.isMobile ? 80 : posZ]} fov={30} near={0.01} far={1500} makeDefault />
+                <PerspectiveCamera ref={camera} position={[0, 0, core.isMobile ? 80 : camPos(rows)]} fov={30} near={0.01} far={1500} makeDefault />
                 <OrbitControls ref={controls} {...orbitOptions} />
             </>
         )
@@ -83,17 +81,13 @@ export const Scene = ({ ws, core }) => {
 
     const Light = () => {
         // useHelper(dLight, SpotLightHelper, 0.5, 'teal')
-        
-        const aLightIntensity = useControl('A Intensity', { type: 'number', group: 'Light', value: 0.4, min: 0, max: 2 })
-
-        // useEffect(() => dLight.current.lookAt([0, 5, 0]), [])
 
 
         return (
             <>
                 <color attach='background' args={['#141622']} />
-                <ambientLight intensity={aLightIntensity} />
-                <spotLight ref={dLight} position={[0, 10, 0]} />
+                <ambientLight intensity={0.4} />
+                <spotLight ref={dLight} intensity={0} position={[0, 10, 0]} />
             </>
         )
     }
@@ -112,7 +106,9 @@ export const Scene = ({ ws, core }) => {
 
         return (
             <Environment resolution={256}>
-                <Lightformer form={'circle'} intensity={intensity} position={[posX, posY, posZ]} rotation={[-Math.PI / 2, 0, 0]} scale={[sclX, sclY, 0]} target={[0, 0, 0]} />
+                <Float speed={5} floatIntensity={2} rotationIntensity={2}>
+                    <Lightformer form={'circle'} intensity={intensity} position={[posX, posY, posZ]} rotation={[-Math.PI / 2, 0, 0]} scale={[sclX, sclY, 0]} target={[0, 0, 0]} />
+                </Float>
             </Environment>
         )
     }
@@ -193,13 +189,10 @@ export const Scene = ({ ws, core }) => {
     const Display = () => {
         const sceneSnap = useSnapshot(STScene)
 
-        const posY = useControl('Pos Y', { type: 'number', group: 'Display', value: 2.7 + 0.65 * rows, min: 0, max: 10 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Display', value: 0, min: 0, max: 10 })
-
 
         return (
             <Effect>
-                <group position={[0, posY, posZ]}>
+                <group position={[0, 2.7 + 0.65 * rows, 0]}>
                     <Center>
                         <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.03} size={0.5} height={0.03}>
                             {sceneSnap.display.author}
@@ -207,7 +200,7 @@ export const Scene = ({ ws, core }) => {
                         </Text3D>
                         <Text3D font={'/fonts/json/inter_regular.json'} bevelEnabled bevelSize={0.05} height={0.05}>
                             {wrap(sceneSnap.display.quest, 4)}
-                            <meshStandardMaterial attach='material' color={'#fff'} emissive={'#fff'} emissiveIntensity={1} toneMapped={false} />
+                            <meshStandardMaterial attach='material' color={'#fff'} emissive={'#fff'} emissiveIntensity={0.4} toneMapped={false} />
                         </Text3D>
                     </Center>
                 </group>
