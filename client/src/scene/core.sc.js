@@ -96,17 +96,17 @@ export const Scene = ({ ws, core }) => {
     const Env = () => {
         const intensity = useControl('Intensity', { type: 'number', group: 'Former', value: 1, min: 0, max: 20 })
 
-        const posX = useControl('Pos X', { type: 'number', group: 'Former', value: -5, min: -10, max: 10 })
+        const posX = useControl('Pos X', { type: 'number', group: 'Former', value: 0, min: -10, max: 10 })
         const posY = useControl('Pos Y', { type: 'number', group: 'Former', value: 30, min: -10, max: 50 })
-        const posZ = useControl('Pos Z', { type: 'number', group: 'Former', value: 1, min: -10, max: 10 })
+        const posZ = useControl('Pos Z', { type: 'number', group: 'Former', value: -6, min: -10, max: 10 })
 
         const sclX = useControl('Scl X', { type: 'number', group: 'Former', value: 60, min: 0, max: 200 })
         const sclY = useControl('Scl Y', { type: 'number', group: 'Former', value: 60, min: 0, max: 200 })
 
 
         return (
-            <Environment resolution={256}>
-                <Float speed={5} floatIntensity={2} rotationIntensity={2}>
+            <Environment frames={Infinity} resolution={256}>
+                <Float speed={2} floatIntensity={10} rotationIntensity={2}>
                     <Lightformer form={'circle'} intensity={intensity} position={[posX, posY, posZ]} rotation={[-Math.PI / 2, 0, 0]} scale={[sclX, sclY, 0]} target={[0, 0, 0]} />
                 </Float>
             </Environment>
@@ -239,10 +239,12 @@ export const Scene = ({ ws, core }) => {
 
         const lod = 32
         const haveQuest = Math.round(Math.random())
+        const inLobby = !haveQuest && Math.round(Math.random())
         const color = genColor()
 
 
         const onPointerOver = (event) => {
+            if (inLobby) return
             event.stopPropagation()
             document.body.style.cursor = 'pointer'
             gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
@@ -254,6 +256,7 @@ export const Scene = ({ ws, core }) => {
         }
 
         const onPointerOut = (event) => {
+            if (inLobby) return
             event.stopPropagation()
             document.body.style.cursor = 'default'
             gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
@@ -265,7 +268,10 @@ export const Scene = ({ ws, core }) => {
         }
 
 
-        const Material = () => <meshStandardMaterial color={color || user.userColor} metalness={0.2} roughness={0} />
+        const Material = () => {
+            if (inLobby) return <meshStandardMaterial color={color || user.userColor} opacity={0.08} transparent />
+            return <meshStandardMaterial color={color || user.userColor} metalness={0.2} roughness={0} />
+        }
 
 
         return (
@@ -273,26 +279,26 @@ export const Scene = ({ ws, core }) => {
                 <group ref={userRef}>
                     {haveQuest && <group position={[0, 0.8, 0]}>
                         <Float speed={10} floatIntensity={0.8} rotationIntensity={0}>
-                            <mesh ref={bubbleRef}>
+                            <mesh name='bubble' ref={bubbleRef}>
                                 <sphereGeometry args={[0.1, lod, lod]} />
                                 <meshStandardMaterial color={'#ffffff'} metalness={0.2} roughness={0} />
                             </mesh>
                             <pointLight ref={lightRef} color={'#ffd60a'} distance={1} intensity={8} />
                         </Float>
                     </group>}
-                    <mesh position={[0, -0.7, 0]}>
+                    {!inLobby && <mesh name='collision' position={[0, -0.7, 0]}>
                         <cylinderGeometry args={[0.5, 0.9, 2.4, lod]} />
                         <meshStandardMaterial opacity={0} transparent />
-                    </mesh>
-                    <mesh position={[0, 0, 0]}>
+                    </mesh>}
+                    <mesh name='head' position={[0, 0, 0]}>
                         <sphereGeometry args={[0.5, lod, lod]} />
                         <Material />
                     </mesh>
-                    <mesh position={[0, -1.5, 0]}>
+                    <mesh name='body' position={[0, -1.5, 0]}>
                         <sphereGeometry args={[0.8, lod, lod, , , , Math.PI / 2]} />
                         <Material />
                     </mesh>
-                    <mesh position={[0, -1.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                    <mesh name='bottom' position={[0, -1.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
                         <circleGeometry args={[0.8, lod]} />
                         <Material />
                     </mesh>
