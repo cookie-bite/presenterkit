@@ -1,39 +1,39 @@
 {
-    "name": "chatapp",
-    "version": "0.0.1",
-    "description": "Chat app",
-    "author": "Ali Mammadli",
-    "license": "ISC",
-    "dependencies": {
-        "cors": "^2.8.5",
-        "express": "^4.18.2",
-        "fs-extra": "^11.1.1",
-        "multer": "^1.4.5-lts.1",
-        "pdf-img-convert": "^1.2.1",
-        "ws": "^8.12.0"
-    },
-    "main": "electron.js",
-    "scripts": {
-        "dev": "nodemon api",
-        "client": "cd client && npm start",
-        "start": "cd client && npm run build && cd .. && electron .",
-        "start:build": "cd client && npm run build && cd .. && node api",
-        "build:node": "cd client && npm install && npm run build && cd .. && node api",
-        "build:react": "cd client && npm run build",
-        "electron:start": "wait-on http://127.0.0.1:50000 && electron .",
-        "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
-        "electron:build": "npm run build:react && electron-builder",
-        "kill:process": "kill -9 $(lsof -ti:3000)"
-    },
-    "build": {
-        "appId": "com.electron.chatapp"
-    },
-    "devDependencies": {
-        "concurrently": "^7.6.0",
-        "cross-env": "^7.0.3",
-        "electron": "^22.2.0",
-        "electron-builder": "^23.6.0",
-        "nodemon": "^2.0.22",
-        "wait-on": "^7.0.1"
-    }
+  "name": "chatapp",
+  "version": "0.0.1",
+  "description": "Chat app",
+  "author": "Ali Mammadli",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "multer": "^1.4.5-lts.1",
+    "pdf-img-convert": "^1.2.1",
+    "ws": "^8.12.0"
+  },
+  "main": "electron.js",
+  "scripts": {
+    "dev": "nodemon api",
+    "client": "cd client && npm start",
+    "start": "cd client && npm run build && cd .. && electron .",
+    "start:build": "cd client && npm run build && cd .. && node api",
+    "build:node": "cd client && npm install && npm run build && cd .. && node api",
+    "build:react": "cd client && npm run build",
+    "electron:start": "wait-on http://127.0.0.1:50000 && electron .",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
+    "electron:build": "npm run build:react && electron-builder",
+    "kill:process": "kill -9 $(lsof -ti:3000)"
+  },
+  "build": {
+    "appId": "com.electron.chatapp"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^22.2.0",
+    "electron-builder": "^23.6.0",
+    "nodemon": "^2.0.22",
+    "wait-on": "^7.0.1"
+  }
 }

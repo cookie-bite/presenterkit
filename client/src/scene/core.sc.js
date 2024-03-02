@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { OrbitControls, PerspectiveCamera, Float, Text3D, Center, Environment, Lightformer, useHelper } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, Float, Text3D, Center, Environment, Lightformer, useHelper, Stats } from '@react-three/drei'
 import { Selection, Select, EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 import { useControl, Controls } from 'react-three-gui'
 import { gsap } from 'gsap'
@@ -42,6 +42,7 @@ export const Scene = ({ ws, core }) => {
             <Controls.Provider>
                 <Controls.Canvas shadows>{children}</Controls.Canvas>
                 {false && <Controls title='Settings' />}
+                {false && <Stats />}
             </Controls.Provider>
         )
     }
