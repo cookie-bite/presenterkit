@@ -25,7 +25,7 @@ var activeSlide = {}
 const cooldown = 2 * 60 * 1000
 var shares = [{ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false }]
 var config = { forwarding: { is: false } }
-var display = { quest: 'Welcome to WWDC23', author: '' }
+var display = { quest: 'Welcome to Event', author: '' }
 var roomActivity = { user: { id: '', name: '' }, activity: '' }
 
 app.use(cors())

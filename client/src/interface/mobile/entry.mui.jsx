@@ -75,7 +75,7 @@ export const Entry = ({ ws, core }) => {
                     animate={{ opacity: 1 }}
                     transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.2 }}
                 >
-                    <h1 className={sty.entryLogo}>SeeQuest</h1>
+                    <h1 className={sty.entryLogo}>PresenterKit</h1>
                     <div className={sty.entryInputView}>
                         <input className={sty.entryInput} autoFocus={true} placeholder='Username' value={username}
                             onChange={(e) => setUsername(e.target.value)}

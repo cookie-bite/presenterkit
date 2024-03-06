@@ -48,7 +48,7 @@ export const STAdmin = proxy({
     adminKey: '',
     uiName: 'Messages',
     userList: [],
-    display: { quest: 'Welcome to WWDC23', author: '' },
+    display: { quest: 'Welcome to Event', author: '' },
     queue: [],
     share: { link: '', icon: '', label: '', text: '' },
     config: { forwarding: { is: false } },
