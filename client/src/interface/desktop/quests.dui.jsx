@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STScene, STApp } from '../../stores/app.store'
+import { STQuests, STUI, STUser } from '../../stores/app.store'
+import { STDisplay } from '../../stores/scene.store'
+
 import { Panel } from '../../components/core.cmp'
-import { genColor, genQuest } from '../../utilities/core.utils'
 import { Icon } from '../../components/core.cmp'
+import { genColor, genQuest } from '../../utilities/core.utils'
 
 import sty from '../../styles/modules/desktop.module.css'
 
@@ -14,8 +16,9 @@ const timeout = 1500
 
 
 export const Quests = ({ ws, core }) => {
-    const appSnap = useSnapshot(STApp)
-    const sceneSnap = useSnapshot(STScene)
+    const SSUI = useSnapshot(STUI)
+    const SSUser = useSnapshot(STUser)
+    const SSQuests = useSnapshot(STQuests)
 
     const inputRef = useRef()
 
@@ -27,9 +30,9 @@ export const Quests = ({ ws, core }) => {
 
 
     const setDisplay = (quest, index) => {
-        STScene.display = { quest: quest.label, author: quest.username }
-        STScene.quests[index].effect = false
-        ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: STScene.display, index }))
+        Object.assign(STDisplay, { quest: quest.label, author: quest.username })
+        STQuests.list[index].effect = false
+        ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay, index }))
     }
 
     const send = () => {
@@ -37,12 +40,12 @@ export const Quests = ({ ws, core }) => {
             if (core.isPresenter && /^\d+$/.test(text)) {
                 for (let i = 0; i < +text; i++) {
                     let quest = genQuest('long')
-                    setTimeout(() => ws.send(JSON.stringify({ command: 'APR_REQ', room: STApp.adminRoom, userID: appSnap.userID, ...quest })), 1000 * i)
+                    setTimeout(() => ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, ...quest })), 1000 * i)
                 }
             } else {
                 let temp = text
                 while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-                ws.send(JSON.stringify({ command: 'APR_REQ', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: temp, color: appSnap.userColor } }))
+                ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
             }
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '28px', 'min-width': '232px' })
@@ -69,14 +72,14 @@ export const Quests = ({ ws, core }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: STApp.userRoom, isTyping: true, color: appSnap.userColor, userID: appSnap.userID, username: appSnap.username }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: STApp.userRoom, isTyping: false, color: appSnap.userColor, userID: appSnap.userID, username: appSnap.username }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
         }, timeout)
     }
 
@@ -92,7 +95,7 @@ export const Quests = ({ ws, core }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape' && STApp.uiName === 'Quests') STApp.uiName = ''
+            if (e.key === 'Escape' && STUI.name === 'Quests') STUI.name = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
@@ -100,10 +103,10 @@ export const Quests = ({ ws, core }) => {
 
 
     return (
-        <Panel show={appSnap.uiName === 'Quests'} label={'Messages'} count={sceneSnap.quests.length}>
-            {sceneSnap.quests.length
+        <Panel show={SSUI.name === 'Quests'} label={'Messages'} count={SSQuests.list.length}>
+            {SSQuests.list.length
                 ? <div className={sty.questList}>
-                    {sceneSnap.quests.map((quest, index) => {
+                    {SSQuests.list.map((quest, index) => {
                         return (
                             <div className={sty.questListItem} key={index} onClick={() => setDisplay(quest, index)}>
                                 <h3 className={sty.questListItemSbtl}>{quest.username}</h3>
@@ -119,13 +122,13 @@ export const Quests = ({ ws, core }) => {
             }
             <div className={sty.inputView}>
                 <div className={sty.msgColor}
-                    style={{ backgroundColor: appSnap.userColor }}
-                    onClick={() => STApp.userColor = genColor()}
+                    style={{ backgroundColor: SSUser.color }}
+                    onClick={() => STUser.color = genColor()}
                 >
-                    {!text && <div className={sty.msgColorPrvw} style={{ color: appSnap.userColor }}>Aa</div>}
+                    {!text && <div className={sty.msgColorPrvw} style={{ color: SSUser.color }}>Aa</div>}
                 </div>
                 <motion.textarea className={sty.input} value={text} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' pass='true'
-                    style={{ color: appSnap.userColor }}
+                    style={{ color: SSUser.color }}
                     ref={inputRef}
                     animate={inputHeight}
                     transition={{ ease: 'easeInOut', duration: 0.3 }}

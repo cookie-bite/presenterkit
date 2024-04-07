@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, usePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STAdmin } from '../../stores/app.store'
+import { STMessages, STQueue } from '../../stores/admin.store'
 import { Icon } from '../../components/core.cmp'
 import { Segment } from '../../components/core.cmp'
 
@@ -9,17 +9,15 @@ import sty from '../../styles/modules/admin.module.css'
 
 
 const Message = ({ ws, msg, index }) => {
-    const adminSnap = useSnapshot(STAdmin)
-
     const [isPresent, safeToRemove] = usePresence()
 
 
     const aprReq = (index) => {
-        ws.send(JSON.stringify({ command: 'SEND_USER', userID: adminSnap.queue[index].userID, username: adminSnap.queue[index].author, quest: { label: adminSnap.queue[index].label, color: adminSnap.queue[index].color, index } }))
+        ws.send(JSON.stringify({ command: 'SEND_USER', userID: STQueue.list[index].userID, username: STQueue.list[index].author, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
     }
 
     const rejectReq = (index) => {
-        ws.send(JSON.stringify({ command: 'CLDW_USER', userID: adminSnap.queue[index].userID, quest: { index } }))
+        ws.send(JSON.stringify({ command: 'CLDW_USER', userID: STQueue.list[index].userID, quest: { index } }))
     }
 
 
@@ -52,15 +50,17 @@ const Message = ({ ws, msg, index }) => {
 }
 
 
+
 export const Messages = ({ ws }) => {
-    const adminSnap = useSnapshot(STAdmin)
+    const SSQueue = useSnapshot(STQueue)
+    const SSMessages = useSnapshot(STMessages)
 
     const segments = ['Pass', 'Stop']
 
 
     const forwarding = (state) => {
-        if ((adminSnap.activeCheckTab === 'Pass') === state) {
-            STAdmin.activeCheckTab = state ? 'Stop' : 'Pass'
+        if ((SSMessages.tab === 'Pass') === state) {
+            STMessages.tab = state ? 'Stop' : 'Pass'
             ws.send(JSON.stringify({ command: 'SET_CNFG', config: { name: 'forwarding', is: state } }))
         }
     }
@@ -70,20 +70,20 @@ export const Messages = ({ ws }) => {
     }
 
     const toggle = () => {
-        STAdmin.activeCheckTab = adminSnap.activeCheckTab === 'Pass' ? 'Stop' : 'Pass'
-        forwarding(adminSnap.activeCheckTab === 'Pass')
+        STMessages.tab = SSMessages.tab === 'Pass' ? 'Stop' : 'Pass'
+        forwarding(SSMessages.tab === 'Pass')
     }
 
 
     return (
         <div className={sty.pageBg}>
             <div className={sty.page} style={{ width: 800 }}>
-                <Segment segments={segments} state={adminSnap.activeCheckTab} onChange={(index, segment) => onSegmentChange(segment)} />
+                <Segment segments={segments} state={SSMessages.tab} onChange={(index, segment) => onSegmentChange(segment)} />
 
-                {adminSnap.queue.length !== 0
+                {SSQueue.list.length !== 0
                     ? <div className={sty.msgList}>
                         <AnimatePresence>
-                            {adminSnap.queue.map((msg, index) => {
+                            {SSQueue.list.map((msg, index) => {
                                 return <Message ws={ws} msg={msg} index={index} key={msg.id} />
                             })}
                         </AnimatePresence>
@@ -91,7 +91,7 @@ export const Messages = ({ ws }) => {
                     : <div className={sty.emptyPage}>
                         <h3 className={sty.emptyPageTtl}>No Pending Message</h3>
                         <h5 className={sty.emptyPageSbtl} onClick={() => toggle()}>
-                            {adminSnap.activeCheckTab === 'Pass' ? 'You can activate filter by clicking Stop' : 'You can turn off filter by clicking Pass'}
+                            {SSMessages.tab === 'Pass' ? 'You can activate filter by clicking Stop' : 'You can turn off filter by clicking Pass'}
                         </h5>
                     </div>
                 }

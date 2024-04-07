@@ -1,22 +1,28 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STAdmin, STApp, STScene } from '../../stores/app.store'
+import { STUsers } from '../../stores/app.store'
+import { STModerator, STSearch, STTab } from '../../stores/admin.store'
+import { STDisplay } from '../../stores/scene.store'
+
 import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/admin.module.css'
 
 
-export const Header = ({ ws }) => {
-    const adminSnap = useSnapshot(STAdmin)
-    const sceneSnap = useSnapshot(STScene)
+export const Header = ({ ws, core }) => {
+    const SSUsers = useSnapshot(STUsers)
+    const SSTab = useSnapshot(STTab)
+    const SSModerator = useSnapshot(STModerator)
+    const SSSearch = useSnapshot(STSearch)
+    const SSDisplay = useSnapshot(STDisplay)
 
     const [title, setTitle] = useState('')
     const [term, setTerm] = useState('')
 
 
     const SearchList = () => {
-        let results = adminSnap.userList.filter((user) => !user.isAdmin && !user.isInLobby && user.username.toLowerCase().includes(term.trim().toLowerCase()))
+        let results = SSUsers.list.filter((user) => !user.isAdmin && !user.isInLobby && user.username.toLowerCase().includes(term.trim().toLowerCase()))
         let exactResults = results.filter((user) => user.username.startsWith(term.trim()))
         let finalResults = [...new Set([...exactResults, ...results])]
 
@@ -48,34 +54,34 @@ export const Header = ({ ws }) => {
 
 
     const send = () => {
-        if (title.trim() !== '' && title !== sceneSnap.display.quest && title !== '') {
-            STAdmin.display = { quest: title, author: '' }
-            ws.send(JSON.stringify({ command: 'DISP_LBL', room: [STApp.userRoom, STApp.adminRoom], display: STAdmin.display }))
+        if (title.trim() !== '' && title !== STDisplay.quest && title !== '') {
+            Object.assign(STDisplay, { quest: title, author: '' })
+            ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay }))
             setTitle('')
         }
     }
 
     const navigate = (tab) => {
-        STAdmin.uiName = tab
+        STTab.name = tab
     }
 
     const updateStatus = (userID, isAdmin) => {
         setTerm('')
-        ws.send(JSON.stringify({ command: 'SET_STTS', room: STApp.userRoom, userID, isAdmin }))
+        ws.send(JSON.stringify({ command: 'SET_STTS', room: core.userRoom, userID, isAdmin }))
     }
 
     const toggleModerator = (user) => {
-        if (!user.isPresenter) STAdmin.activeAdmin = adminSnap.activeAdmin === user.userID ? '' : user.userID
+        if (!user.isPresenter) STModerator.active = STModerator.active === user.userID ? '' : user.userID
     }
 
     const toggleSearch = () => {
         setTerm('')
-        STAdmin.showSearch = !adminSnap.showSearch
+        STSearch.showBar = !STSearch.showBar
     }
 
 
     useEffect(() => {
-        return () => STAdmin.showSearch = false
+        return () => STSearch.showBar = false
     }, [])
 
 
@@ -83,27 +89,27 @@ export const Header = ({ ws }) => {
         <div className={sty.header}>
             <div className={sty.headline}>
                 <h3 className={sty.headlineLbl}>3D Title</h3>
-                <input className={sty.headlineInput} type='text' name='title' autoComplete='off' placeholder={sceneSnap.display.quest} value={title}
+                <input className={sty.headlineInput} type='text' name='title' autoComplete='off' placeholder={SSDisplay.quest} value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }}
                 />
-                <button className={sty.headlineBtn} style={{ backgroundColor: (title !== sceneSnap.display.quest && title !== '') ? 'var(--system-blue)' : 'var(--tertiary-fill)' }} onClick={() => send()}>
+                <button className={sty.headlineBtn} style={{ backgroundColor: (title !== SSDisplay.quest && title !== '') ? 'var(--system-blue)' : 'var(--tertiary-fill)' }} onClick={() => send()}>
                     <Icon name='sync' size={20} color='--white' />
                 </button>
             </div>
             <div className={sty.tabs}>
-                <button className={adminSnap.uiName === 'Messages' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Messages')}>
-                    <Icon name='chatbubble-o' size={22} color={adminSnap.uiName === 'Messages' ? '--white' : '--secondary-label'} />
+                <button className={SSTab.name === 'Messages' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Messages')}>
+                    <Icon name='chatbubble-o' size={22} color={SSTab.name === 'Messages' ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipBottom'>Messages</div>
                 </button>
-                <button className={adminSnap.uiName === 'Shares' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Shares')}>
-                    <Icon name='paper-plane-o' size={22} color={adminSnap.uiName === 'Shares' ? '--white' : '--secondary-label'} />
+                <button className={SSTab.name === 'Shares' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Shares')}>
+                    <Icon name='paper-plane-o' size={22} color={SSTab.name === 'Shares' ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipBottom'>Shares</div>
                 </button>
             </div>
             <div className={sty.moderators}>
                 <AnimatePresence>
-                    {adminSnap.userList.map((user, index) => {
+                    {SSUsers.list.map((user, index) => {
                         return (
                             user.isAdmin && <motion.div className={sty.moderator} key={index}
                                 initial={{ opacity: 0 }}
@@ -115,7 +121,7 @@ export const Header = ({ ws }) => {
                                 <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)`, cursor: user.isPresenter ? 'default' : 'pointer' }}>
                                     <h1 className={sty.moderatorLbl} style={{ color: user.userColor }}>{user.username.charAt()}</h1>
                                 </div>
-                                {adminSnap.activeAdmin === user.userID && <div className={sty.activeModerator}>
+                                {SSModerator.active === user.userID && <div className={sty.activeModerator}>
                                     <h5 className={sty.activeModeratorLbl}>{user.username}</h5>
                                     <button onClick={() => updateStatus(user.userID, false)}>
                                         <Icon name='person-remove' size={15} color='--system-red' />
@@ -126,23 +132,23 @@ export const Header = ({ ws }) => {
                     })}
                 </AnimatePresence>
                 <AnimatePresence>
-                    {adminSnap.showSearch && <motion.div className={sty.searchBar}>
+                    {SSSearch.showBar && <motion.div className={sty.searchBar}>
                         <motion.input className={sty.searchInput} type='text' name='term' autoComplete='off' placeholder='Add moderator' value={term}
                             initial={{ opacity: 0, borderWidth: 0, width: 0, padding: 0, margin: 0 }}
                             animate={{ opacity: 1, borderWidth: 1, width: 220, padding: '10px 15px', margin: '0 5px' }}
                             exit={{ opacity: 0, borderWidth: 0, width: 0, padding: 0, margin: 0 }}
                             transition={{ ease: 'easeOut', duration: 0.4 }}
                             onChange={(e) => setTerm(e.target.value)}
-                            onFocus={() => STAdmin.showSearchList = true}
-                            onBlur={() => setTimeout(() => STAdmin.showSearchList = false, 150)}
+                            onFocus={() => STSearch.showList = true}
+                            onBlur={() => setTimeout(() => STSearch.showList = false, 150)}
                         />
                         <AnimatePresence>
-                            {adminSnap.showSearchList && <SearchList />}
+                            {SSSearch.showList && <SearchList />}
                         </AnimatePresence>
                     </motion.div>
                     }
                 </AnimatePresence>
-                <button className={adminSnap.showSearch ? sty.searchBtnActive : sty.searchBtn} onClick={() => toggleSearch()}>
+                <button className={SSSearch.showBar ? sty.searchBtnActive : sty.searchBtn} onClick={() => toggleSearch()}>
                     <Icon name='add' size={20} color='--primary-tint' />
                 </button>
             </div>

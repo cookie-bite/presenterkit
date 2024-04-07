@@ -177,6 +177,11 @@ export const wrap = (text, count = 4) => {
 }
 
 
+export const calcRows = (users) => {
+    return Math.ceil(Math.sqrt(users + 9) - 3)
+}
+
+
 export const isValidUrl = (url) => {
     return (new RegExp('^(https?:\\/\\/)?' + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + '((\\d{1,3}\\.){3}\\d{1,3}))' + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + '(\\?[;&a-z\\d%_.~+=-]*)?' + '(\\#[-a-z\\d_]*)?$', 'i')).test(url)
 }

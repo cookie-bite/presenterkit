@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STApp, STUI, STUser, STUserPanel, STUsers, STSlide, STTheatre } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 import { genColor } from '../../utilities/core.utils'
 
@@ -11,8 +11,14 @@ import sty from '../../styles/modules/mobile.module.css'
 var delay = null
 const timeout = 1500
 
-export const Controls = ({ ws }) => {
-    const appSnap = useSnapshot(STApp)
+export const Controls = ({ ws, core }) => {
+    const SSApp = useSnapshot(STApp)
+    const SSUI = useSnapshot(STUI)
+    const SSUser = useSnapshot(STUser)
+    const SSUsers = useSnapshot(STUsers)
+    const SSUserPanel = useSnapshot(STUserPanel)
+    const SSSlide = useSnapshot(STSlide)
+
 
     const inputRef = useRef()
 
@@ -28,7 +34,7 @@ export const Controls = ({ ws }) => {
         if (text.trim() !== '') {
             let temp = text
             while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-            ws.send(JSON.stringify({ command: 'APR_REQ', room: STApp.adminRoom, userID: appSnap.userID, username: appSnap.username, quest: { label: temp, color: appSnap.userColor } }))
+            ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '33px', 'min-width': 'calc(100vw - 77px)' })
             setText('')
@@ -54,27 +60,27 @@ export const Controls = ({ ws }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: STApp.userRoom, isTyping: true, color: appSnap.userColor, userID: appSnap.userID, username: appSnap.username }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: STApp.userRoom, isTyping: false, color: appSnap.userColor, userID: appSnap.userID, username: appSnap.username }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
         }, timeout)
     }
 
     const openScreen = (screen) => {
-        STApp.uiName = screen
+        STUI.name = screen
     }
 
     const closeScreen = () => {
-        STApp.uiName = ''
+        STUI.name = ''
     }
 
     const resizeWindow = () => {
-        if (appSnap.isFullscreen) {
+        if (STApp.isFullscreen) {
             if (document.exitFullscreen) { document.exitFullscreen() }
             else if (document.webkitExitFullscreen) { document.webkitExitFullscreen() }
         } else {
@@ -82,18 +88,18 @@ export const Controls = ({ ws }) => {
             else if (document.documentElement.webkitEnterFullscreen) { document.documentElement.webkitEnterFullscreen() }
         }
 
-        STApp.isFullscreen = !appSnap.isFullscreen
+        STApp.isFullscreen = !STApp.isFullscreen
     }
 
     const submitUser = () => {
-        if (appSnap.username !== username) {
-            STApp.username = username
-            ws.send(JSON.stringify({ command: 'SET_USER', room: STApp.userRoom, userID: appSnap.userID, username: username, roomActivity: 'updated' }))
+        if (STUser.name !== username) {
+            STUser.name = username
+            ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, userID: STUser.id, username: username, roomActivity: 'updated' }))
         }
     }
 
 
-    useEffect(() => setUsername(appSnap.username), [appSnap.username])
+    useEffect(() => setUsername(STUser.name), [STUser.name])
 
 
     return (
@@ -104,29 +110,29 @@ export const Controls = ({ ws }) => {
                 transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
             >
                 <AnimatePresence>
-                    {appSnap.activeSlide.hasOwnProperty('index') &&
+                    {SSSlide.active.hasOwnProperty('index') &&
                         <motion.div className={sty.controlsLiveBtn}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ ease: 'easeInOut', duration: 0.5, delay: 1.3 }}
-                            onClick={() => { STApp.uiName = 'Slides'; STApp.showTheatre = true }}
+                            onClick={() => { STUI.name = 'Slides'; STTheatre.show = true }}
                         >
                             <Icon name='tv' size={18} color='--white' />
                         </motion.div>}
                 </AnimatePresence>
                 <AnimatePresence>
-                    {appSnap.uiName !== 'Menu' && <motion.button className={sty.controlsMenuBtn}
+                    {SSUI.name !== 'Menu' && <motion.button className={sty.controlsMenuBtn}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ ease: 'easeInOut', duration: 0.3 }}
-                        onClick={() => STApp.uiName = 'Menu'}
+                        onClick={() => STUI.name = 'Menu'}
                     >
                         <Icon name='ellipsis-horizontal-circle' size={30} color='--primary-tint' />
                     </motion.button>}
                 </AnimatePresence>
                 <motion.textarea className={sty.controlsInput} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' value={text}
-                    style={{ color: appSnap.userColor }}
+                    style={{ color: SSUser.color }}
                     ref={inputRef}
                     animate={inputHeight}
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
@@ -143,7 +149,7 @@ export const Controls = ({ ws }) => {
 
 
             <AnimatePresence>
-                {appSnap.uiName === 'Menu' && <>
+                {SSUI.name === 'Menu' && <>
                     <motion.div className={sty.menuBg}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -160,12 +166,12 @@ export const Controls = ({ ws }) => {
                     >
                         <div className={sty.menuTopList}>
                             <div className={sty.menuTopListIcView}>
-                                <h5 className={sty.menuTopListInd}>{appSnap.userList.length}</h5>
+                                <h5 className={sty.menuTopListInd}>{SSUsers.list.length}</h5>
                             </div>
                             <div className={sty.menuTopListBody}>
                                 <div className={sty.menuTopListBodyText}>
                                     <h4 className={sty.menuTopListTtl}>Active Users</h4>
-                                    <h5 className={sty.menuTopListSbtl}>{`${appSnap.roomActivity.user.id === appSnap.userID ? 'You' : appSnap.roomActivity.user.name} ${appSnap.roomActivity.activity}`}</h5>
+                                    <h5 className={sty.menuTopListSbtl}>{`${SSUserPanel.user.id === SSUser.id ? 'You' : SSUserPanel.user.name} ${SSUserPanel.activity}`}</h5>
                                 </div>
                                 <div className={sty.menuTopListIndView}>
                                     <Icon name='people' size={30} color='--white' />
@@ -182,9 +188,9 @@ export const Controls = ({ ws }) => {
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') submitUser() }}
                                 />
                             </div>
-                            <div className={sty.menuListItem} onClick={() => STApp.userColor = genColor()}>
+                            <div className={sty.menuListItem} onClick={() => STUser.color = genColor()}>
                                 <h5 className={sty.menuListItemLabel}>Message Color</h5>
-                                <div className={sty.menuMsgColor} style={{ backgroundColor: appSnap.userColor }}></div>
+                                <div className={sty.menuMsgColor} style={{ backgroundColor: SSUser.color }}></div>
                             </div>
                         </div>
 
@@ -205,8 +211,8 @@ export const Controls = ({ ws }) => {
 
                         <div className={sty.menuList}>
                             <div className={sty.menuListItem} onClick={() => resizeWindow()}>
-                                <h5 className={sty.menuListItemLabel} >{`${appSnap.isFullscreen ? 'Exit' : 'Enter'} Full screen`}</h5>
-                                <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={24} color='--white' />
+                                <h5 className={sty.menuListItemLabel} >{`${SSApp.isFullscreen ? 'Exit' : 'Enter'} Full screen`}</h5>
+                                <Icon name={SSApp.isFullscreen ? 'contract' : 'expand'} size={24} color='--white' />
                             </div>
                         </div>
                     </motion.div>

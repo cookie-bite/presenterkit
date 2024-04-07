@@ -1,22 +1,24 @@
 import { motion } from 'framer-motion'
 import { Icon } from '../../components/core.cmp'
 import { useSnapshot } from 'valtio'
-import { STAdmin, STApp } from '../../stores/app.store'
+import { STApp, STUI } from '../../stores/app.store'
+import { STAdmin } from '../../stores/admin.store'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Controls = ({ core }) => {
-    const adminSnap = useSnapshot(STAdmin)
-    const appSnap = useSnapshot(STApp)
+    const SSUI = useSnapshot(STUI)
+    const SSApp = useSnapshot(STApp)
+    const SSAdmin = useSnapshot(STAdmin)
 
 
     const toggleScreen = (screen) => {
-        STApp.uiName = appSnap.uiName === screen ? '' : screen
+        STUI.name = SSUI.name === screen ? '' : screen
     }
 
     const resizeWindow = () => {
-        if (appSnap.isFullscreen) {
+        if (STApp.isFullscreen) {
             if (document.exitFullscreen) { document.exitFullscreen() }
             else if (document.webkitExitFullscreen) { document.webkitExitFullscreen() }
         } else {
@@ -24,11 +26,11 @@ export const Controls = ({ core }) => {
             else if (document.documentElement.webkitEnterFullscreen) { document.documentElement.webkitEnterFullscreen() }
         }
 
-        STApp.isFullscreen = !appSnap.isFullscreen
+        STApp.isFullscreen = !STApp.isFullscreen
     }
 
     const cmpr = (screen) => {
-        return appSnap.uiName === screen
+        return SSUI.name === screen
     }
 
 
@@ -67,13 +69,13 @@ export const Controls = ({ core }) => {
                     <Icon name='albums' size={30} color={cmpr('Slides') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Slides</div>
                 </button>}
-                {(core.isPresenter || adminSnap.isAdmin) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
+                {(core.isPresenter || SSAdmin.privileged) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
                     <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Admin</div>
                 </button>}
                 {!core.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
-                    <Icon name={appSnap.isFullscreen ? 'contract' : 'expand'} size={30} color={appSnap.isFullscreen ? '--white' : '--secondary-label'} />
-                    <div className='tooltip tooltipTop'>{appSnap.isFullscreen ? 'Exit' : 'Full screen'}</div>
+                    <Icon name={SSApp.isFullscreen ? 'contract' : 'expand'} size={30} color={SSApp.isFullscreen ? '--white' : '--secondary-label'} />
+                    <div className='tooltip tooltipTop'>{SSApp.isFullscreen ? 'Exit' : 'Full screen'}</div>
                 </button>}
             </motion.div>
         </div>

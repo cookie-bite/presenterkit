@@ -1,19 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STScene, STApp } from '../../stores/app.store'
+import { STQuests, STUI } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/mobile.module.css'
 
 
 export const Quests = () => {
-    const appSnap = useSnapshot(STApp)
-    const sceneSnap = useSnapshot(STScene)
+    const SSUI = useSnapshot(STUI)
+    const SSQuests = useSnapshot(STQuests)
 
 
     return (
         <AnimatePresence>
-            {appSnap.uiName === 'Quests' && <motion.div className={sty.modalView}
+            {SSUI.name === 'Quests' && <motion.div className={sty.modalView}
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
@@ -22,18 +22,18 @@ export const Quests = () => {
                 <div className={sty.modal}>
                     <div className={sty.modalHeader}>
                         <div className={sty.modalLblView}>
-                            {sceneSnap.quests.length !== 0 && <div className={sty.modalCountBg}>
-                                <h1 className={sty.modalCount}>{sceneSnap.quests.length}</h1>
+                            {SSQuests.list.length !== 0 && <div className={sty.modalCountBg}>
+                                <h1 className={sty.modalCount}>{SSQuests.list.length}</h1>
                             </div>}
                             <h3 className={sty.modalHeaderLbl}>Messages</h3>
                         </div>
-                        <button className={sty.modalHeadBtn} onClick={() => STApp.uiName = ''}>
+                        <button className={sty.modalHeadBtn} onClick={() => STUI.name = ''}>
                             <Icon name='close' size={20} color='--white' />
                         </button>
                     </div>
-                    {sceneSnap.quests.length
+                    {SSQuests.list.length
                         ? <div className={sty.questList}>
-                            {sceneSnap.quests.map((quest, index) => {
+                            {SSQuests.list.map((quest, index) => {
                                 return (
                                     <div className={sty.questListItem} key={index}>
                                         <h3 className={sty.questListItemSbtl}>{quest.username}</h3>
@@ -44,7 +44,7 @@ export const Quests = () => {
                         </div>
                         : <div className={sty.modalEmpty}>
                             <h3 className={sty.modalEmptyTtl}>No One Asked Yet</h3>
-                            <h5 className={sty.modalEmptySbtl} onClick={() => STApp.uiName = ''}>Never afraid of being the first.</h5>
+                            <h5 className={sty.modalEmptySbtl} onClick={() => STUI.name = ''}>Never afraid of being the first.</h5>
                         </div>
                     }
                 </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STShare, STShares } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 import { isValidUrl } from '../../utilities/core.utils'
 
@@ -8,13 +8,14 @@ import sty from '../../styles/modules/admin.module.css'
 
 
 export const Shares = ({ ws }) => {
-    const appSnap = useSnapshot(STApp)
+    const SSShare = useSnapshot(STShare)
+    const SSShares = useSnapshot(STShares)
 
     const textareaRef = useRef()
     const urlsRef = useRef()
 
-    const [body, setBody] = useState(STApp.shares[STApp.activeShare].body)
-    const [urls, setUrls] = useState(STApp.shares[STApp.activeShare].urls)
+    const [body, setBody] = useState(STShares.list[STShare.active].body)
+    const [urls, setUrls] = useState(STShares.list[STShare.active].urls)
 
 
     const UrlBtn = ({ url }) => {
@@ -75,42 +76,42 @@ export const Shares = ({ ws }) => {
     }
 
     const addUrl = () => {
-        STApp.shares[STApp.activeShare].urls.push({ link: '', icon: 'link-o', color: '#0A84FF' })
+        STShares.list[STShare.active].urls.push({ link: '', icon: 'link-o', color: '#0A84FF' })
     }
 
     const addShare = () => {
-        STApp.shares.push({ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false })
-        STApp.activeShare = STApp.shares.length - 1
+        STShares.list.push({ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false })
+        STShare.active = STShares.list.length - 1
     }
 
     const closeShare = (e, index) => {
         e.stopPropagation()
-        if (appSnap.activeShare === appSnap.shares.length - 1) STApp.activeShare = appSnap.shares.length - 2
-        STApp.shares.splice(index, 1)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'update', shares: STApp.shares }))
+        if (STShare.active === STShares.list.length - 1) STShare.active = STShares.list.length - 2
+        STShares.list.splice(index, 1)
+        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'update', shares: STShares.list }))
     }
 
     const saveShare = (type, state) => {
-        STApp.shares[appSnap.activeShare][type] = state
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'save', shares: STApp.shares }))
+        STShares.list[STShare.active][type] = state
+        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'save', shares: STShares.list }))
     }
 
     const sendShare = () => {
-        STApp.shares[appSnap.activeShare].urls = STApp.shares[appSnap.activeShare].urls.filter(u => STApp.shares[appSnap.activeShare].urls.length === 1 ? u : u.link)
-        STApp.shares[appSnap.activeShare].isShared = true
-        console.log(STApp.shares)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STApp.shares, activeShare: appSnap.activeShare }))
+        STShares.list[STShare.active].urls = STShares.list[STShare.active].urls.filter(u => STShares.list[STShare.active].urls.length === 1 ? u : u.link)
+        STShares.list[STShare.active].isShared = true
+        console.log(STShares.list)
+        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STShares.list, activeShare: STShare.active }))
     }
 
     const switchShare = (index) => {
-        STApp.activeShare = index
+        STShare.active = index
     }
 
 
     useEffect(() => {
-        setBody(STApp.shares[STApp.activeShare].body)
-        setUrls(STApp.shares[STApp.activeShare].urls)
-    }, [STApp.activeShare])
+        setBody(STShares.list[STShare.active].body)
+        setUrls(STShares.list[STShare.active].urls)
+    }, [STShare.active])
 
     useEffect(() => {
         textareaRef.current.style.height = 'inherit'
@@ -122,11 +123,11 @@ export const Shares = ({ ws }) => {
         <div className={sty.pageBg}>
             <div className={sty.page}>
                 <div className={sty.shareSaves}>
-                    {appSnap.shares.map((share, index) => {
+                    {SSShares.list.map((share, index) => {
                         return (
-                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={() => switchShare(index)}>
-                                <h3 className={sty.shareSaveLbl} style={{ color: index === appSnap.activeShare ? 'var(--primary-label)' : 'var(--secondary-label)' }}>{share.body ? share.body : 'Empty'}</h3>
-                                {appSnap.shares.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === appSnap.activeShare ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={(e) => closeShare(e, index)}>
+                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === SSShare.active ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={() => switchShare(index)}>
+                                <h3 className={sty.shareSaveLbl} style={{ color: index === SSShare.active ? 'var(--primary-label)' : 'var(--secondary-label)' }}>{share.body ? share.body : 'Empty'}</h3>
+                                {SSShares.list.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === SSShare.active ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={(e) => closeShare(e, index)}>
                                     <Icon name='close' size={20} color='--system-red' />
                                 </button>}
                             </div>
@@ -153,19 +154,19 @@ export const Shares = ({ ws }) => {
                                 <h2 className={sty.previewBodyLbl} style={{ color: body ? 'var(--primary-label)' : 'var(--tertiary-label)' }}>{body ? body : 'Body'}</h2>
                             </div>
                             <div className={sty.previewBtns}>
-                                {appSnap.shares[appSnap.activeShare].urls.map((url, index) => {
+                                {SSShares.list[SSShare.active].urls.map((url, index) => {
                                     return <UrlBtn url={url} key={index} />
                                 })}
                             </div>
                         </div>
                         <div className={sty.sharePreviewBtns}>
                             <button className={sty.sharePreviewBtn} onClick={() => sendShare()}>
-                                <h3 className={sty.sharePreviewBtnLbl}>{appSnap.shares[appSnap.activeShare].isShared ? 'Update' : 'Send'}</h3>
+                                <h3 className={sty.sharePreviewBtnLbl}>{SSShares.list[SSShare.active].isShared ? 'Update' : 'Send'}</h3>
                             </button>
                         </div>
                     </div>
                     <div className={sty.shareUrls}>
-                        {appSnap.shares[appSnap.activeShare].urls.map((url, index) => {
+                        {SSShares.list[SSShare.active].urls.map((url, index) => {
                             return (
                                 <input className={sty.shareInput} style={{ marginBottom: 15, color: 'var(--system-blue)' }} key={index} value={url.link} type='text' name='text' autoComplete='off' placeholder='Url'
                                     ref={(ref) => urlsRef[index] = ref}
@@ -176,7 +177,7 @@ export const Shares = ({ ws }) => {
                                 />
                             )
                         })}
-                        {appSnap.shares[appSnap.activeShare].urls.at(-1).link && appSnap.shares[appSnap.activeShare].urls.length < 3 && <button className={sty.urlBtn} onClick={() => addUrl()}>
+                        {SSShares.list[SSShare.active].urls.at(-1).link && SSShares.list[SSShare.active].urls.length < 3 && <button className={sty.urlBtn} onClick={() => addUrl()}>
                             <Icon name='add' size={20} color='--white' />
                         </button>}
                     </div>

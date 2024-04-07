@@ -1,6 +1,6 @@
 import { AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STUI, STEntry } from '../../stores/app.store'
 
 import { Entry } from './entry.dui'
 import { QRScreen } from './qr.dui'
@@ -14,23 +14,24 @@ import { Controls } from './controls.dui'
 
 
 export const Desktop = ({ ws, core }) => {
-    const appSnap = useSnapshot(STApp)
+    const SSUI = useSnapshot(STUI)
+    const SSEntry = useSnapshot(STEntry)
 
 
     return (
         <>
             <AnimatePresence mode='wait'>
-                {appSnap.showEntry && <Entry ws={ws} core={core} />}
+                {SSEntry.show && <Entry ws={ws} core={core} />}
             </AnimatePresence>
 
             <AnimatePresence mode='wait'>
-                {!appSnap.showEntry && <>
+                {!SSEntry.show && <>
                     <QRScreen />
-                    <Users ws={ws} />
+                    <Users ws={ws} core={core} />
                     <Quests ws={ws} core={core} />
                     <Slides />
-                    {appSnap.uiName === 'Presenter' && <Presenter ws={ws} />}
-                    {appSnap.uiName === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
+                    {SSUI.name === 'Presenter' && <Presenter ws={ws} core={core} />}
+                    {SSUI.name === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
                     <Alert.Container />
                     <Controls core={core} />
                 </>

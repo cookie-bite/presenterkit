@@ -1,14 +1,15 @@
 import { useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STDesktop, STApp } from '../../stores/app.store'
+import { STPanel, STUI } from '../../stores/app.store'
+
 import { Icon } from '../core.cmp'
 
 import sty from './panel.module.css'
 
 
 export const Panel = ({ children, show, label, count }) => {
-    const desktopSnap = useSnapshot(STDesktop)
+    const SSPanel = useSnapshot(STPanel)
 
     const panelRef = useRef()
 
@@ -22,8 +23,8 @@ export const Panel = ({ children, show, label, count }) => {
 
 
     const changePos = (to) => {
-        if (to !== STDesktop.panel.position) {
-            STDesktop.panel.position = to
+        if (to !== STPanel.position) {
+            STPanel.position = to
             localStorage.setItem('PANEL_POS', to)
         }
     }
@@ -40,9 +41,9 @@ export const Panel = ({ children, show, label, count }) => {
         <AnimatePresence>
             {show && <motion.div className={sty.panelView}
                 ref={panelRef}
-                initial={{ x: desktopSnap.panel.position === 'right' ? 'calc(100vw)' : 'calc(-100% - 40px)' }}
-                exit={{ x: desktopSnap.panel.position === 'right' ? 'calc(100vw)' : 'calc(-100% - 40px)' }}
-                animate={{ x: desktopSnap.panel.position === 'right' ? window.innerWidth - 340 : 0 }}
+                initial={{ x: SSPanel.position === 'right' ? 'calc(100vw)' : 'calc(-100% - 40px)' }}
+                exit={{ x: SSPanel.position === 'right' ? 'calc(100vw)' : 'calc(-100% - 40px)' }}
+                animate={{ x: SSPanel.position === 'right' ? window.innerWidth - 340 : 0 }}
                 transition={{ ease: 'easeInOut', duration: 0.3 }}
                 drag={'x'}
                 dragElastic={1}
@@ -58,7 +59,7 @@ export const Panel = ({ children, show, label, count }) => {
                         <h1 className={sty.panelLbl}>{label}</h1>
                     </div>
                     <div className={sty.panelBtns}>
-                        <button className={sty.panelBtn} style={{ marginLeft: 10 }} onClick={() => STApp.uiName = ''}>
+                        <button className={sty.panelBtn} style={{ marginLeft: 10 }} onClick={() => STUI.name = ''}>
                             <Icon name='close' size={20} color='--white' />
                         </button>
                     </div>

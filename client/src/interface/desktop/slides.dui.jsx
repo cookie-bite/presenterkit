@@ -1,45 +1,49 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STHost, STUI, STSlide, STSlides, STTheatre } from '../../stores/app.store'
 import { Icon, Panel } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Slides = () => {
-    const appSnap = useSnapshot(STApp)
+    const SSHost = useSnapshot(STHost)
+    const SSUI = useSnapshot(STUI)
+    const SSSlide = useSnapshot(STSlide)
+    const SSSlides = useSnapshot(STSlides)
+    const SSTheatre = useSnapshot(STTheatre)
 
 
     const downloadPdf = (file) => {
-        window.open(`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/pdfs/${file}.pdf`, '_blank')
+        window.open(`http://${STHost.ip}:${STHost.port2}/uploads/pdfs/${file}.pdf`, '_blank')
     }
 
     const playSlide = (index) => {
-        if (appSnap.playSlide.index !== index) STApp.playSlide.page = 1
-        STApp.playSlide.index = index
-        STApp.showTheatre = true
+        if (STSlide.play.index !== index) STSlide.play.page = 1
+        STSlide.play.index = index
+        STTheatre.show = true
     }
 
     const exitSlide = () => {
-        if (STApp.showTheatre) {
-            STApp.showTheatre = false
+        if (STTheatre.show) {
+            STTheatre.show = false
         } else {
-            STApp.uiName = ''
+            STUI.name = ''
         }
     }
 
     const changePage = (to) => {
-        if (appSnap.playSlide.index !== appSnap.activeSlide.index && appSnap.showTheatre) {
-            const pageCount = appSnap.slides[appSnap.playSlide.index].pageCount
+        if (STSlide.play.index !== STSlide.active.index && STTheatre.show) {
+            const pageCount = STSlides.list[STSlide.play.index].pageCount
             var toPage = 1
             
             if (to === '<') {
-                toPage = appSnap.playSlide.page === 1 ? 1 : appSnap.playSlide.page - 1
+                toPage = STSlide.play.page === 1 ? 1 : STSlide.play.page - 1
             } else if (to === '>') {
-                if (appSnap.playSlide.page === pageCount) return STApp.showTheatre = false 
-                else toPage = appSnap.playSlide.page + 1
+                if (STSlide.play.page === pageCount) return STTheatre.show = false 
+                else toPage = STSlide.play.page + 1
             }
-            STApp.playSlide.page = toPage
+            STSlide.play.page = toPage
         }
     }
 
@@ -48,28 +52,28 @@ export const Slides = () => {
         const onKeyUp = (e) => {
             if (e.key === 'ArrowLeft') changePage('<')
             if (e.key === 'ArrowRight') changePage('>')
-            if (e.key === 'Escape' && STApp.uiName === 'Slides') exitSlide()
+            if (e.key === 'Escape' && STUI.name === 'Slides') exitSlide()
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
-    }, [appSnap.playSlide, appSnap.activeSlide])
+    }, [STSlide.play, STSlide.active])
 
 
     return (
         <>
-            <Panel show={appSnap.uiName === 'Slides'} label={'Slides'} count={appSnap.slides.length}>
-                {appSnap.slides.length
+            <Panel show={SSUI.name === 'Slides'} label={'Slides'} count={SSSlides.list.length}>
+                {SSSlides.list.length
                     ? <div className={sty.theatre}>
-                        {appSnap.slides.map((slide, index) => {
+                        {SSSlides.list.map((slide, index) => {
                             return (
                                 <div className={sty.theatreItem} key={index} onClick={() => playSlide(index)}>
-                                    <img className={sty.theatreItemImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${slide.name}/${appSnap.activeSlide.index === index ? appSnap.activeSlide.page : 1}.png`} />
+                                    <img className={sty.theatreItemImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.png`} />
                                     <div className={sty.theatreItemBtns}>
                                         <button className={sty.theatreItemBtn} onClick={() => downloadPdf(slide.name)}>
                                             <Icon name='arrow-down' size={24} color='--system-blue' />
                                         </button>
                                     </div>
-                                    {appSnap.activeSlide.index === index && <div className={sty.theatreItemLive}>
+                                    {SSSlide.active.index === index && <div className={sty.theatreItemLive}>
                                         <Icon name='radio-button-on' size={20} color='--system-red' />
                                     </div>}
                                 </div>
@@ -82,18 +86,18 @@ export const Slides = () => {
                     </div>}
             </Panel>
 
-            {appSnap.uiName === 'Slides' && appSnap.showTheatre &&
+            {SSUI.name === 'Slides' && SSTheatre.show &&
                 <div className={sty.theatrePresenter}>
-                    {appSnap.activeSlide.index === appSnap.playSlide.index
+                    {SSSlide.active.index === SSSlide.play.index
                         ? <div className={sty.theatrePresenterView}>
-                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.activeSlide.index].name}/${appSnap.activeSlide.page}.png`} />
+                            <img className={sty.theatrePresenterImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png`} />
                             <div className={sty.theatreItemLive}>
                                 <Icon name='radio-button-on' size={20} color='--system-red' />
                             </div>
                         </div>
                         : <>
-                            <img className={sty.theatrePresenterImg} src={`http://${appSnap.host.ip}:${appSnap.host.port2}/uploads/imgs/${appSnap.slides[appSnap.playSlide.index].name}/${appSnap.playSlide.page}.png`} />
-                            <button className={sty.theatrePresenterBtn} style={{ left: 0, display: appSnap.playSlide.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
+                            <img className={sty.theatrePresenterImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.play.index].name}/${SSSlide.play.page}.png`} />
+                            <button className={sty.theatrePresenterBtn} style={{ left: 0, display: SSSlide.play.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                             <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                         </>
                     }

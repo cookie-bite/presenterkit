@@ -1,5 +1,5 @@
-const { spawn } = require('child_process')
 const { WebSocket, WebSocketServer } = require('ws')
+const { createServer } = require('http')
 const pdf2img = require('pdf-img-convert')
 const express = require('express')
 const multer = require('multer')
@@ -9,7 +9,12 @@ const os = require('os')
 const fs = require('fs-extra')
 
 const app = express()
-const wss = new WebSocketServer({ port: 50001 })  // on production: 3001
+const server = createServer(app)
+const wss = new WebSocketServer({ server })
+
+
+
+// Storage
 
 const ip = { address: '', all: [] }
 const adminRoom = 0
@@ -27,15 +32,6 @@ var shares = [{ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }]
 var config = { forwarding: { is: false } }
 var display = { quest: 'Welcome to Event', author: '' }
 var roomActivity = { user: { id: '', name: '' }, activity: '' }
-
-app.use(cors())
-app.use(express.json())
-
-console.clearLastLine = () => {
-    process.stdout.moveCursor(0, -1)
-    process.stdout.clearLine(1)
-}
-
 
 var periodicTable = [
     'Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron', 'Carbon', 'Nitrogen', 'Oxygen',
@@ -56,19 +52,19 @@ var periodicTable = [
 ]
 
 
-const genPos = () => {
-    return {
-        web: [
-            /* Pos X */ Math.floor(Math.random() * (10 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)],
-            /* Pos Y */ Math.floor((2 + Math.random() * (quests.length / 3)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)],
-            /* Pos Z */ Math.floor(Math.random() * 1.5 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 3.5
-        ],
-        mob: [
-            /* Pos X */ Math.floor(Math.random() * (3 + quests.length / 5) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)],
-            /* Pos Y */ Math.floor((2 + Math.random() * (8 + quests.length / 2.5)) * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)],
-            /* Pos Z */ Math.floor(Math.random() * 2 * 1000) / 1000 * [-1, 1][Math.floor(Math.random() * 2)] - 4
-        ]
-    }
+
+// Middlewares
+
+app.use(cors())
+app.use(express.json())
+
+
+
+// Functions
+
+console.clearLastLine = () => {
+    process.stdout.moveCursor(0, -1)
+    process.stdout.clearLine(1)
 }
 
 
@@ -164,15 +160,6 @@ const initIpAddress = () => {
 }
 
 
-const initHotspot = () => {
-    var child = spawn('powershell.exe', ['-File', 'hotspot-check.ps1'])
-    child.stdout.on('data', (data) => {
-        spawn('powershell.exe', ['-File', 'hotspot.ps1'])
-        if (data.toString().trim() === 'On') spawn('powershell.exe', ['-File', 'hotspot.ps1'])
-    })
-}
-
-
 const init = () => {
     initIpAddress()
     getSlides()
@@ -182,6 +169,8 @@ const init = () => {
 }
 
 
+
+// Websocket
 
 wss.on('connection', (ws) => {
     const userID = genRandom(4)
@@ -240,14 +229,14 @@ wss.on('connection', (ws) => {
                 queue.push({ id: genRandom(4), userID: req.userID, author: req.username, label: req.quest.label, color: req.quest.color })
                 sendRooms(adminRoom, { command: 'APR_REQ', quest: queue.at(-1), user: { id: req.userID, name: req.username } })
             } else {
-                quests.push({ id: genRandom(4), color: req.quest.color, label: req.quest.label, username: req.username, effect: true, pos: genPos() })
+                quests.push({ id: genRandom(4), color: req.quest.color, label: req.quest.label, userID: req.userID, username: req.username, effect: true })
                 sendRooms(userRoom, { command: 'SEND_USER', quest: quests.at(-1), user: { id: req.userID, name: req.username } })
             }
         } else if (req.command === 'SEND_USER') {
             console.log(`[${req.username}-${req.userID}]: \x1b[33m${req.quest.label}\x1b[0m`)
 
             queue.splice(req.quest.index, 1)
-            quests.push({ effect: true, pos: genPos(), color: req.quest.color, label: req.quest.label, username: req.username })
+            quests.push({ effect: true, color: req.quest.color, label: req.quest.label, username: req.username })
 
             sendRooms(userRoom, { command: 'SEND_USER', quest: quests.at(-1), user: { id: req.userID, name: req.username } })
             sendRooms(adminRoom, { command: 'UPDT_QUE', isFullUpdate: false, index: req.quest.index })
@@ -275,7 +264,7 @@ wss.on('connection', (ws) => {
             }
             sendRooms(adminRoom, { command: 'SHR_ACT', action: 'save', userID, shares })
         } else if (req.command === 'SEND_TYP') {
-            sendRooms(req.room, { command: 'SEND_TYP', isTyping: req.isTyping, color: req.color, userID: req.userID, username: req.username, pos: genPos() })
+            sendRooms(req.room, { command: 'SEND_TYP', isTyping: req.isTyping, color: req.color, userID: req.userID, username: req.username })
         } else if (req.command === 'SET_USER') {
             console.log(`Username changed from [\x1b[33m${rooms[req.room][userID].username}\x1b[0m] to [\x1b[32m${req.username}\x1b[0m]`)
             if (rooms[userRoom][userID].isInLobby) rooms[userRoom][userID].isInLobby = false
@@ -323,19 +312,25 @@ wss.on('connection', (ws) => {
 })
 
 
+
+// File Storage
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(`${__dirname}/uploads/pdfs`)),
     filename: (req, file, cb) => { slides.push({ name: genRandom(2), pageCount: 0 }); cb(null, `${slides.at(-1).name}.pdf`) }
 })
+
 const upload = multer({ storage: storage })
 
 
-app.use('/', express.static(path.join(`${__dirname}/client/build`)))
-app.use('/uploads', express.static(path.join(`${__dirname}/uploads`)))
 
-app.get('*', (req, res) => res.sendFile(path.join(`${__dirname}/client/build`)))
+// Routes
 
 app.get('/api', (req, res) => res.json({ message: 'From api with love' }))
+
+app.use('/', express.static(path.join(`${__dirname}/client/build`)))
+app.use('/uploads', express.static(path.join(`${__dirname}/uploads`)))
+app.get('*', (req, res) => res.sendFile(path.join(`${__dirname}/client/build`)))
 
 app.post('/slide', upload.single('file'), async (req, res) => {
     console.log('Convert started')
@@ -359,5 +354,9 @@ app.delete('/slide', async (req, res) => {
     res.json({ success: true, message: 'File deleted' })
 })
 
-const PORT = 50000 // on production: 3000
-app.listen(PORT, '0.0.0.0', () => init())
+
+
+// Server
+
+const PORT = 50000  // on production: 3000
+server.listen(PORT, '0.0.0.0', () => init())

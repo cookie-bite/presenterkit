@@ -1,25 +1,28 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { Icon } from '../../components/core.cmp'
-import { STApp } from '../../stores/app.store'
+import { STUI, STShare, STShares, STSlide } from '../../stores/app.store'
 
 import sty from '../../styles/modules/mobile.module.css'
 
 
 export const Shares = () => {
-    const appSnap = useSnapshot(STApp)
+    const SSUI = useSnapshot(STUI)
+    const SSShare = useSnapshot(STShare)
+    const SSShares = useSnapshot(STShares)
+    const SSSlide = useSnapshot(STSlide)
 
 
     const closeShare = () => {
-        STApp.showShare = false
-        STApp.uiName = ''
+        STShare.show = false
+        STUI.name = ''
     }
 
 
     return (
         <AnimatePresence mode='wait'>
-            {appSnap.uiName === 'Shares' && <>
-                {appSnap.showShare && <motion.div className={sty.sharePreview}
+            {SSUI.name === 'Shares' && <>
+                {SSShare.show && <motion.div className={sty.sharePreview}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -28,14 +31,14 @@ export const Shares = () => {
                     <button className={sty.modalHeadBtn} style={{ position: 'fixed', top: 16, zIndex: 1 }} onClick={() => closeShare()}>
                         <Icon name='close' size={20} color='--white' />
                     </button>
-                    <button className={sty.previewIc} onClick={() => STApp.showShare = false}>
+                    <button className={sty.previewIc} onClick={() => STShare.show = false}>
                         <Icon name='notifications-o' size={30} color='--system-blue' />
                     </button>
-                    {appSnap.shares[appSnap.activeShare].body && <div className={sty.previewBody}>
-                        <h2 className={sty.previewBodyLbl} style={{ color: appSnap.shares[appSnap.activeShare].body ? 'var(--primary-label)' : 'var(--tertiary-label)' }}>{appSnap.shares[appSnap.activeShare].body}</h2>
+                    {SSShares.list[SSShare.active].body && <div className={sty.previewBody}>
+                        <h2 className={sty.previewBodyLbl} style={{ color: SSShares.list[SSShare.active].body ? 'var(--primary-label)' : 'var(--tertiary-label)' }}>{SSShares.list[SSShare.active].body}</h2>
                     </div>}
-                    {appSnap.shares[appSnap.activeShare].urls[0].link && <div className={sty.previewBtns}>
-                        {appSnap.shares[appSnap.activeShare].urls.map((url, index) => {
+                    {SSShares.list[SSShare.active].urls[0].link && <div className={sty.previewBtns}>
+                        {SSShares.list[SSShare.active].urls.map((url, index) => {
                             return (
                                 <div className={sty.previewBtn} key={index}
                                     style={{ border: `2px solid ${url.color}`, background: `linear-gradient(45deg, ${url.color}24, ${url.color}2B)` }}
@@ -47,7 +50,7 @@ export const Shares = () => {
                         })}
                     </div>}
                 </motion.div>}
-                {!appSnap.showShare && <motion.div className={sty.modalView}
+                {!SSShare.show && <motion.div className={sty.modalView}
                     initial={{ y: '100%' }}
                     animate={{ y: 0 }}
                     exit={{ y: '100%' }}
@@ -56,21 +59,21 @@ export const Shares = () => {
                     <div className={sty.modal}>
                         <div className={sty.modalHeader}>
                             <div className={sty.modalLblView}>
-                                {appSnap.shares.length !== 0 && <div className={sty.modalCountBg}>
-                                    <h1 className={sty.modalCount}>{appSnap.shares.length}</h1>
+                                {SSShares.list.length !== 0 && <div className={sty.modalCountBg}>
+                                    <h1 className={sty.modalCount}>{SSShares.list.length}</h1>
                                 </div>}
                                 <h3 className={sty.modalHeaderLbl}>Shares</h3>
                             </div>
-                            <button className={sty.modalHeadBtn} onClick={() => STApp.uiName = ''}>
+                            <button className={sty.modalHeadBtn} onClick={() => STUI.name = ''}>
                                 <Icon name='close' size={20} color='--white' />
                             </button>
                         </div>
-                        {appSnap.shares.length
+                        {SSShares.list.length
                             ? <div className={sty.sharePages}>
-                                {appSnap.shares.map((share, index) => {
+                                {SSShares.list.map((share, index) => {
                                     return (
-                                        <div key={index} className={sty.sharePage} onClick={() => { STApp.activeSlide.page = (index + 1) }}
-                                            style={{ backgroundColor: appSnap.activeSlide.index === appSnap.playSlide.index && appSnap.activeSlide.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
+                                        <div key={index} className={sty.sharePage} onClick={() => { STSlide.active.page = (index + 1) }}
+                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
                                             {share.body && <h2 className={sty.shareBody}>{share.body}</h2>}
                                             {share.urls[0].link && <div className={sty.shareBtns} style={{ marginTop: share.body ? 20 : 0 }}>
                                                 {share.urls.map((url, index) => {
@@ -91,7 +94,7 @@ export const Shares = () => {
                             </div>
                             : <div className={sty.modalEmpty}>
                                 <h3 className={sty.modalEmptyTtl}>No Info Shared</h3>
-                                <h5 className={sty.modalEmptySbtl} onClick={() => STApp.uiName = ''}>Presenter could share soon.</h5>
+                                <h5 className={sty.modalEmptySbtl} onClick={() => STUI.name = ''}>Presenter could share soon.</h5>
                             </div>
                         }
                     </div>

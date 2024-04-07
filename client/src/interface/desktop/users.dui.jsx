@@ -1,33 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STApp, STUI, STUser, STUserPanel, STUsers } from '../../stores/app.store'
 import { Icon, Panel } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
-export const Users = ({ ws }) => {
-    const appSnap = useSnapshot(STApp)
+export const Users = ({ ws, core }) => {
+    const SSUI = useSnapshot(STUI)
+    const SSUser = useSnapshot(STUser)
+    const SSUsers = useSnapshot(STUsers)
+    const SSUserPanel = useSnapshot(STUserPanel)
 
 
     const UserList = () => {
-        const [username, setUsername] = useState(appSnap.username)
+        const [username, setUsername] = useState(STUser.name)
         const [showEdit, setShowEdit] = useState()
 
         const inputRef = useRef()
 
-        let user = appSnap.userList.filter(user => user.userID === appSnap.userID && !user.isPresenter)
-        let presenter = appSnap.userList.filter(user => user.isPresenter)
-        let users = appSnap.userList.filter(user => !user.isPresenter && user.userID !== appSnap.userID && !user.isInLobby)
-        let lobbyUsers = appSnap.userList.filter(user => user.isInLobby)
+        let user = STUsers.list.filter(user => user.userID === STUser.id && !user.isPresenter)
+        let presenter = STUsers.list.filter(user => user.isPresenter)
+        let users = STUsers.list.filter(user => !user.isPresenter && user.userID !== STUser.id && !user.isInLobby)
+        let lobbyUsers = STUsers.list.filter(user => user.isInLobby)
         let result = [...user, ...presenter, ...users, ...lobbyUsers]
 
 
         const submitUser = () => {
             toggleInput()
-            if (appSnap.username !== username) {
-                ws.send(JSON.stringify({ command: 'SET_USER', room: STApp.userRoom, userID: appSnap.userID, username: username, roomActivity: 'updated' }))
-                setTimeout(() => STApp.username = username, 500)
+            if (STUser.name !== username) {
+                ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, userID: STUser.id, username: username, roomActivity: 'updated' }))
+                setTimeout(() => STUser.name = username, 500)
             }
         }
 
@@ -70,7 +73,7 @@ export const Users = ({ ws }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape' && STApp.uiName === 'Users') STApp.uiName = ''
+            if (e.key === 'Escape' && STUI.name === 'Users') STUI.name = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
@@ -78,19 +81,19 @@ export const Users = ({ ws }) => {
 
 
     return (
-        <Panel show={appSnap.uiName === 'Users'} label={'Users'} count={appSnap.userList.length}>
+        <Panel show={SSUI.name === 'Users'} label={'Users'} count={SSUsers.list.length}>
             <div className={sty.userList}>
                 <UserList />
             </div>
             <div className={sty.userInfo}>
                 <div className={sty.userInfoBody}>
                     <div className={sty.userInfoIcView}>
-                        {appSnap.roomActivity.activity === 'joined'
+                        {SSUserPanel.activity === 'joined'
                             ? <Icon name='enter-o' size={24} color='--system-green' />
                             : <Icon name='exit-o' size={24} color='--system-red' />
                         }
                     </div>
-                    <h5 className={sty.userInfoLbl}>{`${appSnap.roomActivity.user.id === appSnap.userID ? 'You' : appSnap.roomActivity.user.name} ${appSnap.roomActivity.activity}`}</h5>
+                    <h5 className={sty.userInfoLbl}>{`${SSUserPanel.user.id === SSUser.id ? 'You' : SSUserPanel.user.name} ${SSUserPanel.activity}`}</h5>
                 </div>
             </div>
         </Panel>

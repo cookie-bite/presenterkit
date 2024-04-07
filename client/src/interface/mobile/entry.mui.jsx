@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STApp, STUser, STEntry, STCooldown } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/mobile.module.css'
 
 
 export const Entry = ({ ws, core }) => {
-    const appSnap = useSnapshot(STApp)
+    const SSCooldown = useSnapshot(STCooldown)
+
     const [username, setUsername] = useState('')
 
 
@@ -17,20 +18,20 @@ export const Entry = ({ ws, core }) => {
     }
 
     const enterRoom = () => {
-        ws.send(JSON.stringify({ command: 'SET_USER', room: STApp.userRoom, username, roomActivity: 'joined' }))
-        STApp.showEntry = false
-        STApp.username = username
+        ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username, roomActivity: 'joined' }))
+        STEntry.show = false
+        STUser.name = username
         setUsername('')
     }
 
 
     useEffect(() => {
-        if (!appSnap.hasCooldown) joinRoom()
+        if (!STCooldown.active) joinRoom()
         const cldw = +localStorage.getItem('CLDW')
 
         if (cldw && cldw > Date.now()) {
-            STApp.hasCooldown = true
-            STApp.cooldown = Math.ceil((cldw - Date.now()) / (1000 * 60))
+            STCooldown.active = true
+            STCooldown.count = Math.ceil((cldw - Date.now()) / (1000 * 60))
 
             const interval = setInterval(() => {
                 const time = Math.ceil((cldw - Date.now()) / (1000 * 60))
@@ -40,9 +41,9 @@ export const Entry = ({ ws, core }) => {
 
                 if (time === 0) {
                     clearInterval(interval)
-                    if (appSnap.username) STApp.showEntry = false
-                    else STApp.hasCooldown = false
-                } else if (appSnap.cooldown !== time) STApp.cooldown = time
+                    if (STUser.name) STEntry.show = false
+                    else STCooldown.active = false
+                } else if (STCooldown.count !== time) STCooldown.count = time
 
             }, 1000)
         }
@@ -54,7 +55,7 @@ export const Entry = ({ ws, core }) => {
             exit={{ opacity: 0 }}
             transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.4 }}
         >
-            {appSnap.hasCooldown
+            {SSCooldown.active
                 ? <motion.div className={sty.cooldown}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -68,7 +69,7 @@ export const Entry = ({ ws, core }) => {
                         <h1 className={sty.cooldownTtl}>Temporary Cooldown</h1>
                         <h3 className={sty.cooldownSbtl}>for inappropriate action</h3>
                     </div>
-                    <h2 className={sty.cooldownTimer}>{appSnap.cooldown} min</h2>
+                    <h2 className={sty.cooldownTimer}>{SSCooldown.count} min</h2>
                 </motion.div>
                 : <motion.div className={sty.entryView}
                     initial={{ opacity: 0 }}

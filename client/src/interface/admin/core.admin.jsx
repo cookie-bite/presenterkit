@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
-import { STAdmin, STApp } from '../../stores/app.store'
+import { STUI } from '../../stores/app.store'
+import { STAdmin, STTab } from '../../stores/admin.store'
 
 import sty from '../../styles/modules/admin.module.css'
 
@@ -10,18 +11,18 @@ import { Shares } from './shares.admin'
 
 
 const UISwap = (props) => {
-    const adminSnap = useSnapshot(STAdmin)
-    return props.children.filter(c => c.props.uiName === adminSnap.uiName)
+    const SSTab = useSnapshot(STTab)
+    return props.children.filter(c => c.props.uiName === SSTab.name)
 }
 
 
 export const Admin = ({ ws, core }) => {
-    const adminSnap = useSnapshot(STAdmin)
+    const SSAdmin = useSnapshot(STAdmin)
 
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape') STApp.uiName = ''
+            if (e.key === 'Escape') STUI.name = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
@@ -29,9 +30,9 @@ export const Admin = ({ ws, core }) => {
 
 
     return (
-        (core.isPresenter || adminSnap.isAdmin) &&
+        (core.isPresenter || SSAdmin.privileged) &&
         <div className={sty.pageView}>
-            <Header ws={ws} />
+            <Header ws={ws} core={core} />
             <UISwap>
                 <Messages ws={ws} uiName={'Messages'} />
                 <Shares ws={ws} uiName={'Shares'} />

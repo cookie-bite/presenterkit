@@ -1,6 +1,6 @@
 import { AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp } from '../../stores/app.store'
+import { STEntry } from '../../stores/app.store'
 
 import { Entry } from './entry.mui'
 import { Controls } from './controls.mui'
@@ -10,17 +10,17 @@ import { Slides } from './slides.mui'
 
 
 export const Mobile = ({ ws, core }) => {
-    const appSnap = useSnapshot(STApp)
+    const SSEntry = useSnapshot(STEntry)
 
 
     return (
         <>
             <AnimatePresence mode='wait'>
-                {appSnap.showEntry && <Entry ws={ws} core={core} />}
+                {SSEntry.show && <Entry ws={ws} core={core} />}
             </AnimatePresence>
 
             <AnimatePresence mode='wait'>
-                {!appSnap.showEntry && <>
+                {!SSEntry.show && <>
                     <Controls ws={ws} core={core} />
                     <Quests />
                     <Shares />
