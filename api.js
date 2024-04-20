@@ -2,11 +2,12 @@ const { WebSocket, WebSocketServer } = require('ws')
 const { createServer } = require('http')
 const pdf2img = require('pdf-img-convert')
 const express = require('express')
-const multer = require('multer')
 const path = require('path')
 const cors = require('cors')
 const os = require('os')
 const fs = require('fs-extra')
+const electron = require('electron')
+
 
 const app = express()
 const server = createServer(app)
@@ -14,7 +15,7 @@ const wss = new WebSocketServer({ server })
 
 
 
-// Storage
+// MARK: Storage
 
 const ip = { address: '', all: [] }
 const adminRoom = 0
@@ -53,14 +54,14 @@ var periodicTable = [
 
 
 
-// Middlewares
+// MARK: Middlewares
 
 app.use(cors())
 app.use(express.json())
 
 
 
-// Functions
+// MARK: Functions
 
 console.clearLastLine = () => {
     process.stdout.moveCursor(0, -1)
@@ -137,10 +138,9 @@ const getUserList = () => {
 
 const getSlides = () => {
     slides = []
-    fs.readdirSync(path.join(`${__dirname}/uploads/imgs`)).forEach((folder) => {
-        if (folder !== '.gitkeep') {
-            slides.push({ name: folder, pageCount: fs.readdirSync(path.join(`${__dirname}/uploads/imgs/${folder}`)).length })
-        }
+    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs'))
+    fs.readdirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs')).forEach((folder) => {
+        slides.push({ name: folder, pageCount: fs.readdirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', folder)).length })
     })
 }
 
@@ -148,9 +148,8 @@ const getSlides = () => {
 const initIpAddress = () => {
     const ips = []
 
-    Object.keys(os.networkInterfaces()).forEach((interface) => {
-        console.log(interface)
-        os.networkInterfaces()[interface].forEach((ip) => {
+    Object.keys(os.networkInterfaces()).forEach((type) => {
+        os.networkInterfaces()[type].forEach((ip) => {
             if (ip.family === 'IPv4' && !/^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(ip.address)) ips.push(ip.address)
         })
     })
@@ -170,7 +169,7 @@ const init = () => {
 
 
 
-// Websocket
+// MARK: Websocket
 
 wss.on('connection', (ws) => {
     const userID = genRandom(4)
@@ -313,42 +312,41 @@ wss.on('connection', (ws) => {
 
 
 
-// File Storage
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(`${__dirname}/uploads/pdfs`)),
-    filename: (req, file, cb) => { slides.push({ name: genRandom(2), pageCount: 0 }); cb(null, `${slides.at(-1).name}.pdf`) }
-})
-
-const upload = multer({ storage: storage })
-
-
-
-// Routes
+// MARK: Routes
 
 app.get('/api', (req, res) => res.json({ message: 'From api with love' }))
 
-app.use('/', express.static(path.join(`${__dirname}/client/build`)))
-app.use('/uploads', express.static(path.join(`${__dirname}/uploads`)))
-app.get('*', (req, res) => res.sendFile(path.join(`${__dirname}/client/build`)))
+app.use('/', express.static(path.join(__dirname, 'client', 'build')))
+app.use('/uploads', express.static(path.join(electron.app.getPath('userData'), 'uploads')))
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'build')))
 
-app.post('/slide', upload.single('file'), async (req, res) => {
-    console.log('Convert started')
-    const pages = await pdf2img.convert(path.join(`${__dirname}/uploads/pdfs/${slides.at(-1).name}.pdf`))
-    await fs.mkdir(path.join(`${__dirname}/uploads/imgs/${slides.at(-1).name}`))
-    for (let i = 1; i <= pages.length; i++) {
-        fs.writeFile(path.join(`${__dirname}/uploads/imgs/${slides.at(-1).name}/${i}.png`), pages[i - 1])
-    }
-    console.clearLastLine()
-    console.log('Convert finished')
-    slides.at(-1).pageCount = pages.length
-    sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: true, slides })
-    res.json({ success: true, message: 'File uploaded', slide: slides.at(-1) })
+app.post('/slide', async (req, res) => {
+    slides.push({ name: genRandom(2), pageCount: 0 })
+    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs'))
+    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs'))
+    const pipe = req.pipe(fs.createWriteStream(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${slides.at(-1).name}.pdf`)))
+
+    console.log('Slide saved')
+
+    pipe.on('finish', async () => {
+        console.log('Convert started')
+
+        const pages = await pdf2img.convert(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${slides.at(-1).name}.pdf`))
+        await fs.mkdir(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', `${slides.at(-1).name}`))
+        for (let i = 1; i <= pages.length; i++) {
+            fs.writeFile(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', slides.at(-1).name, `${i}.png`), pages[i - 1])
+        }
+
+        console.log('Convert finished')
+        slides.at(-1).pageCount = pages.length
+        sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: true, slides })
+        res.json({ success: true, message: 'File uploaded', slide: slides.at(-1) })
+    })
 })
 
 app.delete('/slide', async (req, res) => {
-    fs.rmSync(path.join(`${__dirname}/uploads/imgs/${req.body.name}`), { recursive: true, force: true })
-    await fs.remove(path.join(`${__dirname}/uploads/pdfs/${req.body.name}.pdf`))
+    fs.rmSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', req.body.name), { recursive: true, force: true })
+    await fs.remove(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${req.body.name}.pdf`))
     getSlides()
     sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: true, slides })
     res.json({ success: true, message: 'File deleted' })
@@ -356,7 +354,7 @@ app.delete('/slide', async (req, res) => {
 
 
 
-// Server
+// MARK: Server
 
-const PORT = 50000  // on production: 3000
-server.listen(PORT, '0.0.0.0', () => init())
+const PORT = 3000  // on production: 3000
+exports.start = () => new Promise(async (resolve, reject) => { server.listen(PORT, '0.0.0.0', () => { init(); resolve() }) })

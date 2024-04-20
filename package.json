@@ -1,19 +1,17 @@
 {
-  "name": "chatapp",
+  "name": "presenterkit",
   "version": "0.0.1",
-  "description": "Chat app",
-  "author": "Ali Mammadli",
+  "description": "PresenterKit",
+  "author": "Ali Mammadli & Sevil Rasulova",
   "license": "ISC",
   "dependencies": {
-    "canvas": "^2.11.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "fs-extra": "^11.1.1",
-    "multer": "^1.4.5-lts.1",
     "pdf-img-convert": "^1.2.1",
     "ws": "^8.12.0"
   },
-  "main": "electron.js",
+  "main": "main.js",
   "scripts": {
     "dev": "nodemon api",
     "client": "cd client && npm start",
@@ -24,15 +22,17 @@
     "electron:start": "wait-on http://127.0.0.1:50000 && electron .",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
     "electron:build": "npm run build:react && electron-builder",
-    "kill:process": "kill -9 $(lsof -ti:3000)"
+    "rebuild": "npm rebuild canvas --update-binary",
+    "kill:process": "kill -9 $(lsof -ti:3000)",
+    "test": "electron . --trace-warnings"
   },
   "build": {
-    "appId": "com.electron.chatapp"
+    "appId": "com.electron.presenterkit"
   },
   "devDependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "electron": "^22.2.0",
+    "electron": "^30.0.1",
     "electron-builder": "^23.6.0",
     "nodemon": "^2.0.22",
     "wait-on": "^7.0.1"

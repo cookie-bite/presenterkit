@@ -72,8 +72,8 @@ export const Presenter = ({ ws, core }) => {
                 if (res.success) {
                     STSlide.active.page = 1
                     STSlides.list.splice(STSlide.active.index, 1)
-                    if (STSlide.active.index === STSlides.list.length - 1) {
-                        STSlide.active.index = STSlide.active.index - 1
+                    if (STSlide.active.index === STSlides.list.length) {
+                        STSlide.active.index = STSlide.list.length - 1
                     }
                 }
             })

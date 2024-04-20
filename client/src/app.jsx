@@ -17,7 +17,7 @@ const core = {
     isPresenter: window.location.hostname === 'localhost'
 }
 
-const ws = new WebSocket(`ws://${window.location.hostname}:50000`)  // on production: 3000
+const ws = new WebSocket(`ws://${window.location.hostname}:3000`)  // on production: 3000
 
 
 window.addEventListener('resize', (event) => {
