@@ -19,8 +19,6 @@ function createWindow() {
     })
 
     start().then(() => win.loadURL('http://localhost:3000'))
-
-    // win.loadURL(app.isPackaged ? `file://${path.join(__dirname, '..', 'build', 'index.html')}` : 'http://localhost:3000')
 }
 
 

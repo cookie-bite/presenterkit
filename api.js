@@ -356,5 +356,5 @@ app.delete('/slide', async (req, res) => {
 
 // MARK: Server
 
-const PORT = 3000  // on production: 3000
+const PORT = 50000  // on production: 3000
 exports.start = () => new Promise(async (resolve, reject) => { server.listen(PORT, '0.0.0.0', () => { init(); resolve() }) })

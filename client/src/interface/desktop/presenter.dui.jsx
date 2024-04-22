@@ -70,11 +70,12 @@ export const Presenter = ({ ws, core }) => {
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
+                    const index = STSlide.active.index
                     STSlide.active.page = 1
-                    STSlides.list.splice(STSlide.active.index, 1)
-                    if (STSlide.active.index === STSlides.list.length) {
-                        STSlide.active.index = STSlide.list.length - 1
+                    if (STSlides.list.length !== 1 && STSlide.active.index === STSlides.list.length - 1) {
+                        STSlide.active.index = STSlide.active.index - 1
                     }
+                    STSlides.list.splice(index, 1)
                 }
             })
     }

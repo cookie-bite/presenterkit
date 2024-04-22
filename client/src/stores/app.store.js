@@ -3,7 +3,7 @@ import { proxy } from 'valtio'
 
 export const STApp = proxy({ isFullscreen: false })
 
-export const STHost = proxy({ ip: '', port1: '3000', port2: '3000' }) // on production: 3000, 3000
+export const STHost = proxy({ ip: '', port1: '3000', port2: '50000' }) // on production: 3000, 3000
 
 export const STUI = proxy({ name: '' })
 
