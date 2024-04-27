@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STApp, STUI, STUser, STUserPanel, STUsers } from '../../stores/app.store'
+import { STUI, STUser, STUserPanel, STUsers } from '../../stores/app.store'
 import { Icon, Panel } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'

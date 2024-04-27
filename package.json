@@ -13,15 +13,28 @@
   },
   "main": "main.js",
   "scripts": {
-    "start": "cd client && npm start",
-    "build:react": "cd client && npm start",
-    "electron:start": "wait-on http://127.0.0.1:3000 && electron .",
-    "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
-    "electron:build": "npm run build:react && electron-builder",
+    "react": "cd client && npm start",
+    "start": "wait-on http://127.0.0.1:3000 && electron .",
+    "dev": "concurrently -k \"cross-env BROWSER=none npm run react\" \"cross-env NODE_ENV=development npm start\"",
+    "dist": "cd client && npm run build",
+    "build": "npm run dist && electron-builder",
     "rebuild": "npm rebuild canvas --update-binary"
   },
   "build": {
-    "appId": "com.electron.presenterkit"
+    "productName": "PresenterKit",
+    "copyright": "Copyright © 2024 PresenterKit",
+    "appId": "com.electron.presenterkit",
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "resources/icon.icns"
+    },
+    "win": {
+      "icon": "resources/icon.ico"
+    }
   },
   "devDependencies": {
     "concurrently": "^7.6.0",

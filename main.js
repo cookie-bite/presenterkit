@@ -1,24 +1,32 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const { start } = require('./api')
 
 
-function createWindow() {
+const isMac = process.platform === 'darwin'
+const isDev = process.env.NODE_ENV === 'development'
+
+
+const createWindow = () => {
     const win = new BrowserWindow({
         title: 'PresenterKit',
         width: 800,
         height: 600,
-        autoHideMenuBar: true,
+        show: false,
+        backgroundColor: '#141622',
         // frame: false,
-        // thickFrame: false,
-        // fullscreen: true,
-        // simpleFullscreen: true,
         webPreferences: {
+            // devTools: isDev,
             nodeIntegration: false,
             contextIsolation: true
         }
     })
 
-    start().then(() => win.loadURL('http://localhost:3000'))
+
+    // Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? [{ label: app.name, submenu: [] }] : []))
+    if (isMac) app.dock.setMenu(Menu.buildFromTemplate([{ label: app.name, submenu: [] }]))
+
+
+    start().then(() => win.loadURL('http://localhost:3000').then(() => { win.maximize(); win.show() }))
 }
 
 

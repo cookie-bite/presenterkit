@@ -24,7 +24,7 @@ const User = ({ user, position }) => {
         event.stopPropagation()
         document.body.style.cursor = 'pointer'
         gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
-        if (haveQuest) {
+        if (bubbleRef.current) {
             gsap.to(lightRef.current, { duration: 0.5, distance: 10 })
             gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1.2, y: 1.2, z: 1.2 })
             gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 0.84, b: 0.04 })
@@ -36,7 +36,7 @@ const User = ({ user, position }) => {
         event.stopPropagation()
         document.body.style.cursor = 'default'
         gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
-        if (haveQuest) {
+        if (bubbleRef.current) {
             gsap.to(lightRef.current, { duration: 0.5, distance: 1 })
             gsap.to(bubbleRef.current.scale, { duration: 0.5, x: 1, y: 1, z: 1 })
             gsap.to(bubbleRef.current.material.color, { duration: 0.5, r: 1, g: 1, b: 1 })

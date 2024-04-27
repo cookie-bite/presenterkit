@@ -14,10 +14,11 @@ const core = {
     adminRoom: 0,
     openingText: 'Welcome to Event',
     isMobile: 'ontouchend' in document,
-    isPresenter: window.location.hostname === 'localhost'
+    isPresenter: window.location.hostname === 'localhost',
+    isDev: process.env.NODE_ENV === 'development'
 }
 
-const ws = new WebSocket(`ws://${window.location.hostname}:50000`)  // on production: 3000
+const ws = new WebSocket(`ws://${window.location.hostname}:${core.isDev ? 50000 : 3000}`)
 
 
 window.addEventListener('resize', (event) => {
@@ -164,6 +165,8 @@ export const App = () => {
 
 
     useEffect(() => {
+        console.log(process.env)
+        
         // const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']
         // let s = 0
         // setInterval(() => {
