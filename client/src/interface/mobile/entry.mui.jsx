@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp, STUser, STEntry, STCooldown } from '../../stores/app.store'
+import { STUser, STEntry, STCooldown } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/mobile.module.css'

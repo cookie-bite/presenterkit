@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { STApp, STHost, STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests } from './stores/app.store'
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
@@ -18,14 +17,37 @@ const core = {
     isDev: process.env.NODE_ENV === 'development'
 }
 
-const ws = new WebSocket(`ws://${window.location.hostname}:${core.isDev ? 50000 : 3000}`)
 
-
-window.addEventListener('resize', (event) => {
+window.addEventListener('resize', () => {
     if (window.innerHeight === window.screen.height && window.innerWidth === window.screen.width) STApp.isFullscreen = true
     else STApp.isFullscreen = false
 })
 
+
+
+// Websocket
+
+var ws = null
+var pingTimeout = null
+
+const connect = () => ws = new WebSocket(`ws://${window.location.hostname}:${core.isDev ? 50000 : 3000}`)
+
+const reconnect = () => location.reload()
+
+const heartbeat = () => {
+    clearTimeout(pingTimeout)
+    pingTimeout = setTimeout(() => ws.close(), 31000)
+}
+
+
+connect()
+
+ws.onopen = () => heartbeat()
+ws.onclose = () => { clearTimeout(pingTimeout); alert('ws closed'); reconnect() }
+
+
+
+// Component
 
 export const App = () => {
 
@@ -161,20 +183,12 @@ export const App = () => {
             STUI.name = ''
             STEntry.show = true
         }
+
+        if (res.command === 'PING') {
+            heartbeat()
+            ws.send(JSON.stringify({ command: 'PONG' }))
+        }
     }
-
-
-    useEffect(() => {
-        console.log(process.env)
-        
-        // const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']
-        // let s = 0
-        // setInterval(() => {
-        //     console.clear()
-        //     console.log(s, 'ws state:', states[ws.readyState])
-        //     s++
-        // }, 1000)
-    }, [])
 
 
     return (

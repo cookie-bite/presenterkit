@@ -15,18 +15,56 @@ const createWindow = () => {
         backgroundColor: '#141622',
         // frame: false,
         webPreferences: {
-            // devTools: isDev,
             nodeIntegration: false,
             contextIsolation: true
         }
     })
 
+    const template = [
+        {
+            label: app.name,
+            submenu: [
+                { role: 'about' },
+                { type: 'separator' },
+                { role: 'services' },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideOthers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' }
+            ]
+        },
+        {
+            label: 'Window',
+            submenu: [
+                ...(isDev ? [
+                    { role: 'reload' },
+                    { role: 'toggleDevTools' }
+                ] : []),
+                { type: 'separator' },
+                { role: 'togglefullscreen' },
+                { role: 'minimize' },
+                { role: 'zoom' },
+                { type: 'separator' },
+                { role: 'front' }
+            ]
+        },
+        {
+            label: 'Help',
+            submenu: [
+                {
+                    label: 'Learn More',
+                    click: async () => await require('electron').shell.openExternal('https://electronjs.org')
+                }
+            ]
+        }
+    ]
 
-    // Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? [{ label: app.name, submenu: [] }] : []))
-    if (isMac) app.dock.setMenu(Menu.buildFromTemplate([{ label: app.name, submenu: [] }]))
 
+    Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? template : []))
 
-    start().then(() => win.loadURL('http://localhost:3000').then(() => { win.maximize(); win.show() }))
+    start().then(() => win.loadURL('http://localhost:3000').then(() => { if (!isDev) win.maximize(); win.show() }))
 }
 
 

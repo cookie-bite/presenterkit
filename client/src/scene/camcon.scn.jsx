@@ -10,10 +10,10 @@ export const CamCon = ({ core }) => {
     const camera = useRef()
     const controls = useRef()
 
-    const orbitOptions = core.isDev ? {} : {
-        maxPolarAngle: Math.PI / 2,
-        maxAzimuthAngle: Math.PI / 4,
-        minAzimuthAngle: -Math.PI / 4
+    const orbitOptions = {
+        enablePan: false,
+        enableZoom: false,
+        enableRotate: false
     }
 
     const zoomOut = core.isMobile ? [3.5] : [1]

@@ -172,8 +172,22 @@ const init = () => {
 
 // MARK: Websocket
 
+const interval = setInterval(() => {
+    for (const client in rooms[userRoom]) {
+        if (rooms[userRoom][client].isAlive === false && rooms[userRoom][client].readyState === WebSocket.OPEN) {
+            console.log(`[${rooms[userRoom][client].username}] \x1b[36mWebsocket is terminated\x1b[0m`)
+            return rooms[userRoom][client].terminate()
+        }
+
+        rooms[userRoom][client].isAlive = false
+        rooms[userRoom][client].send(JSON.stringify({ command: 'PING' }))
+    }
+}, 30000)
+
+
 wss.on('connection', (ws) => {
     const userID = genRandom(4)
+    ws.isAlive = true
 
     ws.on('message', (msg) => {
         const req = JSON.parse(msg)
@@ -283,6 +297,11 @@ wss.on('connection', (ws) => {
             activeSlide = req.activeSlide
             sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide })
         }
+
+        if (req.command === 'PONG') {
+            console.log(`[${ws.username}] \x1b[33mPONG is received\x1b[0m`)
+            ws.isAlive = true
+        }
     })
 
     ws.on('close', () => {
@@ -310,6 +329,9 @@ wss.on('connection', (ws) => {
 
     ws.on('error', console.error)
 })
+
+
+wss.on('close', () => clearInterval(interval))
 
 
 
