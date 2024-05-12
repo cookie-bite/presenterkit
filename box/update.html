@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PresenterKit</title>
+
+    <style>
+        body {
+            margin: 0;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon {
+            width: 120px;
+            pointer-events: none;
+        }
+
+        .label {
+            margin-top: 20px;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, Helvetica, sans-serif;
+        }
+    </style>
+
+    <script>
+        window.onload = () => {
+            let label = document.getElementById('label')
+            window.bridge.onStatusUpdate((data) => label.innerText = data)
+        }
+    </script>
+</head>
+
+<body>
+    <div class="main">
+        <img class="icon" src="icon.png">
+        <h1 class="label" id="label"></h1>
+    </div>
+</body>
+
+</html>
