@@ -92,15 +92,14 @@ const createWindow = () => {
 
     const launch = () => {
         win.loadURL('http://localhost:3000').then(() => {
-            if (isDev) win.webContents.openDevTools()
-            else win.maximize()
-
+            // if (isDev) win.webContents.openDevTools()
+            win.maximize()
             win.show()
         })
     }
 
 
-    Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? template : template))
+    Menu.setApplicationMenu(Menu.buildFromTemplate((isMac || isDev) ? template : []))
     start().then(async () => await isOnline() ? autoUpdater.checkForUpdates() : launch())
 
 

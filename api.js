@@ -151,7 +151,7 @@ const initIpAddress = () => {
 
     Object.keys(os.networkInterfaces()).forEach((type) => {
         os.networkInterfaces()[type].forEach((ip) => {
-            if (ip.family === 'IPv4' && !/^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(ip.address)) ips.push(ip.address)
+            if (ip.family === 'IPv4' && !/^(::f{4}:)?(127|169)\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(ip.address)) ips.push(ip.address)
         })
     })
 

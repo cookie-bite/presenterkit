@@ -57,6 +57,7 @@ export const App = () => {
 
         if (res.command === 'INIT_USER') {
             STHost.ip = res.ip.address
+            STHost.all = res.ip.all
             STUser.id = res.user.id
             Object.assign(STUserPanel, res.roomActivity)
             STSlides.list = res.slides
