@@ -100,7 +100,7 @@ const createWindow = () => {
     }
 
 
-    Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? template : []))
+    Menu.setApplicationMenu(Menu.buildFromTemplate(isMac ? template : template))
     start().then(async () => await isOnline() ? autoUpdater.checkForUpdates() : launch())
 
 
@@ -128,8 +128,8 @@ const createWindow = () => {
     })
 
 
-    win.on('close', () =>{ win.removeAllListeners(); win = null })
-    box.on('close', () =>{ box.removeAllListeners(); box = null })
+    win.on('close', () => { win.removeAllListeners(); win = null })
+    box.on('close', () => { box.removeAllListeners(); box = null })
 }
 
 

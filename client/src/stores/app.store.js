@@ -31,6 +31,4 @@ export const STCooldown = proxy({ active: false, count: 0 })
 
 export const STPanel = proxy({ position: localStorage.getItem('PANEL_POS') ? localStorage.getItem('PANEL_POS') : `${localStorage.setItem('PANEL_POS', 'right') === undefined && 'right'}` })
 
-export const STQR = proxy({ expand: false })
-
 export const STQuests = proxy({ list: [] })

@@ -189,21 +189,71 @@
 
 /* QR */
 
-.qrView {
+.pageView {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: transparent;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.qrView {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+}
+
+.qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: calc(50%);
+    height: 100%;
+}
+
+.qrBg {
+    display: flex;
+    padding: 14px;
+    border-radius: 14px;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--thin-material);
+    cursor: pointer;
+}
+
+.qrInputs {
+    display: flex;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.qrInput {
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 600;
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background-color: var(--primary-fill);
+    transition: all .3s ease-in-out;
 }
 
 .qrLbl {
-    font-size: 20px;
+    font-size: 50px;
     font-weight: 500;
-    margin-bottom: 6px;
+    margin-top: 50px;
     animation: neontext 4s ease-in-out infinite;
 }
 
@@ -211,16 +261,6 @@
     0% { text-shadow: 0 0 0 transparent; }
     50% { text-shadow: 0 0 15px #fff, 0 0 20px #fff5; }
     100% { text-shadow: 0 0 0 transparent; }
-}
-
-.qrBg {
-    display: flex;
-    padding: 6px;
-    border-radius: 8px;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
-    cursor: pointer;
 }
 
 

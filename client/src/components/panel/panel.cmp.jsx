@@ -53,7 +53,7 @@ export const Panel = ({ children, show, label, count }) => {
             >
                 <div className={sty.panelHeader}>
                     <div className={sty.panelLblView}>
-                        {count !== 0 && <div className={sty.panelCountBg}>
+                        {count && count !== 0 && <div className={sty.panelCountBg}>
                             <h1 className={sty.panelCountLbl}>{count}</h1>
                         </div>}
                         <h1 className={sty.panelLbl}>{label}</h1>
