@@ -43,7 +43,7 @@ const heartbeat = () => {
 connect()
 
 ws.onopen = () => heartbeat()
-ws.onclose = () => { clearTimeout(pingTimeout); alert('ws closed'); reconnect() }
+ws.onclose = () => { clearTimeout(pingTimeout); reconnect() }
 
 
 

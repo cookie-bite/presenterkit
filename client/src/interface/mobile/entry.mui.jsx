@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useAnimation } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { STUser, STEntry, STCooldown } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
@@ -10,6 +10,8 @@ import sty from '../../styles/modules/mobile.module.css'
 export const Entry = ({ ws, core }) => {
     const SSCooldown = useSnapshot(STCooldown)
 
+    const inputAnim = useAnimation()
+
     const [username, setUsername] = useState('')
 
 
@@ -18,6 +20,8 @@ export const Entry = ({ ws, core }) => {
     }
 
     const enterRoom = () => {
+        if (username === '') { return inputAnim.start({ x: [15 * 0.789, 15 * -0.478, 15 * 0.29, 15 * -0.176, 15 * 0.107, 15 * -0.065, 0] }) }
+
         ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username, roomActivity: 'joined' }))
         STEntry.show = false
         STUser.name = username
@@ -78,7 +82,7 @@ export const Entry = ({ ws, core }) => {
                 >
                     <h1 className={sty.entryLogo}>PresenterKit</h1>
                     <div className={sty.entryInputView}>
-                        <input className={sty.entryInput} autoFocus={true} placeholder='Username' value={username}
+                        <motion.input className={sty.entryInput} autoFocus={true} placeholder='Username' value={username} animate={inputAnim}
                             onChange={(e) => setUsername(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') enterRoom() }}
                         />

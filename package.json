@@ -24,12 +24,13 @@
     "dev": "concurrently -k \"cross-env BROWSER=none npm run react\" \"cross-env NODE_ENV=development npm start\"",
     "dist": "cd client && npm run build",
     "build": "npm run dist && electron-builder",
-    "rebuild": "npm rebuild canvas --update-binary"
+    "rebuild": "npm rebuild canvas --update-binary",
+    "cert": "electron-builder create-self-signed-cert -p PresenterKit"
   },
   "build": {
     "productName": "PresenterKit",
     "copyright": "Copyright © 2024 PresenterKit",
-    "appId": "com.electron.presenterkit",
+    "appId": "app.presenterkit",
     "directories": {
       "buildResources": "resources",
       "output": "release"

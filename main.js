@@ -93,6 +93,7 @@ const createWindow = () => {
     const launch = () => {
         win.loadURL('http://localhost:3000').then(() => {
             // if (isDev) win.webContents.openDevTools()
+            box.close()
             win.maximize()
             win.show()
         })
