@@ -19,7 +19,7 @@ const createWindow = () => {
         height: 600,
         show: false,
         backgroundColor: '#141622',
-        // frame: false,
+        frame: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true

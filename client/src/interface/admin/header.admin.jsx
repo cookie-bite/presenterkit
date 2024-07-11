@@ -140,7 +140,7 @@ export const Header = ({ ws, core }) => {
                             transition={{ ease: 'easeOut', duration: 0.4 }}
                             onChange={(e) => setTerm(e.target.value)}
                             onFocus={() => STSearch.showList = true}
-                            onBlur={() => setTimeout(() => STSearch.showList = false, 150)}
+                            // onBlur={() => setTimeout(() => STSearch.showList = false, 150)}
                         />
                         <AnimatePresence>
                             {SSSearch.showList && <SearchList />}

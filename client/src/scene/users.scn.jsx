@@ -6,7 +6,7 @@ import { STQuests, STUsers } from '../stores/app.store'
 import { STChat, STTyping } from '../stores/scene.store'
 import * as THREE from 'three'
 
-import { calcRows } from '../utilities/core.utils'
+import { calcRows, genColor } from '../utilities/core.utils'
 
 
 const User = ({ user, position }) => {
@@ -49,11 +49,11 @@ const User = ({ user, position }) => {
 
 
         const Stadium = () => {
-            
+
             console.log('stadium')
 
             const stadiumRef = useRef()
-            
+
             const quest = STChat.queue[user.userID][0]
 
             const label = quest.label.length < 35 ? quest.label : quest.label.slice(0, 30) + '...'
@@ -222,9 +222,61 @@ export const Users = () => {
     let rowIndex = -1
     let userCount = 7
 
+    const count = 20
+    const users = []
+
+    const colors = [
+        "#2130b5",
+        "#1f87ad",
+        "#d92071",
+        "#991a3e",
+        "#906a14",
+        "#719fda",
+        "#5fc832",
+        "#ff1fbf",
+        "#2606a7",
+        "#90299e",
+        "#9d11ee",
+        "#0c9bb0",
+        "#e061b4",
+        "#2cc96d",
+        "#58f9be",
+        "#f67251",
+        "#40257e",
+        "#0eaa16",
+        "#d45ecc",
+        "#906a05",
+        "#86181d"
+    ]
+
+    for (let i = 0; i <= count; i++) {
+        // let color = genColor()
+        // colors.push(color)
+
+        users.push({
+            isInLobby: Boolean(Math.round(Math.random)),
+            userID: i,
+            userColor: colors[i]
+        })
+    }
+
+
+    // useEffect(() => {
+    //     var indexes = [9, 13, 18, 6, 19, 2]
+    //     var index = indexes.length - 1
+
+    //     const interval = setInterval(() => {
+    //         index = (index + 1) % 6
+    //         STChat.queue[indexes[index]] = [{}]
+
+    //     }, 1000)
+
+    //     return () => { clearInterval(interval) }
+    // }, [])
+
 
     return (
-        SSUsers.list.map((user, index) => {
+        users.map((user, index) => {
             if (index >= userCount) { row += 1; userCount += 7 + 2 * row; rowIndex = 0; } else rowIndex++
 
             const pos = (x) => {
