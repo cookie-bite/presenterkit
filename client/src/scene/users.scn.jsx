@@ -15,7 +15,6 @@ const User = ({ user, position }) => {
     const bubbleRef = useRef()
 
     const lod = 32
-    const haveQuest = Boolean(Math.round(Math.random()))
     const inLobby = user.isInLobby
 
 
@@ -88,7 +87,7 @@ const User = ({ user, position }) => {
                             <meshStandardMaterial color={'#ffffff'} />
                         </mesh>
                         <Center position={[0, 2, 0.12]}>
-                            <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled={false} bevelSize={0.03} size={0.3} height={0.05}>
+                            <Text3D font={'/fonts/json/inter_semi_bold.json'} bevelEnabled={false} bevelSize={0.03} size={0.3} height={0.1}>
                                 {label}
                                 <meshStandardMaterial color={quest.color} />
                             </Text3D>

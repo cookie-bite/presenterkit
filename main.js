@@ -20,6 +20,7 @@ const createWindow = () => {
         show: false,
         backgroundColor: '#141622',
         frame: false,
+        fullscreen: true,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true
