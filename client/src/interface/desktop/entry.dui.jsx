@@ -16,18 +16,19 @@ export const Entry = ({ ws, core }) => {
 
 
     const joinRoom = () => {
-        setTimeout(() => ws.send(JSON.stringify({ command: 'JOIN_ROOM', isPresenter: core.isPresenter, roomActivity: 'in lobby' })), 500)
-        if (core.isPresenter) {
-            STUser.name = 'Presenter'
-            STEntry.show = false
+        const interval = setInterval(() => {
+            if (ws.readyState === 1) {
+                ws.send(JSON.stringify({ command: 'JOIN_ROOM', isPresenter: core.isPresenter, roomActivity: 'in lobby' }))
 
-            const interval = setInterval(() => {
-                if (ws.readyState === 1) {
+                if (core.isPresenter) {
+                    STUser.name = 'Presenter'
+                    STEntry.show = false
                     ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username: 'Presenter', roomActivity: 'joined' }))
-                    clearInterval(interval)
                 }
-            }, 10)
-        }
+
+                clearInterval(interval)
+            }
+        }, 10)
     }
 
     const enterRoom = () => {
