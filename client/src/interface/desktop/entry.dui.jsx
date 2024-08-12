@@ -20,7 +20,13 @@ export const Entry = ({ ws, core }) => {
         if (core.isPresenter) {
             STUser.name = 'Presenter'
             STEntry.show = false
-            setTimeout(() => ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username: 'Presenter', roomActivity: 'joined' })), 700)
+
+            const interval = setInterval(() => {
+                if (ws.readyState === 1) {
+                    ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username: 'Presenter', roomActivity: 'joined' }))
+                    clearInterval(interval)
+                }
+            }, 10)
         }
     }
 
