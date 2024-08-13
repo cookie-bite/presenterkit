@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
-import { STHost, STUI, STSlide, STSlides, STTheatre } from '../../stores/app.store'
+import { STHost, STUI, STSlide, STSlides, STTheatre, STSpinner } from '../../stores/app.store'
 
-import { Icon } from '../../components/core.cmp'
+import { Icon, Spinner } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
@@ -11,6 +11,7 @@ export const Presenter = ({ ws, core }) => {
     const SSHost = useSnapshot(STHost)
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
+    const SSSpinner = useSnapshot(STSpinner)
     const SSTheatre = useSnapshot(STTheatre)
 
     const inputRef = useRef()
@@ -24,7 +25,10 @@ export const Presenter = ({ ws, core }) => {
 
     const uploadFile = (e) => {
         const file = e.target.files[0]
+        
         if (file) {
+            STSpinner.isActive = true
+
             const formData = new FormData()
             formData.append('file', file, file.name)
 
@@ -32,12 +36,12 @@ export const Presenter = ({ ws, core }) => {
                 .then((res) => res.json())
                 .then((res) => {
                     if (res.success) {
+                        STSpinner.isActive = false
                         STSlide.active.page = 1
                         STSlide.active.index = STSlides.list.length
                         STSlides.list.push(res.slide)
                     }
                 })
-
         }
     }
 
@@ -110,7 +114,7 @@ export const Presenter = ({ ws, core }) => {
             if (e.key === 'F5') toggleTheatre('on')
             if (e.key === 'Escape') STTheatre.show ? toggleTheatre('off') : STUI.name = ''
         }
-        
+
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)
     }, [STSlide.active, STTheatre.show])
@@ -120,10 +124,12 @@ export const Presenter = ({ ws, core }) => {
         <>
             <div className={sty.slides}>
                 {SSSlides.list.length === 0
-                    ? <button className={sty.slideUploadBtn} onClick={() => openFile()}>
-                        <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                        <Icon name='add' size={30} color='--primary-tint' />
-                    </button>
+                    ? SSSpinner.isActive
+                        ? <Spinner />
+                        : <button className={sty.slideUploadBtn} onClick={() => openFile()}>
+                            <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
+                            <Icon name='add' size={30} color='--primary-tint' />
+                        </button>
                     : <>
                         <div className={sty.slidesLeft}>
                             {SSSlides.list.map((slide, index) => {
@@ -137,10 +143,13 @@ export const Presenter = ({ ws, core }) => {
                                     </div>
                                 )
                             })}
-                            <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
-                                <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                                <Icon name='add' size={26} color='--primary-tint' />
-                            </button>
+                            {SSSpinner.isActive
+                                ? <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />
+                                : <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
+                                    <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
+                                    <Icon name='add' size={26} color='--primary-tint' />
+                                </button>
+                            }
                         </div>
                         <div className={sty.slidesRight}>
                             <div className={sty.slidesHeader}>
@@ -188,7 +197,8 @@ export const Presenter = ({ ws, core }) => {
                                 })}
                             </div>
                         </div>
-                    </>}
+                    </>
+                }
 
             </div>
 
