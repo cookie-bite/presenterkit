@@ -17,6 +17,11 @@
     "pdf-img-convert": "^1.2.1",
     "ws": "^8.12.0"
   },
+  "overrides": {
+    "pdf-img-convert": {
+      "canvas": "https://github.com/Automattic/node-canvas.git#master"
+    }
+  },
   "main": "main.js",
   "scripts": {
     "react": "cd client && npm start",
