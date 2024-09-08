@@ -64,7 +64,7 @@ export const Messages = ({ ws }) => {
     const forwarding = (state) => {
         if ((SSMessages.tab === 'Pass') === state) {
             STMessages.tab = state ? 'Stop' : 'Pass'
-            ws.send(JSON.stringify({ command: 'SET_CNFG', config: { name: 'forwarding', is: state } }))
+            ws.send(JSON.stringify({ command: 'SET_CNFG', eventID: STEvent.id, config: { name: 'forwarding', is: state } }))
         }
     }
 

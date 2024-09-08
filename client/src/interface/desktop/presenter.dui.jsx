@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
-import { STHost, STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
 
 import { Icon, Spinner } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
-export const Presenter = ({ ws, core }) => {
+export const Presenter = ({ ws }) => {
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
     const SSSpinner = useSnapshot(STSpinner)
@@ -32,14 +32,14 @@ export const Presenter = ({ ws, core }) => {
             formData.append('file', file, file.name)
             const fileName = file.name.replace(/\.[^/.]+$/, "")
 
-            fetch(`https://pk-pdf2img.azurewebsites.net/api/Convert?fileName=${fileName}&code=HdqQb5u0JVhYERwSGsn9xz2ddp57ctX8Z97AAneukmAzAzFuyCdeCQ==`, { method: 'post', body: formData })
+            fetch(`${process.env.REACT_APP_FUNC_URL}?code=${process.env.REACT_APP_FUNC_CODE}&fileName=${fileName}`, { method: 'post', body: formData })
                 .then((res) => res.json())
                 .then((res) => {
                     if (res.success) {
                         const headers = { 'Content-type': 'application/json' }
                         const body = JSON.stringify({ eventID: STEvent.id, slide: res.slide })
 
-                        fetch(`http://localhost:${STHost.port2}/slide`, { method: 'post', headers, body })
+                        fetch(`${process.env.REACT_APP_API_URL}/slide`, { method: 'post', headers, body })
                             .then((res) => res.json())
                             .then((res) => {
                                 STSpinner.isActive = false
@@ -80,7 +80,7 @@ export const Presenter = ({ ws, core }) => {
         const headers = { 'Content-type': 'application/json' }
         const body = JSON.stringify({ eventID: STEvent.id, slide: STSlides.list[STSlide.active.index] })
 
-        fetch(`http://localhost:${STHost.port2}/slide`, { method: 'delete', headers, body })
+        fetch(`${process.env.REACT_APP_API_URL}/slide`, { method: 'delete', headers, body })
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
@@ -149,7 +149,7 @@ export const Presenter = ({ ws, core }) => {
                                         className={sty.slidePreview}
                                         style={{ border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
                                         onClick={() => changeSlide(index)}>
-                                        <img className={sty.slidePreviewImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[index].name}/1.webp`} />
+                                        <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[index].name}/1.webp`} />
                                     </div>
                                 )
                             })}
@@ -175,9 +175,9 @@ export const Presenter = ({ ws, core }) => {
                                 </div>
                             </div>
                             <div className={sty.activeSlide}>
-                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
+                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
                                 <div className={sty.activePage} onClick={() => previewTheatre()}>
-                                    <img className={sty.activePageImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
+                                    <img className={sty.activePageImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                                 </div>
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
@@ -201,7 +201,7 @@ export const Presenter = ({ ws, core }) => {
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}
                                             onClick={() => { STSlide.active.page = (index + 1) }}>
-                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
+                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
                                         </div>
                                     )
                                 })}
@@ -214,7 +214,7 @@ export const Presenter = ({ ws, core }) => {
 
             {SSTheatre.show &&
                 <div className={sty.theatrePresenter}>
-                    <img className={sty.theatrePresenterImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
+                    <img className={sty.theatrePresenterImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                     <button className={sty.theatrePresenterBtn} style={{ left: 0, display: SSSlide.active.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                     <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                 </div>

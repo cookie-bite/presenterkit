@@ -259,7 +259,7 @@ wss.on('connection', async (ws) => {
         } else if (req.command === 'SET_CNFG') {
             if (req.config.name === 'forwarding') await db.events.updateAsync({ eventID: req.eventID }, { $set: { config: { forwarding: { is: req.config.is } } } })
 
-            sendRoom(req.eventID, 'admin', { command: 'UPDT_CNFG', name: req.config.name, updateTo: req.config.is })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_CNFG', name: req.config.name, updateTo: { is: req.config.is } })
         } else if (req.command === 'UPDT_SLDS') {
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
 

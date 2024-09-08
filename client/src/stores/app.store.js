@@ -13,8 +13,6 @@ export const STEvent = proxy({ id: '', name: '' })
 
 export const STApp = proxy({ isFullscreen: false })
 
-export const STHost = proxy({ ip: '', all: [], port1: '3000', port2: process.env.NODE_ENV === 'development' ? '50000' : '3000' })
-
 export const STUI = proxy({ name: '' })
 
 export const STUser = proxy({ id: '', name: '', color: '#ffffff', isPresenter: false })
