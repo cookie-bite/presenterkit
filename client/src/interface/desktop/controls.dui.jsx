@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion'
 import { Icon } from '../../components/core.cmp'
 import { useSnapshot } from 'valtio'
-import { STApp, STUI } from '../../stores/app.store'
+import { STApp, STUI, STUser } from '../../stores/app.store'
 import { STAdmin } from '../../stores/admin.store'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
-export const Controls = ({ core }) => {
+export const Controls = () => {
     const SSUI = useSnapshot(STUI)
+    const SSUser= useSnapshot(STUser)
     const SSApp = useSnapshot(STApp)
     const SSAdmin = useSnapshot(STAdmin)
 
@@ -41,7 +42,7 @@ export const Controls = ({ core }) => {
                 animate={{ y: 0 }}
                 transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
             >
-                {core.isPresenter && <button className={sty[cmpr('Remote') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Remote')}>
+                {SSUser.isPresenter && <button className={sty[cmpr('Remote') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Remote')}>
                     <Icon name='phone-o' size={28} color={cmpr('Remote') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Remote</div>
                 </button>}
@@ -57,23 +58,23 @@ export const Controls = ({ core }) => {
                     <Icon name='people' size={30} color={cmpr('Users') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Users</div>
                 </button>
-                {!core.isPresenter && <button className={sty[cmpr('Shares') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Shares')}>
+                {!SSUser.isPresenter && <button className={sty[cmpr('Shares') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Shares')}>
                     <Icon name='paper-plane' size={26} color={cmpr('Shares') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Shares</div>
                 </button>}
-                {core.isPresenter && <button className={sty[cmpr('Presenter') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Presenter')}>
+                {SSUser.isPresenter && <button className={sty[cmpr('Presenter') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Presenter')}>
                     <Icon name='albums' size={30} color={cmpr('Presenter') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Presenter</div>
                 </button>}
-                {!core.isPresenter && <button className={sty[cmpr('Slides') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Slides')}>
+                {!SSUser.isPresenter && <button className={sty[cmpr('Slides') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Slides')}>
                     <Icon name='albums' size={30} color={cmpr('Slides') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Slides</div>
                 </button>}
-                {(core.isPresenter || SSAdmin.privileged) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
+                {(SSUser.isPresenter || SSAdmin.privileged) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
                     <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>Admin</div>
                 </button>}
-                {!core.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
+                {!SSUser.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
                     <Icon name={SSApp.isFullscreen ? 'contract' : 'expand'} size={30} color={SSApp.isFullscreen ? '--white' : '--secondary-label'} />
                     <div className='tooltip tooltipTop'>{SSApp.isFullscreen ? 'Exit' : 'Full screen'}</div>
                 </button>}

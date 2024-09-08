@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp, STUI, STUser, STUserPanel, STUsers, STSlide, STTheatre } from '../../stores/app.store'
+import { STApp, STUI, STUser, STUserPanel, STUsers, STSlide, STTheatre, STEvent } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 import { genColor } from '../../utilities/core.utils'
 
@@ -34,7 +34,7 @@ export const Controls = ({ ws, core }) => {
         if (text.trim() !== '') {
             let temp = text
             while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-            ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
+            ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '33px', 'min-width': 'calc(100vw - 77px)' })
             setText('')
@@ -60,14 +60,14 @@ export const Controls = ({ ws, core }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
         }, timeout)
     }
 
@@ -94,7 +94,7 @@ export const Controls = ({ ws, core }) => {
     const submitUser = () => {
         if (STUser.name !== username) {
             STUser.name = username
-            ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, userID: STUser.id, username: username, roomActivity: 'updated' }))
+            ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username: username, roomActivity: 'updated' }))
         }
     }
 

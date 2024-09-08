@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Stats } from '@react-three/drei'
-import { STHost, STUI, STEntry } from '../stores/app.store'
+import { STHost, STUI, STEntry, STEvent, STUser } from '../stores/app.store'
 import { STDisplay } from '../stores/scene.store'
 
 
@@ -17,14 +17,14 @@ export const Scene = ({ ws, core }) => {
     useEffect(() => {
         const onKeyUp = (e) => {
             if (e.altKey && e.code.slice(3) === 'N') {
-                window.open(`http://${STHost.ip}:${STHost.port1}`, '_blank')
+                window.open(`http://${window.location.hostname}:${STHost.port1}`, '_blank')
             }
 
             if (STEntry.show) return
 
-            if (e.key === 'Escape' && STUI.name === '') {
+            if (e.key === 'Escape' && STUI.name === '' && STUser.isPresenter) {
                 Object.assign(STDisplay, { quest: core.openingText, author: '' })
-                ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay }))
+                ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
             }
         }
 

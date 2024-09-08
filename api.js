@@ -1,57 +1,45 @@
 const { WebSocket, WebSocketServer } = require('ws')
 const { createServer } = require('http')
-const pdf2img = require('pdf-img-convert')
+const { BlobServiceClient } = require('@azure/storage-blob')
+const { MongoClient } = require('mongodb')
+
 const express = require('express')
+const Datastore = require('@seald-io/nedb')
 const path = require('path')
 const cors = require('cors')
-const os = require('os')
-const fs = require('fs-extra')
-const electron = require('electron')
+const jwt = require('jsonwebtoken')
 
+const { genColor, genRandom } = require('./utils/core.utils')
+
+require('dotenv/config')
+
+
+
+// MARK: Express
 
 const app = express()
 const server = createServer(app)
 const wss = new WebSocketServer({ server })
 
-const isDev = process.env.NODE_ENV === 'development'
 
 
-// MARK: Storage
-
-const ip = { address: '', all: [] }
-const adminRoom = 0
-const userRoom = 1
-
-const rooms = {}
-
-var quests = []
-var queue = []
-var slides = []
-var activeSlide = {}
+// MARK: Constants
 
 const cooldown = 2 * 60 * 1000
-var shares = [{ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false }]
-var config = { forwarding: { is: false } }
-var display = { quest: 'Welcome to Event', author: '' }
-var roomActivity = { user: { id: '', name: '' }, activity: '' }
 
-var periodicTable = [
-    'Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron', 'Carbon', 'Nitrogen', 'Oxygen',
-    'Fluorine', 'Neon', 'Sodium', 'Magnesium', 'Aluminum', 'Silicon', 'Phosphorus', 'Sulfur',
-    'Chlorine', 'Argon', 'Potassium', 'Calcium', 'Scandium', 'Titanium', 'Vanadium', 'Chromium',
-    'Manganese', 'Iron', 'Cobalt', 'Nickel', 'Copper', 'Zinc', 'Gallium', 'Germanium', 'Arsenic',
-    'Selenium', 'Bromine', 'Krypton', 'Rubidium', 'Strontium', 'Yttrium', 'Zirconium', 'Niobium',
-    'Molybdenum', 'Technetium', 'Ruthenium', 'Rhodium', 'Palladium', 'Silver', 'Cadmium', 'Indium',
-    'Tin', 'Antimony', 'Tellurium', 'Iodine', 'Xenon', 'Cesium', 'Barium', 'Lanthanum', 'Cerium',
-    'Praseodymium', 'Neodymium', 'Promethium', 'Samarium', 'Europium', 'Gadolinium', 'Terbium',
-    'Dysprosium', 'Holmium', 'Erbium', 'Thulium', 'Ytterbium', 'Lutetium', 'Hafnium', 'Tantalum',
-    'Tungsten', 'Rhenium', 'Osmium', 'Iridium', 'Platinum', 'Gold', 'Mercury', 'Thallium', 'Lead',
-    'Bismuth', 'Polonium', 'Astatine', 'Radon', 'Francium', 'Radium', 'Actinium', 'Thorium',
-    'Protactinium', 'Uranium', 'Neptunium', 'Plutonium', 'Americium', 'Curium', 'Berkelium',
-    'Californium', 'Einsteinium', 'Fermium', 'Mendelevium', 'Nobelium', 'Lawerencium', 'Rutherfordium',
-    'Dubnium', 'Seaborgium', 'Bohrium', 'Hassium', 'Meitnerium', 'Darmstadtium', 'Roentgenium',
-    'Copernicium', 'Nihonium', 'Flerovium', 'Moscovium', 'Livermorium', 'Tennessine', 'Oganesson'
-]
+
+
+// MARK: NeDB
+
+const db = {}
+
+db.events = new Datastore()
+
+
+
+// MARK: Exports
+
+module.exports = { db }
 
 
 
@@ -70,314 +58,296 @@ console.clearLastLine = () => {
 }
 
 
-const genColor = () => {
-    const h = { min: 0, max: 360 }
-    const s = { min: 50, max: 100 }
-    const l = { min: 30, max: 70 }
-
-    const hslToHex = (h, s, l) => {
-        l /= 100
-        const a = s * Math.min(l, 1 - l) / 100
-        const f = n => {
-            const k = (n + h / 30) % 12
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
-            return Math.round(255 * color).toString(16).padStart(2, '0')
+const sendRoom = (eventID, room, obj) => {
+    wss.clients.forEach((client) => {
+        if ((client.eventID === eventID) && (client.readyState === WebSocket.OPEN)) {
+            if (room === 'admin' && !client.isAdmin) return
+            client.send(JSON.stringify(obj))
         }
-        return `#${f(0)}${f(8)}${f(4)}`
-    }
-
-    const random = (x) => {
-        return +(Math.random() * (x.max - x.min) + x.min).toFixed()
-    }
-
-    const r = { h: random(h), s: random(s), l: random(l) }
-
-    return hslToHex(r.h, r.s, r.l)
+    })
 }
 
 
-const genRandom = (bytes = 4) => {
-    return require('crypto').randomBytes(bytes).toString('hex')
-}
-
-
-const sendRooms = (ids, obj) => {
-    // Object.entries(rooms[room]).forEach(([, sock]) => sock.send({ message }))
-
-    let IDs = Number.isInteger(ids) ? [ids] : ids
-    for (let id in IDs) {
-        for (const client in rooms[IDs[id]]) {
-            if (rooms[IDs[id]][client].readyState === WebSocket.OPEN) {
-                rooms[IDs[id]][client].send(JSON.stringify(obj))
-            }
+const sendUser = (eventID, userID, obj) => {
+    wss.clients.forEach((client) => {
+        if ((client.eventID === eventID) && (client.userID === userID)) {
+            client.send(JSON.stringify(obj))
         }
-    }
-}
-
-
-const sendUser = (roomID, userID, obj) => {
-    if (rooms[roomID][userID]) rooms[roomID][userID].send(JSON.stringify(obj))
-}
-
-
-const getUserList = () => {
-    var list = []
-    Object.keys(rooms[userRoom]).forEach((userID) => {
-        let user = rooms[userRoom][userID]
-        list.push({
-            userID,
-            username: user.username,
-            userColor: user.color,
-            isPresenter: user.isPresenter,
-            isAdmin: user.isAdmin,
-            isInLobby: user.isInLobby
-        })
     })
-    return list
-}
-
-
-const getSlides = () => {
-    slides = []
-    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs'))
-    fs.readdirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs')).forEach((folder) => {
-        slides.push({ name: folder, pageCount: fs.readdirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', folder)).length })
-    })
-}
-
-
-const initIpAddress = () => {
-    const ips = []
-
-    Object.keys(os.networkInterfaces()).forEach((type) => {
-        os.networkInterfaces()[type].forEach((ip) => {
-            if (ip.family === 'IPv4' && !/^(::f{4}:)?(127|169)\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(ip.address)) ips.push(ip.address)
-        })
-    })
-
-    ip.address = ips[0]
-    ip.all = ips
 }
 
 
 const init = () => {
-    initIpAddress()
-    getSlides()
-
     console.clear()
-    console.log(`\x1b[33mApp running on 🔥\n\n\x1b[36m  http://localhost:${PORT}  \x1b[0m\n`); wss.on('error', console.error)
+    console.log(`\x1b[33mApp running on 🔥\n\n\x1b[36m  http://localhost:${process.env.PORT}  \x1b[0m\n`)
+    wss.on('error', console.error)
 }
 
 
 
 // MARK: Websocket
 
-const interval = setInterval(() => {
-    for (const client in rooms[userRoom]) {
-        if (rooms[userRoom][client].isAlive === false && rooms[userRoom][client].readyState === WebSocket.OPEN) {
-            console.log(`[${rooms[userRoom][client].username}] \x1b[36mWebsocket is terminated\x1b[0m`)
-            return rooms[userRoom][client].terminate()
-        }
+// const interval = setInterval(() => {
+//     console.log('interval')
+//     const CLWS = db.getCollection('websocket')
+//     const sockets = CLWS.find()
 
-        rooms[userRoom][client].isAlive = false
-        rooms[userRoom][client].send(JSON.stringify({ command: 'PING' }))
-    }
-}, 30000)
+//     sockets.forEach((socket) => {
+//         console.log('Users', socket.userRoom.length)
+//         socket.userRoom.forEach((client) => {
+//             if (client.isAlive === false && client.readyState === WebSocket.OPEN) return client.terminate()
+
+//             client.isAlive = false
+//             console.log(client.userID, client.readyState)
+//             if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
+//         })
+//     })
+// }, 30000)
 
 
-wss.on('connection', (ws) => {
-    const userID = genRandom(4)
+
+wss.on('connection', async (ws) => {
+    const userID = genRandom(8)
+
+    ws.userID = userID
     ws.isAlive = true
 
-    ws.on('message', (msg) => {
+
+    ws.on('message', async (msg) => {
         const req = JSON.parse(msg)
 
         if (req.command === 'JOIN_ROOM') {
-            if (!rooms[userRoom]) rooms[userRoom] = {}
-            if (!rooms[adminRoom]) rooms[adminRoom] = {}
+            ws.eventID = req.eventID
 
-            rooms[userRoom][userID] = ws
-            rooms[userRoom][userID].username = 'In lobby'
-            rooms[userRoom][userID].isInLobby = true
-            rooms[userRoom][userID].color = genColor()
-            rooms[userRoom][userID].isPresenter = req.isPresenter
-            rooms[userRoom][userID].isAdmin = false
-            rooms[userRoom][userID].adminKey = ''
+            const event = await db.events.findOneAsync({ eventID: req.eventID })
 
-            if (req.isPresenter) {
-                rooms[userRoom][userID].isInLobby = false
-                rooms[userRoom][userID].color = '#ffffff'
-                rooms[userRoom][userID].isAdmin = true
-                rooms[userRoom][userID].adminKey = genRandom(8)
-                rooms[adminRoom][userID] = rooms[userRoom][userID]
+            const user = {
+                userID,
+                username: 'In lobby',
+                color: genColor(),
+                isInLobby: true,
+                isPresenter: false,
+                isAdmin: false,
+                adminKey: ''
             }
 
-            const userShares = shares.filter(s => s.isShared)
-            roomActivity = { user: { id: userID, name: rooms[userRoom][userID].username }, activity: req.roomActivity }
 
-            ws.send(JSON.stringify({ command: 'INIT_USER', quests, display, roomActivity, slides, activeSlide, ip, queue, config, shares: req.isPresenter ? shares : userShares, user: { id: userID, name: rooms[userRoom][userID].username, color: rooms[userRoom][userID].color } }))
-            sendRooms(userRoom, { command: 'ROOM_ACTY', roomActivity, userList: getUserList() })
-            sendRooms(adminRoom, { command: 'UPDT_STTS', userList: getUserList() })
-            console.log(`Active users: \x1b[32m${Object.keys(rooms[userRoom]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+            try {
+                const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
+                if (event.presenter.id === payload.sub) {
+                    user.username = 'Presenter'
+                    user.color = '#ffffff'
+                    user.isInLobby = false
+                    user.isPresenter = true
+                    user.isAdmin = true
+                    user.adminKey = genRandom(16)
+
+                }
+            } catch (err) {
+                console.log(err)
+            } finally {
+                ws.username = user.username
+                ws.isAdmin = user.isAdmin
+
+                await db[`event-${req.eventID}`].insertAsync(user)
+                const userList = await db[`event-${req.eventID}`].findAsync({})
+                const userShares = event.shares.filter(s => s.isShared)
+                const roomActivity = { user: { id: userID, name: user.username }, activity: user.isPresenter ? 'joined' : 'in lobby' }
+                await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
+
+                ws.send(JSON.stringify({
+                    command: 'INIT_USER',
+                    user: { id: userID, name: user.username, color: user.color, isPresenter: user.isPresenter },
+                    queue: user.isPresenter ? event.queue : [],
+                    quests: event.quests,
+                    slides: event.slides,
+                    activeSlide: event.activeSlide,
+                    shares: user.isPresenter ? event.shares : userShares,
+                    roomActivity,
+                    display: event.display,
+                    config: event.config
+                }))
+
+                sendRoom(req.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
+                sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
+            }
+        } else if (req.command === 'SET_USER') {
+            const user = await db[`event-${req.eventID}`].findOneAsync({ userID })
+            await db[`event-${req.eventID}`].updateAsync({ userID }, { $set: { isInLobby: !user.isInLobby, username: req.username } })
+            const userList = await db[`event-${req.eventID}`].findAsync({})
+            const roomActivity = { user: { id: userID, name: req.username }, activity: req.roomActivity }
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
+
+            sendRoom(req.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
         } else if (req.command === 'SET_STTS') {
             let userShares = []
 
-            if (req.isAdmin) {
-                userShares = shares
-                rooms[userRoom][req.userID].isAdmin = true
-                rooms[userRoom][req.userID].adminKey = genRandom(8)
-                rooms[adminRoom][req.userID] = rooms[userRoom][req.userID]
-            } else {
-                userShares = shares.filter(s => s.isShared)
-                rooms[userRoom][req.userID].isAdmin = false
-                rooms[userRoom][req.userID].adminKey = ''
-                delete rooms[adminRoom][req.userID]
-            }
+            const event = await db.events.findOneAsync({ eventID: req.eventID })
 
-            sendUser(req.room, req.userID, { command: 'SET_STTS', queue, display, config, shares: userShares, isAdmin: req.isAdmin, adminKey: rooms[userRoom][req.userID].adminKey })
-            sendRooms(adminRoom, { command: 'UPDT_STTS', userList: getUserList() })
-        } else if (req.command === 'APR_REQ') {
+            wss.clients.forEach((client) => {
+                if (client.userID === req.userID) {
+                    if (req.isAdmin) {
+                        client.isAdmin = true
+                        userShares = event.shares
+                    } else {
+                        client.isAdmin = false
+                        userShares = event.shares.filter(s => s.isShared)
+                    }
+                }
+            })
+
+            const adminKey = req.isAdmin ? genRandom(16) : ''
+            await db[`event-${req.eventID}`].updateAsync({ userID: req.userID }, { $set: { adminKey, isAdmin: req.isAdmin } })
+
+            const userList = await db[`event-${req.eventID}`].findAsync({})
+
+            sendUser(req.eventID, req.userID, { command: 'SET_STTS', queue: event.queue, display: event.display, config: event.config, shares: userShares, isAdmin: req.isAdmin, adminKey })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
+        } else if (req.command === 'SEND_MSG') {
             console.log(`[${req.username}-${req.userID}]: \x1b[33m${req.quest.label}\x1b[0m`)
 
-            if (config.forwarding.is) {
-                queue.push({ id: genRandom(4), userID: req.userID, author: req.username, label: req.quest.label, color: req.quest.color })
-                sendRooms(adminRoom, { command: 'APR_REQ', quest: queue.at(-1), user: { id: req.userID, name: req.username } })
+            const event = await db.events.findOneAsync({ eventID: req.eventID })
+
+            if (event.config.forwarding.is) {
+                const newQueue = { id: genRandom(8), userID: req.userID, author: req.username, color: req.quest.color, label: req.quest.label }
+                await db.events.updateAsync({ eventID: req.eventID }, { $push: { queue: newQueue } })
+
+                sendRoom(req.eventID, 'admin', { command: 'SEND_MSG', quest: newQueue, user: { id: req.userID, name: req.username } })
             } else {
-                quests.push({ id: genRandom(4), color: req.quest.color, label: req.quest.label, userID: req.userID, username: req.username, effect: true })
-                sendRooms(userRoom, { command: 'SEND_USER', quest: quests.at(-1), user: { id: req.userID, name: req.username } })
+                const newQuest = { id: genRandom(8), userID: req.userID, username: req.username, color: req.quest.color, label: req.quest.label, effect: true }
+                await db.events.updateAsync({ eventID: req.eventID }, { $push: { quests: newQuest } })
+
+                sendRoom(req.eventID, 'user', { command: 'SEND_USERS', quest: newQuest, user: { id: req.userID, name: req.username } })
             }
-        } else if (req.command === 'SEND_USER') {
+        } else if (req.command === 'SEND_USERS') {
             console.log(`[${req.username}-${req.userID}]: \x1b[33m${req.quest.label}\x1b[0m`)
 
-            queue.splice(req.quest.index, 1)
-            quests.push({ effect: true, color: req.quest.color, label: req.quest.label, username: req.username })
+            const event = await db.events.findOneAsync({ eventID: req.eventID })
+            event.queue.splice(req.quest.index, 1)
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { queue: event.queue } })
 
-            sendRooms(userRoom, { command: 'SEND_USER', quest: quests.at(-1), user: { id: req.userID, name: req.username } })
-            sendRooms(adminRoom, { command: 'UPDT_QUE', isFullUpdate: false, index: req.quest.index })
+            const newQuest = { id: req.id, userID: req.userID, username: req.username, color: req.quest.color, label: req.quest.label, effect: true }
+            await db.events.updateAsync({ eventID: req.eventID }, { $push: { quests: newQuest } })
+
+            sendRoom(req.eventID, 'user', { command: 'SEND_USERS', quest: newQuest, user: { id: req.userID, name: req.username } })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_QUE', queue: event.queue })
         } else if (req.command === 'CLDW_USER') {
-            const queueLength = queue.length
-            queue = queue.filter(msg => msg.userID !== req.userID)
-            const isFullUpdate = queueLength - queue.length > 1
-            const update = isFullUpdate ? { queue } : { index: req.quest.index }
+            const event = await db.events.findOneAsync({ eventID: req.eventID })
+            event.queue = event.queue.filter(msg => msg.userID !== req.userID)
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { queue: event.queue } })
 
-            sendUser(userRoom, req.userID, { command: 'CLDW_USER', cooldown: Date.now() + cooldown })
-            sendRooms(adminRoom, { command: 'UPDT_QUE', isFullUpdate, ...update })
+            sendUser(req.eventID, req.userID, { command: 'CLDW_USER', cooldown: Date.now() + cooldown })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_QUE', queue: event.queue })
         } else if (req.command === 'DISP_LBL') {
             console.log(`Display quest: \x1b[33m[${req.display.author ? req.display.author : 'Author'}] ${req.display.quest}\x1b[0m`)
-            display = req.display
-            if (req.display.author) quests[req.index].effect = false
-            sendRooms(req.room, { command: 'DISP_LBL', display, index: req.index })
+
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { display: req.display } })
+
+            // if (req.display.author) quests[req.index].effect = false
+
+            sendRoom(req.eventID, 'user', { command: 'DISP_LBL', display: req.display, index: req.index })
+            sendRoom(req.eventID, 'admin', { command: 'DISP_LBL', display: req.display, index: req.index })
         } else if (req.command === 'SHR_ACT') {
-            shares = req.shares
-            if (req.action === 'send') {
-                let userShares = shares.filter(s => s.isShared)
-                sendRooms(userRoom, { command: 'SHR_ACT', action: 'send', userID, shares: userShares, activeShare: req.activeShare })
-            } else if (req.action === 'update') {
-                let userShares = shares.filter(s => s.isShared)
-                sendRooms(userRoom, { command: 'SHR_ACT', action: 'update', userID, shares: userShares })
-            }
-            sendRooms(adminRoom, { command: 'SHR_ACT', action: 'save', userID, shares })
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { shares: req.shares } })
+            let userShares = req.shares.filter(s => s.isShared)
+
+            if (req.action !== 'save') sendRoom(req.eventID, 'user', { command: 'SHR_ACT', action: req.action, userID, shares: userShares, activeShare: req?.activeShare })
+            sendRoom(req.eventID, 'admin', { command: 'SHR_ACT', action: 'save', userID, shares: req.shares })
         } else if (req.command === 'SEND_TYP') {
-            sendRooms(req.room, { command: 'SEND_TYP', isTyping: req.isTyping, color: req.color, userID: req.userID, username: req.username })
-        } else if (req.command === 'SET_USER') {
-            console.log(`Username changed from [\x1b[33m${rooms[req.room][userID].username}\x1b[0m] to [\x1b[32m${req.username}\x1b[0m]`)
-            if (rooms[userRoom][userID].isInLobby) rooms[userRoom][userID].isInLobby = false
-            rooms[userRoom][userID].username = req.username
-
-            roomActivity = { user: { id: userID, name: rooms[req.room][userID].username }, activity: req.roomActivity }
-            sendRooms(userRoom, { command: 'ROOM_ACTY', roomActivity, userList: getUserList() })
-            sendRooms(adminRoom, { command: 'UPDT_STTS', userList: getUserList() })
+            sendRoom(req.eventID, 'user', { command: 'SEND_TYP', isTyping: req.isTyping, color: req.color, userID: req.userID, username: req.username })
         } else if (req.command === 'SET_CNFG') {
-            if (req.config.name === 'forwarding') {
-                config.forwarding.is = req.config.is
-            }
+            if (req.config.name === 'forwarding') await db.events.updateAsync({ eventID: req.eventID }, { $set: { config: { forwarding: { is: req.config.is } } } })
 
-            sendRooms(adminRoom, { command: 'UPDT_CNFG', name: req.config.name, updateTo: config[req.config.name] })
+            sendRoom(req.eventID, 'admin', { command: 'UPDT_CNFG', name: req.config.name, updateTo: req.config.is })
         } else if (req.command === 'UPDT_SLDS') {
-            activeSlide = req.activeSlide
-            sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide })
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
+
+            sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide: req.activeSlide })
         }
 
         if (req.command === 'PONG') {
-            console.log(`[${ws.username}] \x1b[33mPONG is received\x1b[0m`)
+            console.log(`[${userID}] \x1b[33mPONG is received\x1b[0m`)
             ws.isAlive = true
         }
     })
 
-    ws.on('close', () => {
-        Object.keys(rooms).forEach((room) => {
-            if (!rooms[room][userID]) return
 
-            console.log(`[${rooms[room][userID].username}-${userID}]\x1b[1;31m Disconnected\x1b[0m ☠️`)
-            console.log(`Active users: \x1b[32m${Object.keys(rooms[room]).length}\x1b[0m\nPeriodic table: \x1b[33m${periodicTable.length}\x1b[0m`)
+    ws.on('close', async () => {
+        const userList = await db[`event-${req.eventID}`].findAsync({})
+        await db[`event-${req.eventID}`].removeAsync({ userID })
+        const roomActivity = { user: { id: userID, name: ws.username }, activity: 'left' }
+        await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
 
-            if (Object.keys(rooms[room]).length === 1) {
-                console.log(`[Room-${room}]\x1b[1;31m is closed\x1b[0m ☠️`)
-                delete rooms[room]
-            } else {
-                const leftUser = rooms[room][userID].username
-                delete rooms[room][userID]
-
-                if (room == userRoom) {
-                    roomActivity = { user: { id: userID, name: leftUser }, activity: 'left' }
-                    sendRooms(userRoom, { command: 'ROOM_ACTY', roomActivity, userList: getUserList() })
-                    sendRooms(adminRoom, { command: 'UPDT_STTS', userList: getUserList() })
-                }
-            }
-        })
+        sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
+        sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
     })
+
 
     ws.on('error', console.error)
 })
 
 
-wss.on('close', () => clearInterval(interval))
-
-
-
-// MARK: Routes
-
-app.get('/api', (req, res) => res.json({ message: 'From api with love' }))
-
-app.use('/', express.static(path.join(__dirname, 'client', 'build')))
-app.use('/uploads', express.static(path.join(electron.app.getPath('userData'), 'uploads')))
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'build')))
-
-app.post('/slide', async (req, res) => {
-    slides.push({ name: genRandom(2), pageCount: 0 })
-    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs'))
-    fs.ensureDirSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs'))
-    const pipe = req.pipe(fs.createWriteStream(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${slides.at(-1).name}.pdf`)))
-
-    console.log('Slide saved')
-
-    pipe.on('finish', async () => {
-        console.log('Convert started')
-
-        const pages = await pdf2img.convert(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${slides.at(-1).name}.pdf`))
-        await fs.mkdir(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', `${slides.at(-1).name}`))
-        for (let i = 1; i <= pages.length; i++) {
-            fs.writeFile(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', slides.at(-1).name, `${i}.png`), pages[i - 1])
-        }
-
-        console.log('Convert finished')
-        slides.at(-1).pageCount = pages.length
-        sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: true, slides })
-        res.json({ success: true, message: 'File uploaded', slide: slides.at(-1) })
-    })
-})
-
-app.delete('/slide', async (req, res) => {
-    fs.rmSync(path.join(electron.app.getPath('userData'), 'uploads', 'imgs', req.body.name), { recursive: true, force: true })
-    await fs.remove(path.join(electron.app.getPath('userData'), 'uploads', 'pdfs', `${req.body.name}.pdf`))
-    getSlides()
-    sendRooms(userRoom, { command: 'UPDT_SLDS', slidesUpdate: true, slides })
-    res.json({ success: true, message: 'File deleted' })
-})
+// wss.on('close', () => clearInterval(interval))
 
 
 
 // MARK: Server
 
-const PORT = isDev ? '50000' : '3000'
-exports.start = () => new Promise(async (resolve, reject) => { server.listen(PORT, '0.0.0.0', () => { init(); resolve() }) })
+let DB
+
+const connectDB = async () => {
+    const client = new MongoClient(process.env.DB_CONNECT)
+    await client.connect()
+    DB = client.db('presenterkit')
+}
+
+
+(async () => await connectDB().then(() => {
+    console.log('Connected to MongoDB')
+    server.listen(process.env.PORT, '0.0.0.0', () => init())
+}).catch((err) => console.log(err)))()
+
+
+
+module.exports.collection = (c) => DB.collection(c)
+
+
+
+// MARK: Routes
+
+app.use('/', express.static(path.join(__dirname, 'client', 'build')))
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'build')))
+
+app.use('/auth', require('./routes/auth.routes'))
+app.use('/event', require('./routes/event.routes'))
+
+
+app.post('/slide', async (req, res) => {
+    const event = await db.events.findOneAsync({ eventID: req.eventID })
+
+    const newSlide = { name: req.body.slide.name, pageCount: req.body.slide.pageCount }
+    await db.events.updateAsync({ eventID: req.eventID }, { $push: { slides: newSlide } })
+
+    sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
+    res.json({ success: true, message: 'File uploaded', slide: newSlide })
+})
+
+app.delete('/slide', async (req, res) => {
+    const event = await db.events.findOneAsync({ eventID: req.eventID })
+
+    const blobService = await BlobServiceClient.fromConnectionString(process.env.AZURE_BLOB_CONNECT)
+    const pdfsContainer = await blobService.getContainerClient('pdfs')
+    const imgsContainer = await blobService.getContainerClient('imgs')
+
+    const pdfBlob = pdfsContainer.getBlockBlobClient(`${req.body.slide.name}.pdf`)
+    pdfBlob.delete()
+
+    for (let i = 1; i <= req.body.slide.pageCount; i++) {
+        const imgBlob = imgsContainer.getBlockBlobClient(`${req.body.slide.name}/${i}.webp`)
+        imgBlob.delete()
+    }
+
+    sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
+    res.json({ success: true, message: 'File deleted' })
+})

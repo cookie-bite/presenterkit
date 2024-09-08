@@ -174,8 +174,8 @@ const User = ({ user, position }) => {
 
     const Body = () => {
         const Material = () => {
-            if (inLobby) return <meshStandardMaterial color={user.userColor} opacity={0.08} transparent />
-            return <meshStandardMaterial color={user.userColor} metalness={0.2} roughness={0} />
+            if (inLobby) return <meshStandardMaterial color={user.color} opacity={0.08} transparent />
+            return <meshStandardMaterial color={user.color} metalness={0.2} roughness={0} />
         }
 
 

@@ -1,58 +1,30 @@
 {
-  "name": "PresenterKit",
-  "version": "1.0.5",
+  "name": "presenterkit",
+  "version": "1.1.0",
   "description": "PresenterKit",
   "author": "Ali Mammadli & Sevil Rasulova",
   "license": "ISC",
-  "repository": "https://github.com/no-tie/presenterkit-app",
-  "publish": {
-    "provider": "github",
-    "releaseType": "release"
+  "main": "api.js",
+  "scripts": {
+    "dev": "nodemon api --ignore client/",
+    "client": "cd client && npm start"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.24.0",
+    "@seald-io/nedb": "^4.0.4",
+    "argon2": "^0.41.0",
     "cors": "^2.8.5",
-    "electron-updater": "^6.1.8",
     "express": "^4.18.2",
-    "fs-extra": "^11.1.1",
-    "pdf-img-convert": "^1.2.1",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "lokijs": "^1.5.12",
+    "mongodb": "^6.8.0",
+    "nodemailer": "^6.9.14",
     "ws": "^8.12.0"
   },
-  "overrides": {
-    "pdf-img-convert": {
-      "canvas": "https://github.com/Automattic/node-canvas.git#master"
-    }
-  },
-  "main": "main.js",
-  "scripts": {
-    "react": "cd client && npm start",
-    "start": "wait-on http://127.0.0.1:3000 && electron .",
-    "dev": "concurrently -k \"cross-env BROWSER=none npm run react\" \"cross-env NODE_ENV=development npm start\"",
-    "dist": "cd client && npm run build",
-    "build": "npm run dist && electron-builder",
-    "rebuild": "npm rebuild canvas --update-binary",
-    "cert": "electron-builder create-self-signed-cert -p PresenterKit"
-  },
-  "build": {
-    "productName": "PresenterKit",
-    "copyright": "Copyright © 2024 PresenterKit",
-    "appId": "app.presenterkit",
-    "directories": {
-      "buildResources": "resources",
-      "output": "release"
-    },
-    "mac": {
-      "category": "public.app-category.productivity",
-      "icon": "resources/icon.icns"
-    },
-    "win": {
-      "icon": "resources/icon.ico"
-    }
-  },
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "cross-env": "^7.0.3",
-    "electron": "^30.0.1",
-    "electron-builder": "^23.6.0",
-    "wait-on": "^7.0.1"
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4",
+    "pm2": "^5.4.2"
   }
 }

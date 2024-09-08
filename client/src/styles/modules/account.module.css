@@ -1,0 +1,30 @@
+.menu {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.menuInput {
+    align-items: center;
+    font-size: 15px;
+    font-weight: 400;
+    width: 220px;
+    height: 30px;
+    padding: 0 8px;
+    margin: 0 5px;
+    border-radius: 8px;
+    background-color: var(--quarternary-fill);
+    transition: all .3s ease-in-out;
+}
+
+.menuBtn {
+    width: fit-content;
+    height: 30px;
+    margin-top: 15px;
+    padding: 0 20px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    background-color: var(--system-blue);
+    font-size: 15px;
+    font-weight: 500;
+}

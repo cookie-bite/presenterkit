@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
-import { STUI } from '../../stores/app.store'
+import { STUI, STUser } from '../../stores/app.store'
 import { STAdmin, STTab } from '../../stores/admin.store'
 
 import sty from '../../styles/modules/admin.module.css'
@@ -18,6 +18,7 @@ const UISwap = (props) => {
 
 export const Admin = ({ ws, core }) => {
     const SSAdmin = useSnapshot(STAdmin)
+    const SSUser = useSnapshot(STUser)
 
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export const Admin = ({ ws, core }) => {
 
 
     return (
-        (core.isPresenter || SSAdmin.privileged) &&
+        (SSUser.isPresenter || SSAdmin.privileged) &&
         <div className={sty.pageView}>
             <Header ws={ws} core={core} />
             <UISwap>

@@ -7,7 +7,6 @@ import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Slides = () => {
-    const SSHost = useSnapshot(STHost)
     const SSUI = useSnapshot(STUI)
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
@@ -15,7 +14,7 @@ export const Slides = () => {
 
 
     const downloadPdf = (file) => {
-        window.open(`http://${STHost.ip}:${STHost.port2}/uploads/pdfs/${file}.pdf`, '_blank')
+        window.open(`https://presenterkitstorage.blob.core.windows.net/pdfs/${file}.pdf`, '_blank')
     }
 
     const playSlide = (index) => {
@@ -49,6 +48,7 @@ export const Slides = () => {
 
 
     useEffect(() => {
+        console.log("active: ", SSSlide.active, "play: ", SSSlide.play, SSSlides.list)
         const onKeyUp = (e) => {
             if (e.key === 'ArrowLeft') changePage('<')
             if (e.key === 'ArrowRight') changePage('>')
@@ -67,7 +67,7 @@ export const Slides = () => {
                         {SSSlides.list.map((slide, index) => {
                             return (
                                 <div className={sty.theatreItem} key={index} onClick={() => playSlide(index)}>
-                                    <img className={sty.theatreItemImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.png`} />
+                                    <img className={sty.theatreItemImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.webp`} />
                                     <div className={sty.theatreItemBtns}>
                                         <button className={sty.theatreItemBtn} onClick={() => downloadPdf(slide.name)}>
                                             <Icon name='arrow-down' size={24} color='--system-blue' />
@@ -90,13 +90,13 @@ export const Slides = () => {
                 <div className={sty.theatrePresenter}>
                     {SSSlide.active.index === SSSlide.play.index
                         ? <div className={sty.theatrePresenterView}>
-                            <img className={sty.theatrePresenterImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png`} />
+                            <img className={sty.theatrePresenterImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                             <div className={sty.theatreItemLive}>
                                 <Icon name='radio-button-on' size={20} color='--system-red' />
                             </div>
                         </div>
                         : <>
-                            <img className={sty.theatrePresenterImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.play.index].name}/${SSSlide.play.page}.png`} />
+                            <img className={sty.theatrePresenterImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.play.index].name}/${SSSlide.play.page}.webp`} />
                             <button className={sty.theatrePresenterBtn} style={{ left: 0, display: SSSlide.play.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                             <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                         </>

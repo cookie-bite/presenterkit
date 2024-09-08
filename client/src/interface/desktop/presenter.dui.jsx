@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
-import { STHost, STUI, STSlide, STSlides, STTheatre, STSpinner } from '../../stores/app.store'
+import { STHost, STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
 
 import { Icon, Spinner } from '../../components/core.cmp'
 
@@ -8,7 +8,6 @@ import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Presenter = ({ ws, core }) => {
-    const SSHost = useSnapshot(STHost)
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
     const SSSpinner = useSnapshot(STSpinner)
@@ -25,21 +24,29 @@ export const Presenter = ({ ws, core }) => {
 
     const uploadFile = (e) => {
         const file = e.target.files[0]
-        
+
         if (file) {
             STSpinner.isActive = true
 
             const formData = new FormData()
             formData.append('file', file, file.name)
+            const fileName = file.name.replace(/\.[^/.]+$/, "")
 
-            fetch(`http://localhost:${STHost.port2}/slide`, { method: 'post', body: formData })
+            fetch(`https://pk-pdf2img.azurewebsites.net/api/Convert?fileName=${fileName}&code=HdqQb5u0JVhYERwSGsn9xz2ddp57ctX8Z97AAneukmAzAzFuyCdeCQ==`, { method: 'post', body: formData })
                 .then((res) => res.json())
                 .then((res) => {
                     if (res.success) {
-                        STSpinner.isActive = false
-                        STSlide.active.page = 1
-                        STSlide.active.index = STSlides.list.length
-                        STSlides.list.push(res.slide)
+                        const headers = { 'Content-type': 'application/json' }
+                        const body = JSON.stringify({ eventID: STEvent.id, slide: res.slide })
+
+                        fetch(`http://localhost:${STHost.port2}/slide`, { method: 'post', headers, body })
+                            .then((res) => res.json())
+                            .then((res) => {
+                                STSpinner.isActive = false
+                                STSlide.active.page = 1
+                                STSlide.active.index = STSlides.list.length
+                                STSlides.list.push(res.slide)
+                            })
                     }
                 })
         }
@@ -70,7 +77,10 @@ export const Presenter = ({ ws, core }) => {
     }
 
     const deleteSlide = () => {
-        fetch(`http://localhost:${STHost.port2}/slide`, { method: 'delete', headers: { 'Content-type': 'application/json' }, body: JSON.stringify({ name: STSlides.list[STSlide.active.index].name }) })
+        const headers = { 'Content-type': 'application/json' }
+        const body = JSON.stringify({ eventID: STEvent.id, slide: STSlides.list[STSlide.active.index] })
+
+        fetch(`http://localhost:${STHost.port2}/slide`, { method: 'delete', headers, body })
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
@@ -101,7 +111,7 @@ export const Presenter = ({ ws, core }) => {
     }
 
     const sendSlideUpdate = (isStarted, pageUpdate = false) => {
-        ws.send(JSON.stringify({ command: 'UPDT_SLDS', room: core.userRoom, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
+        ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
     }
 
 
@@ -139,7 +149,7 @@ export const Presenter = ({ ws, core }) => {
                                         className={sty.slidePreview}
                                         style={{ border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
                                         onClick={() => changeSlide(index)}>
-                                        <img className={sty.slidePreviewImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[index].name}/1.png`} />
+                                        <img className={sty.slidePreviewImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[index].name}/1.webp`} />
                                     </div>
                                 )
                             })}
@@ -165,9 +175,9 @@ export const Presenter = ({ ws, core }) => {
                                 </div>
                             </div>
                             <div className={sty.activeSlide}>
-                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png)` }}></div>
+                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
                                 <div className={sty.activePage} onClick={() => previewTheatre()}>
-                                    <img className={sty.activePageImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png`} />
+                                    <img className={sty.activePageImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                                 </div>
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
@@ -191,7 +201,7 @@ export const Presenter = ({ ws, core }) => {
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}
                                             onClick={() => { STSlide.active.page = (index + 1) }}>
-                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.png`} />
+                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
                                         </div>
                                     )
                                 })}
@@ -204,7 +214,7 @@ export const Presenter = ({ ws, core }) => {
 
             {SSTheatre.show &&
                 <div className={sty.theatrePresenter}>
-                    <img className={sty.theatrePresenterImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png`} />
+                    <img className={sty.theatrePresenterImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                     <button className={sty.theatrePresenterBtn} style={{ left: 0, display: SSSlide.active.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                     <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                 </div>

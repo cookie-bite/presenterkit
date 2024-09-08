@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STShare, STShares } from '../../stores/app.store'
+import { STEvent, STShare, STShares } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 import { isValidUrl } from '../../utilities/core.utils'
 
@@ -88,19 +88,19 @@ export const Shares = ({ ws }) => {
         e.stopPropagation()
         if (STShare.active === STShares.list.length - 1) STShare.active = STShares.list.length - 2
         STShares.list.splice(index, 1)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'update', shares: STShares.list }))
+        ws.send(JSON.stringify({ command: 'SHR_ACT', eventID: STEvent.id, action: 'update', shares: STShares.list }))
     }
 
     const saveShare = (type, state) => {
         STShares.list[STShare.active][type] = state
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'save', shares: STShares.list }))
+        ws.send(JSON.stringify({ command: 'SHR_ACT', eventID: STEvent.id, action: 'save', shares: STShares.list }))
     }
 
     const sendShare = () => {
         STShares.list[STShare.active].urls = STShares.list[STShare.active].urls.filter(u => STShares.list[STShare.active].urls.length === 1 ? u : u.link)
         STShares.list[STShare.active].isShared = true
         console.log(STShares.list)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STShares.list, activeShare: STShare.active }))
+        ws.send(JSON.stringify({ command: 'SHR_ACT', eventID: STEvent.id, action: 'send', shares: STShares.list, activeShare: STShare.active }))
     }
 
     const switchShare = (index) => {

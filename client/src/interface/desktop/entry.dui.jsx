@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STUser, STEntry, STCooldown } from '../../stores/app.store'
+import { STUser, STEntry, STCooldown, STEvent } from '../../stores/app.store'
+import { RTAuth } from '../../routes/routes'
 import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
 
-export const Entry = ({ ws, core }) => {
+export const Entry = ({ ws }) => {
+    const SSUser = useSnapshot(STUser)
     const SSCooldown = useSnapshot(STCooldown)
 
     const inputAnim = useAnimation()
@@ -15,16 +17,13 @@ export const Entry = ({ ws, core }) => {
     const [username, setUsername] = useState('')
 
 
-    const joinRoom = () => {
-        const interval = setInterval(() => {
+    const joinRoom = async () => {
+        const interval = setInterval(async () => {
             if (ws.readyState === 1) {
-                ws.send(JSON.stringify({ command: 'JOIN_ROOM', isPresenter: core.isPresenter, roomActivity: 'in lobby' }))
+                if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
 
-                if (core.isPresenter) {
-                    STUser.name = 'Presenter'
-                    STEntry.show = false
-                    ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username: 'Presenter', roomActivity: 'joined' }))
-                }
+                console.log('JOIN_ROOM event', STEvent.id)
+                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id, token: localStorage.getItem('ACS_TKN') }))
 
                 clearInterval(interval)
             }
@@ -33,8 +32,8 @@ export const Entry = ({ ws, core }) => {
 
     const enterRoom = () => {
         if (username === '') { return inputAnim.start({ x: [15 * 0.789, 15 * -0.478, 15 * 0.29, 15 * -0.176, 15 * 0.107, 15 * -0.065, 0] }) }
-        
-        ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, username, roomActivity: 'joined' }))
+
+        ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'joined' }))
         STEntry.show = false
         STUser.name = username
         setUsername('')
@@ -69,7 +68,7 @@ export const Entry = ({ ws, core }) => {
     return (
         <motion.div className={sty.entryPage}
             exit={{ opacity: 0 }}
-            transition={{ ease: 'easeInOut', duration: core.isPresenter ? 0 : 0.5 }}
+            transition={{ ease: 'easeInOut', duration: SSUser.isPresenter ? 0 : 0.5 }}
         >
             {SSCooldown.active
                 ? <motion.div className={sty.cooldown}

@@ -9,7 +9,7 @@ const Quest = ({ text, index }) => {
         if (!core.isMobile) {
             Object.assign(STDisplay, { quest: e.object.quest, author: e.object.author })
             STQuests.list[index].effect = false
-            ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay, index }))
+            ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay, index }))
         }
     }
 

@@ -1,13 +1,23 @@
 import { proxy } from 'valtio'
 
 
+export const STAppUI = proxy({ name: 'Account' })
+
+export const STAccountUI = proxy({ name: localStorage.getItem('SIGNED_IN') ? 'Board' : 'Auth' })
+
+export const STAuthUI = proxy({ name: 'SignIn' })
+
+export const STRoute = proxy({ path: window.location.pathname, params: {} })
+
+export const STEvent = proxy({ id: '', name: '' })
+
 export const STApp = proxy({ isFullscreen: false })
 
 export const STHost = proxy({ ip: '', all: [], port1: '3000', port2: process.env.NODE_ENV === 'development' ? '50000' : '3000' })
 
 export const STUI = proxy({ name: '' })
 
-export const STUser = proxy({ id: '', name: '', color: '#ffffff' })
+export const STUser = proxy({ id: '', name: '', color: '#ffffff', isPresenter: false })
 
 export const STUsers = proxy({ list: Array(1).fill() })
 

@@ -12,13 +12,7 @@ export const QRScreen = () => {
     const [ssid, setSsid] = useState('')
     const [pass, setPass] = useState('')
 
-    const SSHost = useSnapshot(STHost)
     const SSUI = useSnapshot(STUI)
-
-
-    const changeIP = () => {
-        STHost.ip = STHost.all.at(STHost.all.indexOf(STHost.ip) + 1 - STHost.all.length)
-    }
 
 
     useEffect(() => {
@@ -57,7 +51,7 @@ export const QRScreen = () => {
                     </div>
                     <div className={sty.qr}>
                         <div className={sty.qrBg}>
-                            <QRCode value={`http://${SSHost.ip}:${SSHost.port1}`} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
+                            <QRCode value={`http://${window.location.hostname}:${STHost.port1}`} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
                         </div>
                         <h1 className={sty.qrLbl} style={{ animationDelay: '1.5s' }}>2. Enter App</h1>
                         <div className={sty.qrForm}>
@@ -67,13 +61,10 @@ export const QRScreen = () => {
                             </div>
                             <div className={sty.qrInputs}>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{`http://${SSHost.ip}:${SSHost.port1}`}</h3>
+                                    <h3 className={sty.qrHostLbl}>{`http://${window.location.hostname}:${STHost.port1}`}</h3>
                                 </div>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{SSHost.ip}</h3>
-                                    {SSHost.all.length > 1 && <div className={sty.qrHostIcon} onClick={() => changeIP()}>
-                                        <Icon name='sync' size={22} color={'--system-blue'} />
-                                    </div>}
+                                    <h3 className={sty.qrHostLbl}>{`http://${window.location.hostname}:${STHost.port1}`}</h3>
                                 </div>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STQuests, STUI, STUser } from '../../stores/app.store'
+import { STEvent, STQuests, STUI, STUser } from '../../stores/app.store'
 import { STDisplay } from '../../stores/scene.store'
 
 import { Panel } from '../../components/core.cmp'
@@ -32,20 +32,20 @@ export const Quests = ({ ws, core }) => {
     const setDisplay = (quest, index) => {
         Object.assign(STDisplay, { quest: quest.label, author: quest.username })
         STQuests.list[index].effect = false
-        ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay, index }))
+        ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay, index }))
     }
 
     const send = () => {
         if (text.trim() !== '') {
-            if (core.isPresenter && /^\d+$/.test(text)) {
+            if (SSUser.isPresenter && /^\d+$/.test(text)) {
                 for (let i = 0; i < +text; i++) {
                     let quest = genQuest('long')
-                    setTimeout(() => ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, ...quest })), 1000 * i)
+                    setTimeout(() => ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, userID: STUser.id, ...quest })), 1000 * i)
                 }
             } else {
                 let temp = text
                 while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-                ws.send(JSON.stringify({ command: 'APR_REQ', room: core.adminRoom, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
+                ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
             }
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '28px', 'min-width': '232px' })
@@ -72,14 +72,14 @@ export const Quests = ({ ws, core }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', room: core.userRoom, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
         }, timeout)
     }
 

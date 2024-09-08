@@ -1,6 +1,9 @@
 import { motion, AnimatePresence, usePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
+
 import { STMessages, STQueue } from '../../stores/admin.store'
+import { STEvent } from '../../stores/app.store'
+
 import { Icon } from '../../components/core.cmp'
 import { Segment } from '../../components/core.cmp'
 
@@ -13,11 +16,11 @@ const Message = ({ ws, msg, index }) => {
 
 
     const aprReq = (index) => {
-        ws.send(JSON.stringify({ command: 'SEND_USER', userID: STQueue.list[index].userID, username: STQueue.list[index].author, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
+        ws.send(JSON.stringify({ command: 'SEND_USERS', eventID: STEvent.id, id: STQueue.list[index].id, userID: STQueue.list[index].userID, username: STQueue.list[index].author, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
     }
 
     const rejectReq = (index) => {
-        ws.send(JSON.stringify({ command: 'CLDW_USER', userID: STQueue.list[index].userID, quest: { index } }))
+        ws.send(JSON.stringify({ command: 'CLDW_USER', eventID: STEvent.id, userID: STQueue.list[index].userID, quest: { index } }))
     }
 
 

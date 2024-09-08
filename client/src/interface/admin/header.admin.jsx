@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STUsers } from '../../stores/app.store'
+import { STEvent, STUsers } from '../../stores/app.store'
 import { STModerator, STSearch, STTab } from '../../stores/admin.store'
 import { STDisplay } from '../../stores/scene.store'
 
@@ -36,8 +36,8 @@ export const Header = ({ ws, core }) => {
                         {finalResults.map((user, index) => {
                             return (
                                 <div className={sty.searchListItem} onClick={() => updateStatus(user.userID, true)} key={index}>
-                                    <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)` }} key={index}>
-                                        <h1 className={sty.moderatorLbl} style={{ color: user.userColor }}>{user.username.charAt()}</h1>
+                                    <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.color}24, ${user.color}2B)` }} key={index}>
+                                        <h1 className={sty.moderatorLbl} style={{ color: user.color }}>{user.username.charAt()}</h1>
                                     </div>
                                     <h4 className={sty.searchListItemLbl}>{user.username}</h4>
                                 </div>
@@ -56,7 +56,7 @@ export const Header = ({ ws, core }) => {
     const send = () => {
         if (title.trim() !== '' && title !== STDisplay.quest && title !== '') {
             Object.assign(STDisplay, { quest: title, author: '' })
-            ws.send(JSON.stringify({ command: 'DISP_LBL', room: [core.userRoom, core.adminRoom], display: STDisplay }))
+            ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
             setTitle('')
         }
     }
@@ -67,7 +67,7 @@ export const Header = ({ ws, core }) => {
 
     const updateStatus = (userID, isAdmin) => {
         setTerm('')
-        ws.send(JSON.stringify({ command: 'SET_STTS', room: core.userRoom, userID, isAdmin }))
+        ws.send(JSON.stringify({ command: 'SET_STTS', eventID: STEvent.id, userID, isAdmin }))
     }
 
     const toggleModerator = (user) => {
@@ -118,8 +118,8 @@ export const Header = ({ ws, core }) => {
                                 transition={{ ease: 'easeInOut', duration: 0.3 }}
                                 onClick={() => toggleModerator(user)}
                             >
-                                <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)`, cursor: user.isPresenter ? 'default' : 'pointer' }}>
-                                    <h1 className={sty.moderatorLbl} style={{ color: user.userColor }}>{user.username.charAt()}</h1>
+                                <div className={sty.moderatorAvtr} style={{ background: `linear-gradient(45deg, ${user.color}24, ${user.color}2B)`, cursor: user.isPresenter ? 'default' : 'pointer' }}>
+                                    <h1 className={sty.moderatorLbl} style={{ color: user.color }}>{user.username.charAt()}</h1>
                                 </div>
                                 {SSModerator.active === user.userID && <div className={sty.activeModerator}>
                                     <h5 className={sty.activeModeratorLbl}>{user.username}</h5>

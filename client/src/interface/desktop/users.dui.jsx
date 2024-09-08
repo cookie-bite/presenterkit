@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { STUI, STUser, STUserPanel, STUsers } from '../../stores/app.store'
+import { STEvent, STUI, STUser, STUserPanel, STUsers } from '../../stores/app.store'
 import { Icon, Panel } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
@@ -29,7 +29,8 @@ export const Users = ({ ws, core }) => {
         const submitUser = () => {
             toggleInput()
             if (STUser.name !== username) {
-                ws.send(JSON.stringify({ command: 'SET_USER', room: core.userRoom, userID: STUser.id, username: username, roomActivity: 'updated' }))
+                console.log('SET_USER', STEvent.id)
+                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username, roomActivity: 'updated' }))
                 setTimeout(() => STUser.name = username, 500)
             }
         }
@@ -45,8 +46,8 @@ export const Users = ({ ws, core }) => {
             result.map((user, index) => {
                 return (
                     <div className={sty.userListItem} key={index}>
-                        <div className={sty.userListItemAvatarView} style={{ background: `linear-gradient(45deg, ${user.userColor}24, ${user.userColor}2B)` }}>
-                            <h1 className={sty.userListItemAvatarLbl} style={{ color: user.userColor }}>{index === 0 ? username.charAt() : user.username.charAt()}</h1>
+                        <div className={sty.userListItemAvatarView} style={{ background: `linear-gradient(45deg, ${user.color}24, ${user.color}2B)` }}>
+                            <h1 className={sty.userListItemAvatarLbl} style={{ color: user.color }}>{index === 0 ? username.charAt() : user.username.charAt()}</h1>
                         </div>
                         <div className={sty.userListItemLblView}>
                             {index === 0

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STHost, STUI, STSlide, STSlides, STPages, STTheatre } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STPages, STTheatre } from '../../stores/app.store'
 
 import { Icon } from '../../components/core.cmp'
 
@@ -9,7 +9,6 @@ import sty from '../../styles/modules/mobile.module.css'
 
 
 export const Slides = () => {
-    const SSHost = useSnapshot(STHost)
     const SSUI = useSnapshot(STUI)
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
@@ -18,7 +17,7 @@ export const Slides = () => {
 
 
     const downloadPdf = (file) => {
-        window.open(`http://${STHost.ip}:${STHost.port2}/uploads/pdfs/${file}.pdf`, '_blank')
+        window.open(`https://presenterkitstorage.blob.core.windows.net/pdfs/${file}.pdf`, '_blank')
     }
 
     const playSlide = (index) => {
@@ -52,7 +51,7 @@ export const Slides = () => {
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ ease: 'easeInOut', duration: 0.3 }}
-                        style={{ backgroundImage: `url(http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.png)` }}
+                        style={{ backgroundImage: `url(https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}
                         onClick={() => toggleCloseBtn()}
                     >
                         {SSTheatre.showClose && <button className={sty.theatreCloseBtn} onClick={() => STTheatre.show = false}>
@@ -111,7 +110,7 @@ export const Slides = () => {
                                         {SSSlides.list.map((slide, index) => {
                                             return (
                                                 <div className={sty.slideItem} key={index} onClick={() => playSlide(index)}>
-                                                    <img className={sty.slideItemImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.png`} />
+                                                    <img className={sty.slideItemImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.webp`} />
                                                     {SSSlide.active.index === index && <div className={sty.slideItemLive}>
                                                         <Icon name='radio-button-on' size={20} color='--system-red' />
                                                     </div>}
@@ -137,7 +136,7 @@ export const Slides = () => {
                                     return (
                                         <div key={index} className={sty.slidePage} onClick={() => { STSlide.active.page = (index + 1) }}
                                             style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
-                                            <img className={sty.slidePageImg} src={`http://${SSHost.ip}:${SSHost.port2}/uploads/imgs/${SSSlides.list[SSSlide.play.index].name}/${index + 1}.png`} />
+                                            <img className={sty.slidePageImg} src={`https://presenterkitstorage.blob.core.windows.net/imgs/${SSSlides.list[SSSlide.play.index].name}/${index + 1}.webp`} />
                                             <h5 className={sty.slidePageNumber}>{index + 1}</h5>
                                         </div>
                                     )
