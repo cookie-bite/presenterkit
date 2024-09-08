@@ -6,8 +6,11 @@
   "license": "ISC",
   "main": "api.js",
   "scripts": {
+    "start": "pm2 start ./api.js --no-daemon",
+    "stop": "pm2 delete all",
     "dev": "nodemon api --ignore client/",
-    "client": "cd client && npm start"
+    "client": "cd client && npm start",
+    "build": "npm i && cd client && npm i && npm run build && cd .."
   },
   "dependencies": {
     "@azure/storage-blob": "^12.24.0",
@@ -17,7 +20,6 @@
     "express": "^4.18.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "lokijs": "^1.5.12",
     "mongodb": "^6.8.0",
     "nodemailer": "^6.9.14",
     "ws": "^8.12.0"
