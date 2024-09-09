@@ -6,6 +6,7 @@
   "license": "ISC",
   "main": "api.js",
   "scripts": {
+    "node": "node api.js",
     "start": "pm2 start api.js --no-daemon",
     "stop": "pm2 delete all",
     "dev": "nodemon api --ignore client/",
