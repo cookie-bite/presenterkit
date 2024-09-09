@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 
-require('dotenv/config')
+require('dotenv').config()
 
 
 module.exports.mailSender = (receiver, subject, text) => {
