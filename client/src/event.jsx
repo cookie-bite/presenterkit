@@ -30,7 +30,7 @@ export const Event = () => {
     var ws = null
     var pingTimeout = null
 
-    const connect = () => ws = new WebSocket(`ws://${window.location.hostname}:${core.isDev ? 50000 : 3000}`)
+    const connect = () => ws = new WebSocket(process.env.REACT_APP_WS_URL)
 
     const reconnect = () => location.reload()
 
