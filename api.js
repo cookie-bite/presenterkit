@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken')
 
 const { genColor, genRandom } = require('./utils/core.utils')
 
-require('dotenv/config')
+if (process.env.NODE_ENV === 'DEV') require('dotenv/config')
 
 
 

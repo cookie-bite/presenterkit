@@ -6,7 +6,7 @@ const { mailSender } = require('../utils/nodemailer.utils')
 const { collection } = require('../api')
 const { ObjectId } = require('mongodb')
 
-require('dotenv/config')
+if (process.env.NODE_ENV === 'DEV') require('dotenv/config')
 
 
 
