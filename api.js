@@ -274,10 +274,10 @@ wss.on('connection', async (ws) => {
 
 
     ws.on('close', async () => {
-        const userList = await db[`event-${req.eventID}`].findAsync({})
-        await db[`event-${req.eventID}`].removeAsync({ userID })
+        const userList = await db[`event-${ws.eventID}`].findAsync({})
+        await db[`event-${ws.eventID}`].removeAsync({ userID })
         const roomActivity = { user: { id: userID, name: ws.username }, activity: 'left' }
-        await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
+        await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
 
         sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
         sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
