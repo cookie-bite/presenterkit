@@ -316,9 +316,6 @@ module.exports.collection = (c) => DB.collection(c)
 
 // MARK: Routes
 
-app.use('/', express.static(path.join(__dirname, 'client', 'build')))
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'build')))
-
 app.use('/auth', require('./routes/auth.routes'))
 app.use('/event', require('./routes/event.routes'))
 
@@ -333,6 +330,7 @@ app.post('/slide', async (req, res) => {
     sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
     res.json({ success: true, message: 'File uploaded', slide: newSlide })
 })
+
 
 app.delete('/slide', async (req, res) => {
     const event = await db.events.findOneAsync({ eventID: req.body.eventID })
@@ -352,3 +350,7 @@ app.delete('/slide', async (req, res) => {
     sendRoom(req.body.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
     res.json({ success: true, message: 'File deleted' })
 })
+
+
+app.use('/', express.static(path.join(__dirname, 'client', 'build')))
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'build', 'index.html')))
