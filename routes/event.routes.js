@@ -7,7 +7,7 @@ const { genRandom } = require('../utils/core.utils')
 
 const joiSchema = require('../utils/joi.utils')
 
-if (process.env.NODE_ENV === 'DEV') require('dotenv/config')
+require('dotenv/config')
 
 
 

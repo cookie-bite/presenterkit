@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 
-if (process.env.NODE_ENV === 'DEV') require('dotenv/config')
+require('dotenv/config')
 
 
 module.exports.mailSender = (receiver, subject, text) => {
