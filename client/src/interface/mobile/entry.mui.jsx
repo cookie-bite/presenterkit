@@ -18,8 +18,10 @@ export const Entry = ({ ws }) => {
     const joinRoom = () => {
         const interval = setInterval(async () => {
             if (ws.readyState === 1) {
-                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id, token: localStorage.getItem('ACS_TKN') }))
                 clearInterval(interval)
+                
+                alert(`eventID ${STEvent.id}`)
+                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id, token: localStorage.getItem('ACS_TKN') }))
             }
         }, 10)
     }

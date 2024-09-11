@@ -12,6 +12,7 @@ export const QRScreen = () => {
     const [pass, setPass] = useState('')
 
     const SSUI = useSnapshot(STUI)
+    const SSEvent = useSnapshot(STEvent)
 
 
     useEffect(() => {
@@ -50,20 +51,20 @@ export const QRScreen = () => {
                     </div>
                     <div className={sty.qr}>
                         <div className={sty.qrBg}>
-                            <QRCode value={`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
+                            <QRCode value={`${process.env.REACT_APP_HOST_URL}/event?id=${SSEvent.id}`} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
                         </div>
                         <h1 className={sty.qrLbl} style={{ animationDelay: '1.5s' }}>2. Enter App</h1>
                         <div className={sty.qrForm}>
                             <div className={sty.qrLbls}>
-                                <h3 className={sty.qrInputLbl}>URL:</h3>
-                                <h3 className={sty.qrInputLbl}>IP:</h3>
+                                <h3 className={sty.qrInputLbl}>Url:</h3>
+                                <h3 className={sty.qrInputLbl}>Code:</h3>
                             </div>
                             <div className={sty.qrInputs}>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`}</h3>
+                                    <h3 className={sty.qrHostLbl}>{process.env.REACT_APP_HOST_URL}</h3>
                                 </div>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`}</h3>
+                                    <h3 className={sty.qrHostLbl}>{SSEvent.id}</h3>
                                 </div>
                             </div>
                         </div>
