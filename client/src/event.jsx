@@ -56,17 +56,18 @@ export const Event = () => {
             STUser.name = res.user.name
             STUser.color = res.user.color
             STUser.isPresenter = res.user.isPresenter
-            STSlide.active = res.activeSlide
             STSlides.list = res.slides
             STShares.list = res.shares
             Object.assign(STDisplay, res.display)
             Object.assign(STUserPanel, res.roomActivity)
-
+            
             
             if (res.user.isPresenter) {
                 STEntry.show = false
                 STQueue.list = res.queue
                 STConfig.forwarding = res.config.forwarding
+            } else {
+                STSlide.active = res.activeSlide
             }
 
             if (res.quests.length) {
@@ -137,7 +138,7 @@ export const Event = () => {
             if ((res.roomActivity.activity === 'updated' && res.roomActivity.user.id !== STUser.id) || res.roomActivity.activity !== 'updated') STUsers.list = res.userList
             console.log('ROOM_ACTY', STUsers.list)
         } else if (res.command === 'UPDT_SLDS') {
-            if (STUser.isPresenter) {
+            if (!STUser.isPresenter) {
                 if (res.slidesUpdate) STSlides.list = res.slides
                 else {
                     console.log(res.activeSlide)

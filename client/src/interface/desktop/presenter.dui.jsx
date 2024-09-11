@@ -12,6 +12,7 @@ export const Presenter = ({ ws }) => {
     const SSSlides = useSnapshot(STSlides)
     const SSSpinner = useSnapshot(STSpinner)
     const SSTheatre = useSnapshot(STTheatre)
+    const SSEvent = useSnapshot(STEvent)
 
     const inputRef = useRef()
     const pageCount = STSlides.list[STSlide.active.index]?.pageCount
@@ -32,7 +33,7 @@ export const Presenter = ({ ws }) => {
             formData.append('file', file, file.name)
             const fileName = file.name.replace(/\.[^/.]+$/, "")
 
-            fetch(`${process.env.REACT_APP_FUNC_URL}?code=${process.env.REACT_APP_FUNC_CODE}&fileName=${fileName}`, { method: 'post', body: formData })
+            fetch(`${process.env.REACT_APP_FUNC_URL}?code=${process.env.REACT_APP_FUNC_CODE}&fileName=${fileName}&eventID=${STEvent.id}`, { method: 'post', body: formData })
                 .then((res) => res.json())
                 .then((res) => {
                     if (res.success) {
@@ -84,12 +85,12 @@ export const Presenter = ({ ws }) => {
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    const index = STSlide.active.index
+                    const deleteIndex = STSlide.active.index
                     STSlide.active.page = 1
                     if (STSlides.list.length !== 1 && STSlide.active.index === STSlides.list.length - 1) {
                         STSlide.active.index = STSlide.active.index - 1
                     }
-                    STSlides.list.splice(index, 1)
+                    STSlides.list.splice(deleteIndex, 1)
                 }
             })
     }
@@ -149,7 +150,7 @@ export const Presenter = ({ ws }) => {
                                         className={sty.slidePreview}
                                         style={{ border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
                                         onClick={() => changeSlide(index)}>
-                                        <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[index].name}/1.webp`} />
+                                        <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
                                     </div>
                                 )
                             })}
@@ -175,9 +176,9 @@ export const Presenter = ({ ws }) => {
                                 </div>
                             </div>
                             <div className={sty.activeSlide}>
-                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
+                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
                                 <div className={sty.activePage} onClick={() => previewTheatre()}>
-                                    <img className={sty.activePageImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
+                                    <img className={sty.activePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                                 </div>
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
@@ -201,7 +202,7 @@ export const Presenter = ({ ws }) => {
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}
                                             onClick={() => { STSlide.active.page = (index + 1) }}>
-                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
+                                            <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
                                         </div>
                                     )
                                 })}
@@ -214,7 +215,7 @@ export const Presenter = ({ ws }) => {
 
             {SSTheatre.show &&
                 <div className={sty.theatrePresenter}>
-                    <img className={sty.theatrePresenterImg} src={`${process.env.REACT_APP_BLOB_URL}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
+                    <img className={sty.theatrePresenterImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                     <button className={sty.theatrePresenterBtn} style={{ left: 0, display: SSSlide.active.page === 1 ? 'none' : 'flex' }} onClick={() => changePage('<')}></button>
                     <button className={sty.theatrePresenterBtn} style={{ right: 0 }} onClick={() => changePage('>')}></button>
                 </div>

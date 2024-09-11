@@ -321,11 +321,11 @@ app.use('/event', require('./routes/event.routes'))
 
 
 app.post('/slide', async (req, res) => {
-    const { eventID } = req.body
-    const event = await db.events.findOneAsync({ eventID })
+    const { eventID, slide } = req.body
 
-    const newSlide = { name: req.body.slide.name, pageCount: req.body.slide.pageCount }
+    const newSlide = { name: slide.name, pageCount: slide.pageCount }
     await db.events.updateAsync({ eventID }, { $push: { slides: newSlide } })
+    const event = await db.events.findOneAsync({ eventID })
 
     sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
     res.json({ success: true, message: 'File uploaded', slide: newSlide })
@@ -333,22 +333,26 @@ app.post('/slide', async (req, res) => {
 
 
 app.delete('/slide', async (req, res) => {
-    const event = await db.events.findOneAsync({ eventID: req.body.eventID })
+    const { eventID, slide } = req.body
 
     const blobService = await BlobServiceClient.fromConnectionString(process.env.AZURE_BLOB_CONNECT)
-    const pdfsContainer = await blobService.getContainerClient('pdfs')
-    const imgsContainer = await blobService.getContainerClient('imgs')
+    const pdfsContainer = await blobService.getContainerClient(`event/${eventID}/pdfs`)
+    const imgsContainer = await blobService.getContainerClient(`event/${eventID}/imgs`)
 
-    const pdfBlob = pdfsContainer.getBlockBlobClient(`${req.body.slide.name}.pdf`)
+    const pdfBlob = pdfsContainer.getBlockBlobClient(`${slide.name}.pdf`)
     pdfBlob.delete()
 
-    for (let i = 1; i <= req.body.slide.pageCount; i++) {
-        const imgBlob = imgsContainer.getBlockBlobClient(`${req.body.slide.name}/${i}.webp`)
+    for (let i = 1; i <= slide.pageCount; i++) {
+        const imgBlob = imgsContainer.getBlockBlobClient(`${slide.name}/${i}.webp`)
         imgBlob.delete()
     }
 
-    sendRoom(req.body.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
-    res.json({ success: true, message: 'File deleted' })
+    const event = await db.events.findOneAsync({ eventID })
+    event.slides = event.slides.filter((s) => s.name !== slide.name)
+    await db.events.updateAsync({ eventID }, { $set: { slides: event.slides } })
+
+    sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
+    res.json({ success: true, message: 'Slide deleted' })
 })
 
 

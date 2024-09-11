@@ -20,7 +20,7 @@ router.post('/create', async (req, res) => {
 
     try {
         const payload = jwt.verify(req.headers.authorization.split(' ')[1], process.env.ACS_TKN_SCT)
-        const eventID = genRandom(4)
+        const eventID = genRandom(4, 10)
 
         await db.events.insertAsync({
             eventID,
