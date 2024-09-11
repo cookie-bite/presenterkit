@@ -171,6 +171,8 @@ wss.on('connection', async (ws) => {
             const roomActivity = { user: { id: userID, name: req.username }, activity: req.roomActivity }
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
 
+            ws.username = req.username
+
             sendRoom(req.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
             sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
         } else if (req.command === 'SET_STTS') {
@@ -267,10 +269,10 @@ wss.on('connection', async (ws) => {
 
 
     ws.on('close', async () => {
-        const userList = await db[`event-${ws.eventID}`].findAsync({})
         await db[`event-${ws.eventID}`].removeAsync({ userID })
         const roomActivity = { user: { id: userID, name: ws.username }, activity: 'left' }
         await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
+        const userList = await db[`event-${ws.eventID}`].findAsync({})
 
         sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
         sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })

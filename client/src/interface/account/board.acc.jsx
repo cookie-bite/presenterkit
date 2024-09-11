@@ -22,7 +22,7 @@ export const Board = () => {
             if (data.success) {
                 STEvent.id = data.event.id
                 STEvent.name = data.event.name
-                goTo('/event')
+                goTo(`/event?id=${STEvent.id}`)
             }
         })
     }

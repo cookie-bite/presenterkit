@@ -9,6 +9,8 @@ export const Router = (props) => {
 
 
 export const goTo = (path = '/') => {
+    const url = new URL(window.location.origin + path)
     window.history.pushState({}, '', path)
-    STRoute.path = path
+
+    STRoute.path = url.pathname
 }

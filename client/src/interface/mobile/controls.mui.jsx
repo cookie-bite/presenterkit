@@ -11,7 +11,7 @@ import sty from '../../styles/modules/mobile.module.css'
 var delay = null
 const timeout = 1500
 
-export const Controls = ({ ws, core }) => {
+export const Controls = ({ ws }) => {
     const SSApp = useSnapshot(STApp)
     const SSUI = useSnapshot(STUI)
     const SSUser = useSnapshot(STUser)
@@ -94,7 +94,7 @@ export const Controls = ({ ws, core }) => {
     const submitUser = () => {
         if (STUser.name !== username) {
             STUser.name = username
-            ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username: username, roomActivity: 'updated' }))
+            ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username, roomActivity: 'updated' }))
         }
     }
 
