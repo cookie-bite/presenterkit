@@ -42,8 +42,8 @@ export const Event = () => {
     connect()
 
     
-    // ws.onopen = () => heartbeat()
-    // ws.onclose = () => { clearTimeout(pingTimeout); reconnect() }
+    ws.onopen = () => heartbeat()
+    ws.onclose = () => { clearTimeout(pingTimeout); reconnect() }
 
 
 

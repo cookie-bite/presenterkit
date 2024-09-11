@@ -121,9 +121,6 @@ const User = ({ user, position }) => {
         }
 
 
-        console.log('message')
-
-
         return (
             <>
                 {(SSChat.queue.hasOwnProperty(user.userID) && SSChat.queue[user.userID]?.length > 0) && <Stadium />}

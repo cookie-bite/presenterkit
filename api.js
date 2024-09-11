@@ -87,22 +87,15 @@ const init = () => {
 
 // MARK: Websocket
 
-// const interval = setInterval(() => {
-//     console.log('interval')
-//     const CLWS = db.getCollection('websocket')
-//     const sockets = CLWS.find()
+const interval = setInterval(() => {
+    wss.clients.forEach((client) => {
+        if (client.isAlive === false && client.readyState === WebSocket.OPEN) return client.terminate()
 
-//     sockets.forEach((socket) => {
-//         console.log('Users', socket.userRoom.length)
-//         socket.userRoom.forEach((client) => {
-//             if (client.isAlive === false && client.readyState === WebSocket.OPEN) return client.terminate()
-
-//             client.isAlive = false
-//             console.log(client.userID, client.readyState)
-//             if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
-//         })
-//     })
-// }, 30000)
+        client.isAlive = false
+        console.log(client.userID, client.readyState)
+        if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
+    })
+}, 30000)
 
 
 
@@ -288,7 +281,7 @@ wss.on('connection', async (ws) => {
 })
 
 
-// wss.on('close', () => clearInterval(interval))
+wss.on('close', () => clearInterval(interval))
 
 
 
