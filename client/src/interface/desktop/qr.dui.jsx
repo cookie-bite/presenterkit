@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STUI } from '../../stores/app.store'
+import { STEvent, STUI } from '../../stores/app.store'
 
 import QRCode from 'react-qr-code'
 import sty from '../../styles/modules/desktop.module.css'
@@ -50,7 +50,7 @@ export const QRScreen = () => {
                     </div>
                     <div className={sty.qr}>
                         <div className={sty.qrBg}>
-                            <QRCode value={process.env.REACT_APP_HOST_URL} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
+                            <QRCode value={`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`} size={Math.round(window.innerWidth / 5)} bgColor={'#00000000'} fgColor={'#ffffff'} />
                         </div>
                         <h1 className={sty.qrLbl} style={{ animationDelay: '1.5s' }}>2. Enter App</h1>
                         <div className={sty.qrForm}>
@@ -60,10 +60,10 @@ export const QRScreen = () => {
                             </div>
                             <div className={sty.qrInputs}>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{process.env.REACT_APP_HOST_URL}</h3>
+                                    <h3 className={sty.qrHostLbl}>{`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`}</h3>
                                 </div>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{process.env.REACT_APP_HOST_URL}</h3>
+                                    <h3 className={sty.qrHostLbl}>{`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`}</h3>
                                 </div>
                             </div>
                         </div>

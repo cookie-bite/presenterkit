@@ -30,7 +30,7 @@ export const sendAuth = (url, config) => new Promise((resolve, reject) => {
             try { return res.json() }
             catch { throw new Error(`Something went wrong!\nHttp: ${res.status}\nRequested URL: ${url}`) }
         })
-        .then(data => { console.log(data); resolve(data) })
+        .then(data => resolve(data))
         .catch(err => reject(err))
 })
 
@@ -46,7 +46,6 @@ export const send = async (url, config) => new Promise(async (resolve, reject) =
             .then((data) => resolve(data))
             .catch((err) => reject(err))
     } else {
-        console.log('token refreshing')
         refreshToken().then(async () => {
             config.headers['Authorization'] = 'Bearer ' + localStorage.getItem('ACS_TKN')
             sendAuth(url, config)

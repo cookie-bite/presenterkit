@@ -49,7 +49,6 @@ export const Slides = () => {
 
 
     useEffect(() => {
-        console.log("active: ", SSSlide.active, "play: ", SSSlide.play, SSSlides.list)
         const onKeyUp = (e) => {
             if (e.key === 'ArrowLeft') changePage('<')
             if (e.key === 'ArrowRight') changePage('>')

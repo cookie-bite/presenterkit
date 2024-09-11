@@ -136,12 +136,10 @@ export const Event = () => {
         } else if (res.command === 'ROOM_ACTY') {
             if (res.roomActivity.activity !== 'in lobby' && res.roomActivity.activity !== 'updated') Object.assign(STUserPanel, res.roomActivity)
             if ((res.roomActivity.activity === 'updated' && res.roomActivity.user.id !== STUser.id) || res.roomActivity.activity !== 'updated') STUsers.list = res.userList
-            console.log('ROOM_ACTY', STUsers.list)
         } else if (res.command === 'UPDT_SLDS') {
             if (!STUser.isPresenter) {
                 if (res.slidesUpdate) STSlides.list = res.slides
                 else {
-                    console.log(res.activeSlide)
                     STSlide.active = res.activeSlide
                     if (res.isStarted && !res.pageUpdate) {
                         Alert.show({

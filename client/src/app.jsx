@@ -17,7 +17,6 @@ export const App = () => {
         for (let param of params.keys()) {
             STRoute.params[param] = params.get(param)
         }
-        console.log(STRoute.params)
     }, [SSRoute.path])
     
     
