@@ -61,7 +61,7 @@ export const QRScreen = () => {
                             </div>
                             <div className={sty.qrInputs}>
                                 <div className={sty.qrHost}>
-                                    <h3 className={sty.qrHostLbl}>{process.env.REACT_APP_HOST_URL}</h3>
+                                    <h3 className={sty.qrHostLbl}>{process.env.REACT_APP_HOST_URL.split('//')[1]}</h3>
                                 </div>
                                 <div className={sty.qrHost}>
                                     <h3 className={sty.qrHostLbl}>{SSEvent.id}</h3>
