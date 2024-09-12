@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { RTAuth, RTEvent, RTUser } from '../../routes/routes'
 import { STEvent, STUser } from '../../stores/app.store'
-import { goTo } from '../../components/core.cmp'
+import { goTo, Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/account.module.css'
 
@@ -18,6 +18,7 @@ export const Dashboard = () => {
     }
 
     const create = () => {
+        setEventName('')
         RTEvent.create(eventName).then((data) => {
             if (data.success) {
                 STUser.events.push({ eventID: data.event.id, name: data.event.name })
@@ -61,25 +62,44 @@ export const Dashboard = () => {
 
 
     return (
-        <div>
-            <h2>{localStorage.getItem('EMAIL')}</h2>
-            <h3>{SSUser.name}</h3>
-            <button className={sty.menuBtn} onClick={() => signOut()} style={{ backgroundColor: 'var(--system-red)' }}>Sign out</button>
-            <br />
-            <input className={sty.menuInput} style={{ marginTop: 15 }} name='eventName' placeholder='Event name' type='text' value={eventName} onChange={(e) => onChange(e.target.value, setEventName)} />
-            <button className={sty.menuBtn} onClick={() => create()}>Create</button>
+        <div className={sty.dashboard}>
+            <div className={sty.profile}>
+                <Icon name='person-circle-o' size={60} color='--system-gray1' />
+                <div className={sty.info}>
+                    <h2 className={sty.username}>{SSUser.name}</h2>
+                    <h4 className={sty.email}>{localStorage.getItem('EMAIL')}</h4>
+                </div>
+                <button className={sty.exitBtn} onClick={() => signOut()} style={{ backgroundColor: 'var(--system-red)' }}>
+                    <Icon name='exit-o' size={24} color='--white' style={{ marginRight: 5 }} />Sign out
+                </button>
+            </div>
 
-            {SSUser.events.map((event) => {
-                return (
-                    <div key={event.eventID}>
-                        <h1>Event name: {event.name}</h1>
-                        <h3>Code: {event.eventID}</h3>
-                        <button className={sty.menuBtn} onClick={() => joinEvent(event.eventID)}>Join</button>
-                        <button className={sty.menuBtn} onClick={() => deleteBy(event.eventID)} style={{ backgroundColor: 'var(--system-red)' }}>Delete</button>
-                        <br />
-                    </div>
-                )
-            })}
+            <div className={sty.eventForm}>
+                <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName} onChange={(e) => onChange(e.target.value, setEventName)} />
+                <button className={sty.eventBtn} onClick={() => create()}>Create</button>
+            </div>
+
+            <div className={sty.events}>
+                {SSUser.events.map((event) => {
+                    return (
+                        <div className={sty.event} key={event.eventID}>
+                            <div className={sty.eventDetails}>
+                                <h1 className={sty.eventName}>{event.name}</h1>
+                                <h3 className={sty.eventCodeLbl}>Code: <strong className={sty.eventCode}>{event.eventID}</strong></h3>
+                            </div>
+                            <div className={sty.eventBtns}>
+                                <button className={sty.deleteBtn} onClick={() => deleteBy(event.eventID)}>
+                                    <Icon name='trash-o' size={24} color='--system-red' />
+                                </button>
+                                <button className={sty.joinBtn} onClick={() => joinEvent(event.eventID)}>
+                                    <Icon name='open-o' size={24} color='--white' style={{ marginRight: 5 }} />Start
+                                </button>
+                            </div>
+                            <br />
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     )
 }
