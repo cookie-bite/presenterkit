@@ -28,7 +28,7 @@ export const Auth = () => {
                 localStorage.setItem('ACS_TKN', data.accessToken)
                 localStorage.setItem('RFS_TKN', data.refreshToken)
                 localStorage.setItem('SIGNED_IN', 'true')
-                goTo('/board')
+                goTo('/dashboard')
             }
         })
     }
@@ -41,7 +41,7 @@ export const Auth = () => {
                 localStorage.setItem('ACS_TKN', data.accessToken)
                 localStorage.setItem('RFS_TKN', data.refreshToken)
                 localStorage.setItem('SIGNED_IN', 'true')
-                goTo('/board')
+                goTo('/dashboard')
             }
         })
     }

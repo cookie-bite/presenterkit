@@ -27,7 +27,7 @@ router.post('/signup', async (req, res) => {
 
     try {
         const hash = await argon2.hash(password + process.env.PEPPER, { type: argon2.argon2id, memoryCost: 15360, timeCost: 2 })
-        const newUser = await collection('users').insertOne({ username, email, password: hash, refreshToken: [], color, balance: 1000 })
+        const newUser = await collection('users').insertOne({ username, email, password: hash, refreshToken: [], color, events: [] })
         const accessToken = genAcsToken({ sub: newUser.insertedId })
         const refreshToken = genRfsToken({ sub: newUser.insertedId })
         collection('users').updateOne({ _id: newUser.insertedId }, { $push: { refreshToken: refreshToken } })

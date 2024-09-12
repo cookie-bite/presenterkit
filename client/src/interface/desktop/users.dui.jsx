@@ -30,7 +30,7 @@ export const Users = ({ ws, core }) => {
             toggleInput()
             if (STUser.name !== username) {
                 console.log('SET_USER', STEvent.id)
-                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username, roomActivity: 'updated' }))
+                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username, roomActivity: 'updated', token: localStorage.getItem('ACS_TKN') }))
                 setTimeout(() => STUser.name = username, 500)
             }
         }

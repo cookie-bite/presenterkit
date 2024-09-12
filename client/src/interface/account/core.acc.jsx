@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Route } from '../../components/core.cmp'
 import { Auth } from './auth.acc'
-import { Board } from './board.acc'
+import { Dashboard } from './dashboard.acc'
 
 
 export const Account = () => {
@@ -16,7 +16,7 @@ export const Account = () => {
 
     return (
         <>
-            <Route path='/board' component={Board} />
+            <Route path='/dashboard' component={Dashboard} />
             <Route path='/auth' component={Auth} />
         </>
     )

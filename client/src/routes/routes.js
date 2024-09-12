@@ -1,6 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import { refreshToken, signIn, signUp, signOut } from './auth.routes'
-import { create } from './event.routes'
+import { create, deleteBy } from './event.routes'
+import { getData } from './user.routes'
 
 
 const API_URL = process.env.REACT_APP_API_URL
@@ -58,4 +59,5 @@ export const send = async (url, config) => new Promise(async (resolve, reject) =
 
 
 export const RTAuth = { refreshToken, signIn, signUp, signOut }
-export const RTEvent = { create }
+export const RTEvent = { create, deleteBy }
+export const RTUser = { getData }

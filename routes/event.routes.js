@@ -1,31 +1,31 @@
 const router = require('express').Router()
 const Datastore = require('@seald-io/nedb')
-const jwt = require('jsonwebtoken')
 
-const { db } = require('../api')
+const { db, collection } = require('../api')
+const { authUser } = require('../middlewares/user.middlewares')
 const { genRandom } = require('../utils/core.utils')
-
 const joiSchema = require('../utils/joi.utils')
+
 
 require('dotenv/config')
 
+module.exports = router
 
 
-router.post('/create', async (req, res) => {
+
+router.post('/create', authUser, async (req, res) => {
     const { name } = req.body
 
     const { error } = joiSchema.createEvent.validate(req.body)
-    console.log(error)
     if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
     try {
-        const payload = jwt.verify(req.headers.authorization.split(' ')[1], process.env.ACS_TKN_SCT)
         const eventID = genRandom(4, 10)
 
-        await db.events.insertAsync({
+        const event = {
             eventID,
-            name: name,
-            presenter: { id: payload.sub },
+            name,
+            presenter: { id: req.user.id },
             queue: [],
             quests: [],
             slides: [],
@@ -34,14 +34,36 @@ router.post('/create', async (req, res) => {
             roomActivity: { user: { id: '', name: '' }, activity: '' },
             display: { quest: 'Welcome to Event', author: '' },
             config: { forwarding: { is: false } }
-        })
+        }
+
+        await db.events.insertAsync(event)
+        await collection('events').insertOne(event)
+        await collection('users').updateOne({ _id: req.user._id }, { $push: { events: { eventID, name } } })
 
         db[`event-${eventID}`] = new Datastore()
 
         res.status(200).json({ success: true, event: { id: eventID, name } })
-    } catch (err) { console.log(err); res.status(502).json({ success: false, err: err }) }
+    } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
 
 
-module.exports = router
+router.delete('/delete', authUser, async (req, res) => {
+    const { eventID } = req.body
+
+    try {
+        const event = await collection('events').findOne({ eventID })
+        if (!event) return res.status(404).json({ success: false, err: 'Event doesn\'t exist.' })
+
+        if (event.presenter.id !== req.user.id) return res.status(403).json({ success: false, err: 'Access denied.' })
+
+        await collection('events').deleteOne({ eventID })
+
+        const user = await collection('users').findOne({ _id: req.user._id })
+        const newEvents = user.events.filter((e) => e.eventID !== eventID)
+        
+        await collection('users').updateOne({ _id: req.user._id }, { $set: { events: newEvents } })
+
+        res.status(200).json({ success: true, message: 'Event deleted successfully.' })
+    } catch (err) { res.status(500).json({ success: false, err: err }) }
+})

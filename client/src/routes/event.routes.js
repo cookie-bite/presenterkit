@@ -9,3 +9,13 @@ export const create = (name) => new Promise(async (resolve, reject) => {
         .then((data) => resolve(data))
         .catch((err) => reject(err))
 })
+
+
+export const deleteBy = (eventID) => new Promise(async (resolve, reject) => {
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({ eventID })
+
+    send('/event/delete', { method: 'DELETE', headers, body })
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+})

@@ -1,7 +1,7 @@
 const { WebSocket, WebSocketServer } = require('ws')
 const { createServer } = require('http')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 
 const express = require('express')
 const Datastore = require('@seald-io/nedb')
@@ -92,7 +92,6 @@ const interval = setInterval(() => {
         if (client.isAlive === false && client.readyState === WebSocket.OPEN) return client.terminate()
 
         client.isAlive = false
-        console.log(client.userID, client.readyState)
         if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
     })
 }, 30000)
@@ -112,7 +111,28 @@ wss.on('connection', async (ws) => {
         if (req.command === 'JOIN_ROOM') {
             ws.eventID = req.eventID
 
-            const event = await db.events.findOneAsync({ eventID: req.eventID })
+            let event = await db.events.findOneAsync({ eventID: req.eventID })
+
+            if (!event) {
+                event = await DB.collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
+
+                if (!event) {
+                    // handle nonexistent event
+                }
+
+                try {
+                    const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
+                    if (event.presenter.id === payload.sub) {
+                        await db.events.insertAsync(event)
+                        db[`event-${req.eventID}`] = new Datastore()
+                    } else {
+                        // handle first user join
+                    }
+                } catch (err) {
+                    // handle first user join
+                }
+            }
+
 
             const user = {
                 userID,
@@ -128,16 +148,17 @@ wss.on('connection', async (ws) => {
             try {
                 const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
                 if (event.presenter.id === payload.sub) {
-                    user.username = 'Presenter'
-                    user.color = '#ffffff'
+                    const presenter = await DB.collection('users').findOne({ _id: new ObjectId(payload.sub) })
+
+                    user.username = presenter.username
+                    user.color = presenter.color
                     user.isInLobby = false
                     user.isPresenter = true
                     user.isAdmin = true
                     user.adminKey = genRandom(16)
-
                 }
             } catch (err) {
-                console.log(err)
+                // console.log(err)
             } finally {
                 ws.username = user.username
                 ws.isAdmin = user.isAdmin
@@ -165,8 +186,20 @@ wss.on('connection', async (ws) => {
                 sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
             }
         } else if (req.command === 'SET_USER') {
+            let event = await db.events.findOneAsync({ eventID: req.eventID })
+
             const user = await db[`event-${req.eventID}`].findOneAsync({ userID })
             await db[`event-${req.eventID}`].updateAsync({ userID }, { $set: { isInLobby: !user.isInLobby, username: req.username } })
+
+            try {
+                const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
+                if (event.presenter.id === payload.sub) {
+                    await DB.collection('users').updateOne({ _id: new ObjectId(payload.sub) }, { $set: { username: req.username } })
+                }
+            } catch (err) {
+
+            }
+
             const userList = await db[`event-${req.eventID}`].findAsync({})
             const roomActivity = { user: { id: userID, name: req.username }, activity: req.roomActivity }
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
@@ -268,11 +301,19 @@ wss.on('connection', async (ws) => {
     })
 
 
-    ws.on('close', async () => {
+    ws.on('close', async () => {        
         await db[`event-${ws.eventID}`].removeAsync({ userID })
+        const userList = await db[`event-${ws.eventID}`].findAsync({})
+
         const roomActivity = { user: { id: userID, name: ws.username }, activity: 'left' }
         await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
-        const userList = await db[`event-${ws.eventID}`].findAsync({})
+
+        if (userList.length === 0) {
+            const event = await db.events.findOneAsync({ eventID: ws.eventID }, { _id: 0 })
+            await DB.collection('events').replaceOne({ eventID: ws.eventID }, event)
+            await db.events.removeAsync({ eventID: ws.eventID })
+            delete db[`event-${ws.eventID}`]
+        }
 
         sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
         sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
@@ -313,6 +354,7 @@ module.exports.collection = (c) => DB.collection(c)
 
 app.use('/auth', require('./routes/auth.routes'))
 app.use('/event', require('./routes/event.routes'))
+app.use('/user', require('./routes/user.routes'))
 
 
 app.post('/slide', async (req, res) => {
