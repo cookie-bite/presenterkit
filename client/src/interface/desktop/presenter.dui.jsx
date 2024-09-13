@@ -176,7 +176,7 @@ export const Presenter = ({ ws }) => {
                                 </div>
                             </div>
                             <div className={sty.activeSlide}>
-                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url(${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}></div>
+                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url('${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp')` }}></div>
                                 <div className={sty.activePage} onClick={() => previewTheatre()}>
                                     <img className={sty.activePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                                 </div>

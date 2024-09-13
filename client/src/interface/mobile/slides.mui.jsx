@@ -47,18 +47,18 @@ export const Slides = () => {
         <AnimatePresence mode='wait'>
             {SSUI.name === 'Slides' && <>
                 <AnimatePresence>
-                    {SSTheatre.show && <motion.div className={sty.theatre}
-                        initial={{ y: '100%' }}
-                        animate={{ y: 0 }}
-                        exit={{ y: '100%' }}
-                        transition={{ ease: 'easeInOut', duration: 0.3 }}
-                        style={{ backgroundImage: `url(${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp)` }}
+                    {SSTheatre.show && <div className={sty.theatre}
+                        // initial={{ y: '100%' }}
+                        // animate={{ y: 0 }}
+                        // exit={{ y: '100%' }}
+                        // transition={{ ease: 'easeInOut', duration: 0.3 }}
+                        style={{ backgroundImage: `url('${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp')` }}
                         onClick={() => toggleCloseBtn()}
                     >
                         {SSTheatre.showClose && <button className={sty.theatreCloseBtn} onClick={() => STTheatre.show = false}>
                             <Icon name='close' size={20} color='--white' />
                         </button>}
-                    </motion.div>}
+                    </div>}
                 </AnimatePresence>
                 {!SSTheatre.show && <motion.div className={sty.modalView}
                     initial={{ y: '100%' }}
