@@ -32,8 +32,8 @@ export const Auth = () => {
             }
         })
     }
-    
-    
+
+
     const signUp = () => {
         RTAuth.signUp(username, email, password, STUser.color).then((data) => {
             if (data.success) {
@@ -48,20 +48,25 @@ export const Auth = () => {
 
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <button className={sty.menuBtn} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
-            {SSAuthUI.name === 'SignIn' && <div className={sty.menu}>
-                <input className={sty.menuInput} style={{ marginTop: 15 }} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
-                <input className={sty.menuInput} style={{ marginTop: 5 }} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
-                <button className={sty.menuBtn} onClick={() => signIn()}>Sign in</button>
-            </div>}
-            <button className={sty.menuBtn} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
-            {SSAuthUI.name === 'SignUp' && <div className={sty.menu}>
-                <input className={sty.menuInput} style={{ marginTop: 15 }} name='username' placeholder='Username' type='text' value={username} onChange={(e) => onChange(e.target.value, setUsername)} />
-                <input className={sty.menuInput} style={{ marginTop: 5 }} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
-                <input className={sty.menuInput} style={{ marginTop: 5 }} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
-                <button className={sty.menuBtn} onClick={() => signUp()}>Sign Up</button>
-            </div>}
+        <div className={sty.authBg}>
+            <div className={sty.auth}>
+                <div className={sty.authNav}>
+                    <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
+                    <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
+                </div>
+
+                {SSAuthUI.name === 'SignIn' && <div className={sty.authForm}>
+                    <input className={sty.authInput} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
+                    <input className={sty.authInput} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
+                    <button className={sty.authBtn} onClick={() => signIn()}>Sign in</button>
+                </div>}
+                {SSAuthUI.name === 'SignUp' && <div className={sty.authForm}>
+                    <input className={sty.authInput} name='username' placeholder='Username' type='text' value={username} onChange={(e) => onChange(e.target.value, setUsername)} />
+                    <input className={sty.authInput} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
+                    <input className={sty.authInput} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
+                    <button className={sty.authBtn} onClick={() => signUp()}>Sign Up</button>
+                </div>}
+            </div>
         </div>
     )
 }   
