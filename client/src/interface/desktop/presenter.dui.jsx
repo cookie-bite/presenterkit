@@ -48,6 +48,8 @@ export const Presenter = ({ ws }) => {
                                 STSlide.active.index = STSlides.list.length
                                 STSlides.list.push(res.slide)
                             })
+                    } else {
+                        STSpinner.isActive = false
                     }
                 })
         }

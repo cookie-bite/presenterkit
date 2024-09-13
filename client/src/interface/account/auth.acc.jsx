@@ -50,6 +50,10 @@ export const Auth = () => {
     return (
         <div className={sty.authBg}>
             <div className={sty.auth}>
+                <div className={sty.authLogo}>
+                    <img className={sty.authLogoImg} src='/logo.svg' alt='logo' />
+                    <h1 className={sty.authLogoLbl}>PresenterKit</h1>
+                </div>
                 <div className={sty.authNav}>
                     <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
                     <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>

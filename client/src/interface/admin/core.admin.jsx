@@ -26,7 +26,7 @@ export const Admin = ({ ws, core }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if (e.key === 'Escape') STUI.name = ''
+            if (e.key === 'Escape' && STUI.name === 'Admin') STUI.name = ''
         }
         window.addEventListener('keyup', onKeyUp)
         return () => window.removeEventListener('keyup', onKeyUp)

@@ -37,7 +37,6 @@ export const Desktop = ({ ws, core }) => {
                 </>
                 }
             </AnimatePresence>
-
         </>
     )
 }

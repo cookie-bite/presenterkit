@@ -12,14 +12,30 @@
 .auth {
     display: flex;
     flex-direction: column;
-    height: 300px;
+    height: 500px;
     align-items: center;
+}
+
+.authLogo {
+    display: flex;
+    align-items: center;
+}
+
+.authLogoImg {
+    width: 100px;
+    height: 100px;
+}
+
+.authLogoLbl {
+    font-size: 40px;
+    font-weight: 600;
 }
 
 .authNav {
     display: flex;
     gap: 10px;
-    padding: 10px;
+    padding: 5px;
+    margin-top: 30px;
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
