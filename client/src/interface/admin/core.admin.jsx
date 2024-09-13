@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
+import { motion, AnimatePresence } from 'framer-motion'
+
 import { STUI, STUser } from '../../stores/app.store'
 import { STAdmin, STTab } from '../../stores/admin.store'
 
@@ -19,6 +21,7 @@ const UISwap = (props) => {
 export const Admin = ({ ws, core }) => {
     const SSAdmin = useSnapshot(STAdmin)
     const SSUser = useSnapshot(STUser)
+    const SSUI = useSnapshot(STUI)
 
 
     useEffect(() => {
@@ -31,13 +34,20 @@ export const Admin = ({ ws, core }) => {
 
 
     return (
-        (SSUser.isPresenter || SSAdmin.privileged) &&
-        <div className={sty.pageView}>
-            <Header ws={ws} core={core} />
-            <UISwap>
-                <Messages ws={ws} uiName={'Messages'} />
-                <Shares ws={ws} uiName={'Shares'} />
-            </UISwap>
-        </div>
+        <AnimatePresence>
+            {(SSUI.name === 'Admin' && !core.isMobile) && (SSUser.isPresenter || SSAdmin.privileged) &&
+                <motion.div className={sty.pageView}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    transition={{ ease: 'easeInOut', duration: 0.3 }}
+                >
+                    <Header ws={ws} core={core} />
+                    <UISwap>
+                        <Messages ws={ws} uiName={'Messages'} />
+                        <Shares ws={ws} uiName={'Shares'} />
+                    </UISwap>
+                </motion.div>}
+        </AnimatePresence>
     )
 }

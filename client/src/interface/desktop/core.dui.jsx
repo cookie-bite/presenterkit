@@ -31,7 +31,7 @@ export const Desktop = ({ ws, core }) => {
                     <Quests ws={ws} core={core} />
                     <Slides />
                     {SSUI.name === 'Presenter' && <Presenter ws={ws} core={core} />}
-                    {SSUI.name === 'Admin' && !core.isMobile && <Admin ws={ws} core={core} />}
+                    <Admin ws={ws} core={core} />
                     <Alert.Container />
                     <Controls core={core} />
                 </>
