@@ -29,8 +29,7 @@ export const Users = ({ ws, core }) => {
         const submitUser = () => {
             toggleInput()
             if (STUser.name !== username) {
-                console.log('SET_USER', STEvent.id)
-                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, userID: STUser.id, username, roomActivity: 'updated', token: localStorage.getItem('ACS_TKN') }))
+                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'updated', token: localStorage.getItem('ACS_TKN') }))
                 setTimeout(() => STUser.name = username, 500)
             }
         }
@@ -45,7 +44,7 @@ export const Users = ({ ws, core }) => {
         return (
             result.map((user, index) => {
                 return (
-                    <div className={sty.userListItem} key={index}>
+                    <div className={sty.userListItem} style={{ opacity: user.isActive ? 1 : 0.5 }} key={index}>
                         <div className={sty.userListItemAvatarView} style={{ background: `linear-gradient(45deg, ${user.color}24, ${user.color}2B)` }}>
                             <h1 className={sty.userListItemAvatarLbl} style={{ color: user.color }}>{index === 0 ? username.charAt() : user.username.charAt()}</h1>
                         </div>

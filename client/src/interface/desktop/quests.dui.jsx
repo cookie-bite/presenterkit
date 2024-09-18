@@ -40,12 +40,12 @@ export const Quests = ({ ws, core }) => {
             if (SSUser.isPresenter && /^\d+$/.test(text)) {
                 for (let i = 0; i < +text; i++) {
                     let quest = genQuest('long')
-                    setTimeout(() => ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, userID: STUser.id, ...quest })), 1000 * i)
+                    setTimeout(() => ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, ...quest })), 1000 * i)
                 }
             } else {
                 let temp = text
                 while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-                ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, userID: STUser.id, username: STUser.name, quest: { label: temp, color: STUser.color } }))
+                ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, quest: { label: temp, color: STUser.color } }))
             }
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '28px', 'min-width': '232px' })
@@ -72,14 +72,14 @@ export const Quests = ({ ws, core }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color, userID: STUser.id, username: STUser.name }))
+            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color }))
         }, timeout)
     }
 

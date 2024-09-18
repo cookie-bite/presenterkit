@@ -21,11 +21,10 @@ export const Entry = ({ ws }) => {
         const interval = setInterval(async () => {
             if (ws.readyState === 1) {
                 clearInterval(interval)
-                
+
                 if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
 
-                console.log('JOIN_ROOM event', STEvent.id)
-                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id, token: localStorage.getItem('ACS_TKN') }))
+                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'), userID: localStorage.getItem('userID'), token: localStorage.getItem('ACS_TKN') }))
             }
         }, 10)
     }

@@ -15,11 +15,11 @@ const User = ({ user, position }) => {
     const bubbleRef = useRef()
 
     const lod = 32
-    const inLobby = user.isInLobby
+    const isGhost = user.isInLobby || !user.isActive
 
 
     const onPointerOver = (event) => {
-        if (inLobby) return
+        if (isGhost) return
         event.stopPropagation()
         document.body.style.cursor = 'pointer'
         gsap.to(userRef.current.position, { duration: 0.5, y: 1 })
@@ -31,7 +31,7 @@ const User = ({ user, position }) => {
     }
 
     const onPointerOut = (event) => {
-        if (inLobby) return
+        if (isGhost) return
         event.stopPropagation()
         document.body.style.cursor = 'default'
         gsap.to(userRef.current.position, { duration: 0.5, y: 0 })
@@ -171,14 +171,14 @@ const User = ({ user, position }) => {
 
     const Body = () => {
         const Material = () => {
-            if (inLobby) return <meshStandardMaterial color={user.color} opacity={0.08} transparent />
+            if (isGhost) return <meshStandardMaterial color={user.color} opacity={0.08} transparent />
             return <meshStandardMaterial color={user.color} metalness={0.2} roughness={0} />
         }
 
 
         return (
             <group>
-                {!inLobby && <mesh name='collision' position={[0, -0.7, 0]}>
+                {(!isGhost) && <mesh name='collision' position={[0, -0.7, 0]}>
                     <cylinderGeometry args={[0.5, 0.9, 2.4, lod]} />
                     <meshStandardMaterial opacity={0} transparent />
                 </mesh>}

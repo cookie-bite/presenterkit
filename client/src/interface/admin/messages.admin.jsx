@@ -16,7 +16,7 @@ const Message = ({ ws, msg, index }) => {
 
 
     const aprReq = (index) => {
-        ws.send(JSON.stringify({ command: 'SEND_USERS', eventID: STEvent.id, id: STQueue.list[index].id, userID: STQueue.list[index].userID, username: STQueue.list[index].author, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
+        ws.send(JSON.stringify({ command: 'SEND_USERS', eventID: STEvent.id, id: STQueue.list[index].id, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
     }
 
     const rejectReq = (index) => {

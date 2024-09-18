@@ -40,7 +40,7 @@ export const Presenter = ({ ws }) => {
                         const headers = { 'Content-type': 'application/json' }
                         const body = JSON.stringify({ eventID: STEvent.id, slide: res.slide })
 
-                        fetch(`${process.env.REACT_APP_API_URL}/slide`, { method: 'post', headers, body })
+                        fetch(`${process.env.REACT_APP_API_URL}/slide/create`, { method: 'post', headers, body })
                             .then((res) => res.json())
                             .then((res) => {
                                 STSpinner.isActive = false
@@ -83,7 +83,7 @@ export const Presenter = ({ ws }) => {
         const headers = { 'Content-type': 'application/json' }
         const body = JSON.stringify({ eventID: STEvent.id, slide: STSlides.list[STSlide.active.index] })
 
-        fetch(`${process.env.REACT_APP_API_URL}/slide`, { method: 'delete', headers, body })
+        fetch(`${process.env.REACT_APP_API_URL}/slide/delete`, { method: 'delete', headers, body })
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {

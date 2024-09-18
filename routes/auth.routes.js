@@ -8,6 +8,8 @@ const { ObjectId } = require('mongodb')
 
 require('dotenv/config')
 
+module.exports = router
+
 
 
 const genAcsToken = (payload) => { return jwt.sign(payload, process.env.ACS_TKN_SCT, { expiresIn: process.env.ACS_TKN_EXP }) }
@@ -141,7 +143,3 @@ router.delete('/signout', async (req, res) => {
         res.json({ success: true })
     } catch (err) { return res.status(401).json({ success: false }) }
 })
-
-
-
-module.exports = router

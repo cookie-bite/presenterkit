@@ -20,7 +20,7 @@ export const Entry = ({ ws }) => {
             if (ws.readyState === 1) {
                 clearInterval(interval)
 
-                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id, token: localStorage.getItem('ACS_TKN') }))
+                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'), userID: localStorage.getItem('userID'), token: localStorage.getItem('ACS_TKN') }))
             }
         }, 10)
     }
