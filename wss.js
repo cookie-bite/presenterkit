@@ -4,7 +4,7 @@ const Datastore = require('@seald-io/nedb')
 const jwt = require('jsonwebtoken')
 
 const { genColor, genRandom } = require('./utils/core.utils')
-const { server, db, collection } = require('./api')
+const { collection, db, server } = require('./api')
 
 require('dotenv/config')
 
@@ -266,6 +266,10 @@ wss.on('connection', async (ws) => {
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
 
             sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide: req.activeSlide })
+        } else if (req.command === 'SWAP_SLDS') {
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { slides: req.slides } })
+
+            sendRoom(req.eventID, 'user', { command: 'SWAP_SLDS', slides: req.slides })
         }
 
         if (req.command === 'PONG') {

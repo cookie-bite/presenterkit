@@ -1,7 +1,6 @@
 /* Entry View */
 
 .entryPage {
-    display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -14,7 +13,6 @@
 }
 
 .entryView {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -37,7 +35,6 @@
 }
 
 .entryInputView {
-    display: flex;
     align-items: center;
     height: 30px;
     border-radius: 15px;
@@ -62,7 +59,6 @@
 }
 
 .cooldown {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -72,7 +68,6 @@
 }
 
 .cooldownIc {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 50px;
@@ -82,7 +77,6 @@
 }
 
 .cooldownLbl {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-self: center;
@@ -116,7 +110,6 @@
 /* Controls */
 
 .controls {
-    display: flex;
     align-items: flex-end;
     position: fixed;
     bottom: 16px;
@@ -124,7 +117,6 @@
 }
 
 .controlsLiveBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -161,7 +153,6 @@
 }
 
 .controlsMenuBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 16px;
@@ -171,7 +162,6 @@
 }
 
 .controlsInput {
-    display: flex;
     min-width: calc(100vw - 77px);
     font-size: 17px;
     line-height: 23px;
@@ -193,7 +183,6 @@
 }
 
 .controlsInputBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 35px;
@@ -222,7 +211,6 @@
 }
 
 .menuView {
-    display: flex;
     flex-direction: column;
     position: fixed;
     width: clamp(260px, 70%, 70%);
@@ -236,7 +224,6 @@
 }
 
 .menuTopList {
-    display: flex;
     align-items: center;
     height: 64px;
     padding: 0 10px;
@@ -244,7 +231,6 @@
 }
 
 .menuTopListIcView {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 44px;
@@ -254,14 +240,12 @@
 }
 
 .menuTopListBody {
-    display: flex;
     flex: 1;
     justify-content: space-between;
     margin-left: 10px;
 }
 
 .menuTopListBodyText {
-    display: flex;
     flex-direction: column;
     justify-content: center;
 }
@@ -278,7 +262,6 @@
 }
 
 .menuTopListIndView {
-    display: flex;
     flex-direction: column;
     justify-content: center;
 }
@@ -295,7 +278,6 @@
 }
 
 .menuListItem {
-    display: flex;
     height: 44px;
     justify-content: space-between;
     align-items: center;
@@ -340,7 +322,6 @@
 }
 
 .menuCloseBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -356,7 +337,6 @@
 /* Modal */
 
 .modalView {
-    display: flex;
     flex-direction: column;
     position: fixed;
     top: 0;
@@ -374,7 +354,6 @@
 }
 
 .modal {
-    display: flex;
     flex-direction: column;
     position: relative;
     height: 100%;
@@ -382,7 +361,6 @@
 }
 
 .modalHeader {
-    display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 16px 16px;
@@ -392,12 +370,10 @@
 }
 
 .modalLblView {
-    display: flex;
     align-items: center;
 }
 
 .modalCountBg {
-    display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 6px;
@@ -418,7 +394,6 @@
 }
 
 .modalHeadBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     top: 10px;
@@ -430,7 +405,6 @@
 }
 
 .modalEmpty {
-    display: flex;
     flex-direction: column;
     flex: 1;
     align-items: center;
@@ -457,7 +431,6 @@
 /* Shares */
 
 .sharePreview {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -472,7 +445,6 @@
 }
 
 .previewIc {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 50px;
@@ -483,7 +455,6 @@
 }
 
 .previewBody {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -501,13 +472,11 @@
 }
 
 .previewBtns {
-    display: flex;
     justify-content: center;
     z-index: 1;
 }
 
 .previewBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 44px;
@@ -524,7 +493,6 @@
 
 
 .sharePages {
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
@@ -538,7 +506,6 @@
 }
 
 .sharePage {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -557,14 +524,12 @@
 }
 
 .shareBtns {
-    display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 20px;
 }
 
 .shareBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 44px;
@@ -582,7 +547,6 @@
 /* Quest Modal */
 
 .questList {
-    display: flex;
     flex-direction: column;
     padding: 20px;
     overflow-x: hidden;
@@ -590,7 +554,6 @@
 }
 
 .questListItem {
-    display: flex;
     flex-direction: column;
     justify-content: center;
     margin-bottom: 30px;
@@ -614,7 +577,6 @@
 /* Slides */
 
 .slides {
-    display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
@@ -624,7 +586,6 @@
 }
 
 .slideItem {
-    display: flex;
     justify-content: flex-end;
     position: relative;
     margin: 8px 0;
@@ -641,7 +602,6 @@
 }
 
 .slideItemBtns {
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: absolute;
@@ -651,7 +611,6 @@
 }
 
 .slideItemBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;
@@ -670,7 +629,6 @@
 }
 
 .slidePages {
-    display: flex;
     flex-direction: column;
     align-items: center;
     position: absolute;
@@ -687,7 +645,6 @@
 }
 
 .slidePage {
-    display: flex;
     flex-direction: column;
     align-items: center;
     margin: 8px 0;
@@ -710,7 +667,6 @@
 }
 
 .slideHeaderLive {
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -737,7 +693,6 @@
 }
 
 .theatreCloseBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;

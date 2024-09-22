@@ -2,6 +2,7 @@ import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlide
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
 
+import { RTAuth } from './routes/routes'
 import { Alert } from './components/core.cmp'
 
 
@@ -153,6 +154,8 @@ export const initWS = () => {
                     }
                 }
             }
+        } else if (res.command === 'SWAP_SLDS') {
+            STSlides.list = res.slides
         }
 
         if (res.command === 'SEND_MSG') {

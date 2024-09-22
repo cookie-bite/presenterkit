@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const Datastore = require('@seald-io/nedb')
 
-const { db, collection } = require('../api')
+const { collection, db } = require('../api')
 const { authUser } = require('../middlewares/user.middlewares')
 const { genRandom } = require('../utils/core.utils')
 const joiSchema = require('../utils/joi.utils')

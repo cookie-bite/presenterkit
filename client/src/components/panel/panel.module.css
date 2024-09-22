@@ -1,5 +1,4 @@
 .panelView {
-    display: flex;
     flex-direction: column;
     position: fixed;
     top: 20px;
@@ -15,7 +14,6 @@
 }
 
 .panelHeader {
-    display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
@@ -25,7 +23,6 @@
 }
 
 .panelLblView {
-    display: flex;
     align-items: center;
 }
 
@@ -35,7 +32,6 @@
 }
 
 .panelCountBg {
-    display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 6px;
@@ -51,14 +47,12 @@
 }
 
 .panelBtns {
-    display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
 }
 
 .panelBtn {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 30px;

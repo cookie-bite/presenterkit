@@ -24,12 +24,6 @@ db.events = new Datastore()
 
 
 
-// MARK: Exports
-
-module.exports = { db, server }
-
-
-
 // MARK: Middlewares
 
 app.use(cors())
@@ -55,6 +49,9 @@ const connectDB = async () => {
 
 
 
+// MARK: Exports
+
+module.exports = { db, server }
 module.exports.collection = (c) => DB.collection(c)
 
 

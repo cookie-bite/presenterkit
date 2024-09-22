@@ -26,14 +26,25 @@ body {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}    
+}   
+
+div {
+    display: flex;
+} 
 
 h1, h2, h3, h4, h5, h6, p, input {
     margin: 0;
     color: var(--primary-label);
 }
 
+a {
+    all: unset;
+    color: var(--link);
+    cursor: pointer;
+}
+
 button {
+    display: flex;
     cursor: pointer;
     border: none;
     padding: 0;
@@ -56,10 +67,4 @@ input::placeholder {
 
 input::selection, textarea::selection {
     background-color: var(--primary-fill);
-}
-
-/* react-three-gui */
-
-.hufbEg {
-    color: var(--black);
 }

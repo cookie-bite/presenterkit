@@ -1,10 +1,16 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useSnapshot } from 'valtio'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+
 import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
 
 import { Icon, Spinner } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
+
+
+var reqTimeout = null
 
 
 export const Presenter = ({ ws }) => {
@@ -55,6 +61,34 @@ export const Presenter = ({ ws }) => {
         }
     }
 
+    const changeSlide = (to) => {
+        STSlide.active.page = 1
+        if (to === STSlides.list.length) {
+            STSlide.active.index = 0
+        } else if (to === -1) {
+            STSlide.active.index = STSlides.list.length - 1
+        } else {
+            STSlide.active.index = to
+        }
+    }
+
+    const updateList = ({ source, destination }) => {
+        if (!destination) return
+        if (destination.index === source.index) return
+
+        if (source.index === STSlide.active.index) STSlide.active.index = destination.index
+        else if (((STSlide.active.index - source.index) * (STSlide.active.index - destination.index)) <= 0) {
+            if (source.index > STSlide.active.index) STSlide.active.index = STSlide.active.index + 1
+            else if (source.index < STSlide.active.index) STSlide.active.index = STSlide.active.index - 1
+        }
+
+        const [reorderedItem] = STSlides.list.splice(source.index, 1)
+        STSlides.list.splice(destination.index, 0, reorderedItem)
+
+        clearTimeout(reqTimeout)
+        reqTimeout = setTimeout(() => ws.send(JSON.stringify({ command: 'SWAP_SLDS', eventID: STEvent.id, slides: STSlides.list })), 5000)
+    }
+
     const changePage = (to) => {
         var toPage = 1
         if (to === '<') {
@@ -66,17 +100,6 @@ export const Presenter = ({ ws }) => {
         STSlide.active.page = toPage
         pagesRef[toPage - 1].scrollIntoView()
         if (STTheatre.show) sendSlideUpdate(true, true)
-    }
-
-    const changeSlide = (to) => {
-        STSlide.active.page = 1
-        if (to === STSlides.list.length) {
-            STSlide.active.index = 0
-        } else if (to === -1) {
-            STSlide.active.index = STSlides.list.length - 1
-        } else {
-            STSlide.active.index = to
-        }
     }
 
     const deleteSlide = () => {
@@ -144,26 +167,41 @@ export const Presenter = ({ ws }) => {
                             <Icon name='add' size={30} color='--primary-tint' />
                         </button>
                     : <>
-                        <div className={sty.slidesLeft}>
-                            {SSSlides.list.map((slide, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className={sty.slidePreview}
-                                        style={{ border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
-                                        onClick={() => changeSlide(index)}>
-                                        <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
+                        <DragDropContext onDragEnd={updateList}>
+                            <Droppable droppableId='slidesLeft'>
+                                {(provided) => (
+                                    <div className={sty.slidesLeft} {...provided.droppableProps} ref={provided.innerRef}>
+                                        {SSSlides.list.map((slide, index) => {
+                                            return (
+                                                <Draggable draggableId={slide.id} index={index} key={slide.id}>
+                                                    {(provided) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className={sty.slidePreview}
+                                                            style={{ ...provided.draggableProps.style, border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
+                                                            onClick={() => changeSlide(index)}>
+                                                            <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            )
+                                        })}
+
+                                        {provided.placeholder}
+
+                                        {SSSpinner.isActive
+                                            ? <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />
+                                            : <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
+                                                <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
+                                                <Icon name='add' size={26} color='--primary-tint' />
+                                            </button>
+                                        }
                                     </div>
-                                )
-                            })}
-                            {SSSpinner.isActive
-                                ? <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />
-                                : <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
-                                    <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                                    <Icon name='add' size={26} color='--primary-tint' />
-                                </button>
-                            }
-                        </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
                         <div className={sty.slidesRight}>
                             <div className={sty.slidesHeader}>
                                 <div className={sty.slidesHeaderMiddle}>

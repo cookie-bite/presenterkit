@@ -1,7 +1,6 @@
 /* Entry */
 
 .entryPage {
-    display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -13,7 +12,6 @@
 }
 
 .entryView {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
@@ -35,7 +33,6 @@
 }
 
 .entryInputView {
-    display: flex;
     align-items: center;
     height: 30px;
     border-radius: 15px;
@@ -60,7 +57,6 @@
 }
 
 .cooldown {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -70,7 +66,6 @@
 }
 
 .cooldownIc {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 50px;
@@ -80,7 +75,6 @@
 }
 
 .cooldownLbl {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-self: center;
@@ -114,7 +108,6 @@
 /* Controls */
 
 .controlsHitSlop {
-    display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -126,7 +119,6 @@
 }
 
 .controls {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 200px;
@@ -159,7 +151,6 @@
 }
 
 .controlsBtn {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 44px;
@@ -172,7 +163,6 @@
 }
 
 .controlsBtnActive {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 44px;
@@ -190,7 +180,6 @@
 /* QR */
 
 .pageView {
-    display: flex;
     flex: 1;
     flex-direction: column;
     align-items: center;
@@ -204,7 +193,6 @@
 }
 
 .qrView {
-    display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
@@ -213,7 +201,6 @@
 }
 
 .qr {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -222,7 +209,6 @@
 }
 
 .qrBg {
-    display: flex;
     padding: 14px;
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
@@ -245,13 +231,11 @@
 }
 
 .qrForm {
-    display: flex;
     align-items: center;
     margin-top: 30px;
 }
 
 .qrLbls {
-    display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: space-around;
@@ -266,13 +250,11 @@
 }
 
 .qrInputs {
-    display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
 .qrInput {
-    display: flex;
     align-items: center;
     font-size: 17px;
     font-weight: 600;
@@ -285,7 +267,6 @@
 }
 
 .qrHost {
-    display: flex;
     align-items: center;
     justify-content: space-between;
     width: 220px;
@@ -311,7 +292,6 @@
 /* Panel */
 
 .panelEmpty {
-    display: flex;
     flex-direction: column;
     flex: 1;
     align-items: center;
@@ -338,7 +318,6 @@
 /* Quest Panel */
 
 .questList {
-    display: flex;
     flex-direction: column;
     height: 100%;
     padding: 20px 0 0 16px;
@@ -347,7 +326,6 @@
 }
 
 .questListItem {
-    display: flex;
     flex-direction: column;
     justify-content: center;
     margin-bottom: 30px;
@@ -376,7 +354,6 @@
 /* Input */
 
 .inputView {
-    display: flex;
     align-items: flex-end;
     position: relative;
     width: 100%;
@@ -386,7 +363,6 @@
 }
 
 .msgColor {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -400,7 +376,6 @@
 }
 
 .msgColor:hover > .msgColorPrvw {
-    display: flex;
 }
 
 .msgColorPrvw {
@@ -420,7 +395,6 @@
 }
 
 .input {
-    display: flex;
     min-width: 232px;
     font-size: 15px;
     line-height: 18px;
@@ -441,7 +415,6 @@
 }
 
 .inputBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -459,7 +432,6 @@
 /* Users Panel */
 
 .userList {
-    display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
@@ -469,14 +441,12 @@
 }
 
 .userListItem {
-    display: flex;
     align-items: center;
     width: 100%;
     margin-bottom: 22px;
 }
 
 .userListItemAvatarView {
-    display: flex;
     justify-content: center;
     align-items: center;
     min-width: 44px;
@@ -492,12 +462,10 @@
 }
 
 .userListItemLblView {
-    display: flex;
     align-items: center;
 }
 
 .userListItemInput {
-    display: flex;
     align-items: center;
     font-size: 17px;
     font-weight: 600;
@@ -519,7 +487,6 @@
 }
 
 .userListItemEdit {
-    display: flex;
     align-items: center;
     justify-content: center;
     min-width: 24px;
@@ -531,7 +498,6 @@
 }
 
 .userInfo {
-    display: flex;
     align-items: center;
     padding: 10px 16px;
     border-top: 1px solid var(--nonopaque-separator);
@@ -539,7 +505,6 @@
 }
 
 .userInfoBody {
-    display: flex;
     align-items: center;
     /* opacity: 0;
     animation: in-out 10s ease-in-out; */
@@ -553,7 +518,6 @@
 }
 
 .userInfoIcView {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 24px;
@@ -578,7 +542,6 @@
 /* Presenter */
 
 .slides {
-    display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -592,7 +555,6 @@
 }
 
 .slideUploadBtn {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 52px;
@@ -604,7 +566,6 @@
 }
 
 .slidesLeft {
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 230px;
@@ -612,8 +573,6 @@
     padding: 5px 10px;
     margin-right: 10px;
     border-radius: 14px;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--thin-material);
     overflow-x: hidden;
     overflow-y: auto;
@@ -625,7 +584,6 @@
 }
 
 .slidePreview {
-    display: flex;
     align-items: center;
     justify-content: center;
     margin: 5px 0;
@@ -639,7 +597,6 @@
 }
 
 .slideUploadBtnSml {
-    display: flex;
     justify-content: center;
     align-items: center;
     min-height: 40px;
@@ -652,7 +609,6 @@
 }
 
 .slidesRight {
-    display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
@@ -665,7 +621,6 @@
 }
 
 .slidesHeader {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 50px;
@@ -676,18 +631,15 @@
 }
 
 .slidesHeaderMiddle {
-    display: flex;
     align-items: center;
 }
 
 .slidesTopBody {
-    display: flex;
     width: 100%;
     height: calc(100% - 60px);
 }
 
 .slidePages {
-    display: flex;
     align-items: center;
     width: 100%;
     min-height: 136px;
@@ -698,7 +650,6 @@
 }
 
 .slidePage {
-    display: flex;
     align-items: flex-end;
     margin: 10px 5px;
     padding: 5px;
@@ -721,7 +672,6 @@
 }
 
 .activeSlide {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -754,13 +704,11 @@
 }
 
 .slideControls {
-    display: flex;
     align-items: center;
     margin-top: 10px;
 }
 
 .slideControlsBtn {
-    display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
@@ -777,7 +725,6 @@
 }
 
 .theatrePresenter {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -813,7 +760,6 @@
 /* Slides */
 
 .theatre {
-    display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
@@ -823,7 +769,6 @@
 }
 
 .theatreItem {
-    display: flex;
     justify-content: flex-end;
     position: relative;
     margin: 8px 0;
@@ -841,7 +786,6 @@
 }
 
 .theatreItemBtns {
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: absolute;
@@ -851,7 +795,6 @@
 }
 
 .theatreItemBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;

@@ -3,6 +3,7 @@ const { BlobServiceClient } = require('@azure/storage-blob')
 
 const { db } = require('../api')
 const { sendRoom } = require('../wss')
+const { genRandom } = require('../utils/core.utils')
 
 require('dotenv/config')
 
@@ -13,7 +14,7 @@ module.exports = router
 router.post('/create', async (req, res) => {
     const { eventID, slide } = req.body
 
-    const newSlide = { name: slide.name, pageCount: slide.pageCount }
+    const newSlide = { id: genRandom(6, 10), name: slide.name, pageCount: slide.pageCount }
     await db.events.updateAsync({ eventID }, { $push: { slides: newSlide } })
     const event = await db.events.findOneAsync({ eventID })
 

@@ -1,7 +1,6 @@
 /* Admin */
 
 .pageView {
-    display: flex;
     flex: 1;
     flex-direction: column;
     align-items: center;
@@ -20,7 +19,6 @@
 /* Header */
 
 .header {
-    display: flex;
     justify-content: space-between;
     align-items: center; 
     height: 50px;
@@ -32,7 +30,6 @@
 }
 
 .headline {
-    display: flex;
     align-items: center;
 }
 
@@ -43,7 +40,6 @@
 }
 
 .headlineInput {
-    display: flex;
     height: 30px;
     width: 220px;
     margin-right: 10px;
@@ -58,7 +54,6 @@
 }
 
 .headlineBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 30px;
@@ -68,7 +63,6 @@
 }
 
 .tabs {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -77,7 +71,6 @@
 }
 
 .tabBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -90,7 +83,6 @@
 }
 
 .tabBtnActive {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -103,19 +95,16 @@
 }
 
 .moderators {
-    display: flex;
     align-items: center;
     justify-content: flex-end;
 }
 
 .moderator {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .moderatorAvtr {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 30px;
@@ -132,7 +121,6 @@
 }
 
 .activeModerator {
-    display: flex;
     align-items: center;
     position: absolute;
     top: 65px;
@@ -151,13 +139,11 @@
 }
 
 .searchBar {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .searchInput {
-    display: flex;
     height: 30px;
     width: 220px;
     margin: 0 5px;
@@ -172,7 +158,6 @@
 }
 
 .searchList {
-    display: flex;
     flex-direction: column;
     position: absolute;
     top: 65px;
@@ -193,7 +178,6 @@
 }
 
 .searchListItem {
-    display: flex;
     align-items: center;
     width: 100%;
     padding: 5px;
@@ -212,7 +196,6 @@
 }
 
 .emptySearch {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -225,7 +208,6 @@
 }
 
 .searchBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 30px;
@@ -237,7 +219,6 @@
 }
 
 .searchBtnActive {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 30px;
@@ -255,7 +236,6 @@
 /* Page */
 
 .pageBg {
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
@@ -266,7 +246,6 @@
 }
 
 .page {
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
@@ -285,7 +264,6 @@
 /* Messages */
 
 .msgList {
-    display: flex;
     flex-direction: column;
     height: 100%;
     margin-top: 20px;
@@ -294,7 +272,6 @@
 }
 
 .msgItem {
-    display: flex;
     align-items: center;
     justify-content: space-between;
     width: 800px;
@@ -305,12 +282,10 @@
 }
 
 .msgBody {
-    display: flex;
     flex-direction: column;
 }
 
 .msgUser {
-    display: flex;
     align-items: center;
 }
 
@@ -349,7 +324,6 @@
 }
 
 .emptyPage {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -376,14 +350,12 @@
 /* Share */
 
 .shareSaves {
-    display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
 }
 
 .shareSave {
-    display: flex;
     align-items: center;
     position: relative;
     width: 150px;
@@ -401,7 +373,6 @@
 }
 
 .shareCloseBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -424,19 +395,16 @@
 }
 
 .share {
-    display: flex;
     justify-content: center;
     height: 100%;
 }
 
 .shareBody {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .shareInput {
-    display: flex;
     min-width: 250px;
     font-size: 14px;
     font-weight: 400;
@@ -451,13 +419,11 @@
 }
 
 .sharePreview {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .sharePreviewView {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -472,7 +438,6 @@
 }
 
 .previewIc {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 38px;
@@ -482,7 +447,6 @@
 }
 
 .previewBody {
-    display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -501,13 +465,11 @@
 }
 
 .previewBtns {
-    display: flex;
     justify-content: center;
     z-index: 1;
 }
 
 .previewBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 38px;
@@ -520,12 +482,10 @@
 }
 
 .sharePreviewBtns {
-    display: flex;
     align-items: center;
 }
 
 .sharePreviewBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px 15px;
@@ -540,13 +500,11 @@
 }
 
 .shareUrls {
-    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .urlBtn {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 30px;

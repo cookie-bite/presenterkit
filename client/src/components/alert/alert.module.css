@@ -1,5 +1,4 @@
 .alert {
-    display: flex;
     align-items: center;
     justify-content: space-between;
     position: absolute;
@@ -17,7 +16,6 @@
 }
 
 .alertIc {
-    display: flex;
     align-items: center;
     justify-content: center;
     width: 42px;
@@ -26,7 +24,6 @@
 }
 
 .alertBody {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -45,7 +42,6 @@
 }
 
 .alertBtns {
-    display: flex;
     align-items: center;
     justify-content: center;
 }
