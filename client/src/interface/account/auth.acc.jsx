@@ -50,26 +50,32 @@ export const Auth = () => {
     return (
         <div className={sty.authBg}>
             <div className={sty.auth}>
-                <div className={sty.authLogo}>
-                    <img className={sty.authLogoImg} src='/logo.svg' alt='logo' />
-                    <h1 className={sty.authLogoLbl}>PresenterKit</h1>
-                </div>
-                <div className={sty.authNav}>
-                    <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
-                    <button className={sty.authNavBtn} style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
-                </div>
+                <div className={sty.authForm}>
+                    <div className={sty.authNav}>
+                        <button style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
+                        <button style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
+                    </div>
 
-                {SSAuthUI.name === 'SignIn' && <div className={sty.authForm}>
-                    <input className={sty.authInput} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
-                    <input className={sty.authInput} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
-                    <button className={sty.authBtn} onClick={() => signIn()}>Sign in</button>
-                </div>}
-                {SSAuthUI.name === 'SignUp' && <div className={sty.authForm}>
-                    <input className={sty.authInput} name='username' placeholder='Username' type='text' value={username} onChange={(e) => onChange(e.target.value, setUsername)} />
-                    <input className={sty.authInput} name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
-                    <input className={sty.authInput} name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
-                    <button className={sty.authBtn} onClick={() => signUp()}>Sign Up</button>
-                </div>}
+                    {SSAuthUI.name === 'SignIn' && <div className={sty.authInputs}>
+                        <input name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
+                        <input name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
+                        <button className={sty.authBtn} onClick={() => signIn()}>Sign in</button>
+                    </div>}
+                    {SSAuthUI.name === 'SignUp' && <div className={sty.authInputs}>
+                        <input name='username' placeholder='Username' type='text' value={username} onChange={(e) => onChange(e.target.value, setUsername)} />
+                        <input name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange(e.target.value, setEmail)} />
+                        <input name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange(e.target.value, setPassword)} />
+                        <button className={sty.authBtn} onClick={() => signUp()}>Sign Up</button>
+                    </div>}
+                </div>
+                <div className={sty.authBanner}>
+                    <div className={sty.authLogo}>
+                        <img src='/logo.svg' alt='logo' />
+                        <h1>PresenterKit</h1>
+                    </div>
+
+                    <h2>Boost interactivity even offline.<br />Slide Share & 3D Messaging.</h2>
+                </div>
             </div>
         </div>
     )
