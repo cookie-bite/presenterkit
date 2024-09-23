@@ -11,7 +11,7 @@
     border-radius: 31px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     z-index: 1;
 }
 
@@ -38,7 +38,7 @@
 .alertSbtl {
     font-size: 15px;
     font-weight: 500;
-    color: var(--secondary-label);
+    color: var(--label-2);
 }
 
 .alertBtns {
@@ -53,5 +53,5 @@
     border-radius: 21px;
     font-size: 14px;
     font-weight: 600;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
 }

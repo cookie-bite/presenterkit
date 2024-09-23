@@ -26,7 +26,7 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 14px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .headline {
@@ -46,11 +46,11 @@
     padding: 10px 15px;
     font-size: 15px;
     border-radius: 22px;
-    border: 1px solid var(--nonopaque-separator);
-    color: var(--primary-label);
+    border: 1px solid var(--line-no);
+    color: var(--label-1);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .headlineBtn {
@@ -59,7 +59,7 @@
     height: 30px;
     width: 30px;
     border-radius: 15px;
-    background-color: var(--primary-tint);
+    background-color: var(--tint);
 }
 
 .tabs {
@@ -90,7 +90,7 @@
     width: 34px;
     margin: 10px;
     border-radius: 17px;
-    background-color: var(--system-gray3);
+    background-color: var(--gray-3);
     transition: all .3s ease-in-out;
 }
 
@@ -126,10 +126,10 @@
     top: 65px;
     padding: 5px 8px;
     border-radius: 8px;
-    border: 1px solid var(--nonopaque-separator);
+    border: 1px solid var(--line-no);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .activeModeratorLbl {
@@ -150,11 +150,11 @@
     padding: 10px 15px;
     font-size: 15px;
     border-radius: 22px;
-    border: 1px solid var(--nonopaque-separator);
-    color: var(--primary-label);
+    border: 1px solid var(--line-no);
+    color: var(--label-1);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .searchList {
@@ -165,12 +165,12 @@
     max-height: 185px;
     padding: 5px;
     border-radius: 15px;
-    border: 1px solid var(--nonopaque-separator);
+    border: 1px solid var(--line-no);
     overflow-x: hidden;
     overflow-y: scroll;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .searchList::-webkit-scrollbar {
@@ -186,7 +186,7 @@
 }
 
 .searchListItem:hover {
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
 }
 
 .searchListItemLbl {
@@ -214,7 +214,7 @@
     width: 30px;
     margin-left: 5px;
     border-radius: 15px;
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
     transition: all .3s ease-in-out;
 }
 
@@ -225,7 +225,7 @@
     width: 30px;
     margin-left: 5px;
     border-radius: 15px;
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
     transform: rotate(-45deg);
     transition: all .3s ease-in-out;
 }
@@ -242,7 +242,7 @@
     height: calc(100% - 60px);
     padding: 10px;
     border-radius: 14px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .page {
@@ -278,7 +278,7 @@
     padding: 10px;
     margin: 5px 0;
     border-radius: 10px;
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
 }
 
 .msgBody {
@@ -337,7 +337,7 @@
 }
 
 .emptyPageSbtl {
-    color: var(--secondary-label);
+    color: var(--label-2);
     font-size: 18px;
     font-weight: 400;
     margin-top: 6px;
@@ -363,7 +363,7 @@
     margin-right: 10px;
     padding: 0 10px;
     border-radius: 10px;
-    background-color: var(--system-gray4);
+    background-color: var(--gray-4);
     cursor: pointer;
 }
 
@@ -380,7 +380,7 @@
     width: 24px;
     height: 24px;
     border-radius: 12px;
-    background-color: var(--system-gray4);
+    background-color: var(--gray-4);
     opacity: 0;
     transition: opacity .3s ease-in-out;
 }
@@ -388,7 +388,7 @@
 .shareSaveLbl {
     font-size: 13px;
     font-weight: 400;
-    color: var(--secondary-label);
+    color: var(--label-2);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -411,10 +411,10 @@
     line-height: 18px;
     border-radius: 15px;
     border: none;
-    box-shadow: 0 0 1px 1px var(--nonopaque-separator);
+    box-shadow: 0 0 1px 1px var(--line-no);
     padding: 5px 15px;
-    color: var(--primary-label);
-    background-color: var(--thin-material);
+    color: var(--label-1);
+    background-color: var(--glass-3);
     resize: none;
 }
 
@@ -433,8 +433,8 @@
     padding: 20px 10px;
     margin: 0 100px;
     border-radius: 15px;
-    border: 5px solid var(--system-gray4);
-    background-color: var(--quarternary-fill);
+    border: 5px solid var(--gray-4);
+    background-color: var(--fill-4);
 }
 
 .previewIc {
@@ -476,7 +476,7 @@
     height: 38px;
     margin: 0 15px;
     border-radius: 19px;
-    border: 2px solid var(--primary-tint);
+    border: 2px solid var(--tint);
     background: linear-gradient(45deg, #0A84FF24, #0A84FF2B);
     cursor: pointer;
 }
@@ -491,7 +491,7 @@
     padding: 5px 15px;
     margin-top: 20px;
     border-radius: 10px;
-    background-color: var(--primary-tint);
+    background-color: var(--tint);
 }
 
 .sharePreviewBtnLbl {
@@ -510,5 +510,5 @@
     height: 30px;
     width: 30px;
     border-radius: 15px;
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
 }

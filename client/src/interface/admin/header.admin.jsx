@@ -93,17 +93,17 @@ export const Header = ({ ws, core }) => {
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }}
                 />
-                <button className={sty.headlineBtn} style={{ backgroundColor: (title !== SSDisplay.quest && title !== '') ? 'var(--system-blue)' : 'var(--tertiary-fill)' }} onClick={() => send()}>
+                <button className={sty.headlineBtn} style={{ backgroundColor: (title !== SSDisplay.quest && title !== '') ? 'var(--blue)' : 'var(--fill-3)' }} onClick={() => send()}>
                     <Icon name='sync' size={20} color='--white' />
                 </button>
             </div>
             <div className={sty.tabs}>
                 <button className={SSTab.name === 'Messages' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Messages')}>
-                    <Icon name='chatbubble-o' size={22} color={SSTab.name === 'Messages' ? '--white' : '--secondary-label'} />
+                    <Icon name='chatbubble-o' size={22} color={SSTab.name === 'Messages' ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipBottom'>Messages</div>
                 </button>
                 <button className={SSTab.name === 'Shares' ? sty.tabBtnActive : sty.tabBtn} onClick={() => navigate('Shares')}>
-                    <Icon name='paper-plane-o' size={22} color={SSTab.name === 'Shares' ? '--white' : '--secondary-label'} />
+                    <Icon name='paper-plane-o' size={22} color={SSTab.name === 'Shares' ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipBottom'>Shares</div>
                 </button>
             </div>
@@ -124,7 +124,7 @@ export const Header = ({ ws, core }) => {
                                 {SSModerator.active === user.userID && <div className={sty.activeModerator}>
                                     <h5 className={sty.activeModeratorLbl}>{user.username}</h5>
                                     <button onClick={() => updateStatus(user.userID, false)}>
-                                        <Icon name='person-remove' size={15} color='--system-red' />
+                                        <Icon name='person-remove' size={15} color='--red' />
                                     </button>
                                 </div>}
                             </motion.div>
@@ -149,7 +149,7 @@ export const Header = ({ ws, core }) => {
                     }
                 </AnimatePresence>
                 <button className={SSSearch.showBar ? sty.searchBtnActive : sty.searchBtn} onClick={() => toggleSearch()}>
-                    <Icon name='add' size={20} color='--primary-tint' />
+                    <Icon name='add' size={20} color='--tint' />
                 </button>
             </div>
         </div>

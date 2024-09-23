@@ -61,7 +61,7 @@ export const Users = ({ ws, core }) => {
                                 : <h2 className={sty.userListItemLbl}>{user.username}</h2>
                             }
                             {index === 0 && <div className={sty.userListItemEdit} onClick={() => toggleInput()}>
-                                <Icon name={showEdit ? 'checkmark' : 'pencil'} size={14} color='--primary-tint' />
+                                <Icon name={showEdit ? 'checkmark' : 'pencil'} size={14} color='--tint' />
                             </div>}
                         </div>
                     </div>
@@ -89,8 +89,8 @@ export const Users = ({ ws, core }) => {
                 <div className={sty.userInfoBody}>
                     <div className={sty.userInfoIcView}>
                         {SSUserPanel.activity === 'joined'
-                            ? <Icon name='enter-o' size={24} color='--system-green' />
-                            : <Icon name='exit-o' size={24} color='--system-red' />
+                            ? <Icon name='enter-o' size={24} color='--green' />
+                            : <Icon name='exit-o' size={24} color='--red' />
                         }
                     </div>
                     <h5 className={sty.userInfoLbl}>{`${SSUserPanel.user.id === SSUser.id ? 'You' : SSUserPanel.user.name} ${SSUserPanel.activity}`}</h5>

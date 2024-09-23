@@ -94,13 +94,13 @@ export const initWS = () => {
                 STConfig.forwarding = res.config.forwarding
                 if (res.config.hasOwnProperty('forwarding')) STMessages.tab = res.config.forwarding ? 'Stop' : 'Pass'
                 Alert.show({
-                    icon: { name: 'person-circle-o', color: '--system-blue' },
+                    icon: { name: 'person-circle-o', color: '--blue' },
                     title: 'You are a moderator now',
                     buttons: [{ label: 'Open', onClick: () => STUI.name = 'Admin' }]
                 })
             } else {
                 Alert.show({
-                    icon: { name: 'person-circle-o', color: '--system-red' },
+                    icon: { name: 'person-circle-o', color: '--red' },
                     title: 'You are no longer a moderator'
                 })
             }
@@ -141,14 +141,14 @@ export const initWS = () => {
                     STSlide.active = res.activeSlide
                     if (res.isStarted && !res.pageUpdate) {
                         Alert.show({
-                            icon: { name: 'tv-o', color: '--system-green' },
+                            icon: { name: 'tv-o', color: '--green' },
                             title: 'Presenter shares slide now',
                             buttons: [{ label: 'Open', onClick: () => { STSlide.play = res.activeSlide, STTheatre.show = true, STUI.name = 'Slides' } }]
                         })
                     } else if (!res.isStarted) {
                         STTheatre.show = false
                         Alert.show({
-                            icon: { name: 'tv-o', color: '--system-red' },
+                            icon: { name: 'tv-o', color: '--red' },
                             title: 'Presenter finished slide sharing'
                         })
                     }

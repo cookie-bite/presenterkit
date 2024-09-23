@@ -20,7 +20,7 @@ export const Segment = ({ segments, state, onChange }) => {
                 return (
                     <div className={sty.segment} key={i} onClick={() => setIndex(i)}>
                         {index === i && <motion.div layoutId={id} className={sty.segmentBg}></motion.div>}
-                        <h4 className={sty.segmentLbl} style={{ color: index === i ? 'var(--black)' : 'var(--primary-label)' }}>{segment}</h4>
+                        <h4 className={sty.segmentLbl} style={{ color: index === i ? 'var(--black)' : 'var(--label-1)' }}>{segment}</h4>
                     </div>
                 )
             })}

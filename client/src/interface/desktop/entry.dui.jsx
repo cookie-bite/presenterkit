@@ -77,7 +77,7 @@ export const Entry = ({ ws }) => {
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
                 >
                     <div className={sty.cooldownIc}>
-                        <Icon name='timer-o' size={30} color='--system-red' />
+                        <Icon name='timer-o' size={30} color='--red' />
                     </div>
                     <div className={sty.cooldownLbl}>
                         <h1 className={sty.cooldownTtl}>Temporary Cooldown</h1>
@@ -97,7 +97,7 @@ export const Entry = ({ ws }) => {
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') enterRoom() }}
                         />
                         <button className={sty.entryInputBtn} onClick={() => enterRoom()}>
-                            <Icon name='arrow-forward-circle-o' size={28} color='--system-blue' />
+                            <Icon name='arrow-forward-circle-o' size={28} color='--blue' />
                         </button>
                     </div>
                 </motion.div>

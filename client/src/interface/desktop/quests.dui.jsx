@@ -140,7 +140,7 @@ export const Quests = ({ ws, core }) => {
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
                     onClick={() => send()}
                 >
-                    <Icon name='arrow-up-circle-o' size={30} color='--primary-tint' />
+                    <Icon name='arrow-up-circle-o' size={30} color='--tint' />
                 </motion.button>
             </div>
         </Panel>

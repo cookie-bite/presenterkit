@@ -70,11 +70,11 @@ export const Slides = () => {
                                     <img className={sty.theatreItemImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.webp`} />
                                     <div className={sty.theatreItemBtns}>
                                         <button className={sty.theatreItemBtn} onClick={() => downloadPdf(slide.name)}>
-                                            <Icon name='arrow-down' size={24} color='--system-blue' />
+                                            <Icon name='arrow-down' size={24} color='--blue' />
                                         </button>
                                     </div>
                                     {SSSlide.active.index === index && <div className={sty.theatreItemLive}>
-                                        <Icon name='radio-button-on' size={20} color='--system-red' />
+                                        <Icon name='radio-button-on' size={20} color='--red' />
                                     </div>}
                                 </div>
                             )
@@ -92,7 +92,7 @@ export const Slides = () => {
                         ? <div className={sty.theatrePresenterView}>
                             <img className={sty.theatrePresenterImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
                             <div className={sty.theatreItemLive}>
-                                <Icon name='radio-button-on' size={20} color='--system-red' />
+                                <Icon name='radio-button-on' size={20} color='--red' />
                             </div>
                         </div>
                         : <>

@@ -64,12 +64,12 @@ export const Dashboard = () => {
     return (
         <div className={sty.dashboard}>
             <div className={sty.profile}>
-                <Icon name='person-circle-o' size={60} color='--system-gray1' />
+                <Icon name='person-circle-o' size={60} color='--gray-1' />
                 <div className={sty.info}>
                     <h2 className={sty.username}>{SSUser.name}</h2>
                     <h4 className={sty.email}>{localStorage.getItem('EMAIL')}</h4>
                 </div>
-                <button className={sty.exitBtn} onClick={() => signOut()} style={{ backgroundColor: 'var(--system-red)' }}>
+                <button className={sty.exitBtn} onClick={() => signOut()} style={{ backgroundColor: 'var(--red)' }}>
                     <Icon name='exit-o' size={24} color='--white' style={{ marginRight: 5 }} />Sign out
                 </button>
             </div>
@@ -89,7 +89,7 @@ export const Dashboard = () => {
                             </div>
                             <div className={sty.eventBtns}>
                                 <button className={sty.deleteBtn} onClick={() => deleteBy(event.eventID)}>
-                                    <Icon name='trash-o' size={24} color='--system-red' />
+                                    <Icon name='trash-o' size={24} color='--red' />
                                 </button>
                                 <button className={sty.joinBtn} onClick={() => joinEvent(event.eventID)}>
                                     <Icon name='open-o' size={24} color='--white' style={{ marginRight: 5 }} />Start

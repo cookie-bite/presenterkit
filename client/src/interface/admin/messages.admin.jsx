@@ -40,13 +40,13 @@ const Message = ({ ws, msg, index }) => {
                 <div className={sty.msgUser}>
                     <h5 className={sty.msgUserLbl}>{msg.author}</h5>
                     <button className={sty.msgUserBtn} onClick={() => rejectReq(index)}>
-                        <Icon name='remove-circle-o' size={20} color='--system-red' />
+                        <Icon name='remove-circle-o' size={20} color='--red' />
                     </button>
                 </div>
                 <h3 className={sty.msgLbl} style={{ color: msg.color }}>{msg.label}</h3>
             </div>
             <button className={sty.msgCheckBtn} onClick={() => aprReq(index)}>
-                <Icon name='checkmark-circle-o' size={30} color='--system-green' />
+                <Icon name='checkmark-circle-o' size={30} color='--green' />
             </button>
         </motion.div >
     )

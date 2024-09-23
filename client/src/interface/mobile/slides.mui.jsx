@@ -72,18 +72,18 @@ export const Slides = () => {
                                 ? <>
                                     <div className={sty.modalLblView}>
                                         <button className={sty.modalHeadBtn} onClick={() => STPages.show = false}>
-                                            <Icon name='chevron-back' size={20} color='--primary-tint' />
+                                            <Icon name='chevron-back' size={20} color='--tint' />
                                         </button>
                                     </div>
                                     {SSSlide.active.index === SSSlide.play.index
                                         ? <div className={sty.slideHeaderLive}>
-                                            <Icon name='radio-button-on' size={20} color='--system-red' />
+                                            <Icon name='radio-button-on' size={20} color='--red' />
                                             <h3 className={sty.slidePageCount} style={{ marginLeft: 5 }}>Live</h3>
                                         </div>
                                         : <h3 className={sty.slidePageCount}>{`${SSSlides.list[SSSlide.play.index].pageCount} pages`}</h3>
                                     }
                                     <button className={sty.modalHeadBtn} onClick={() => downloadPdf(SSSlides.list[SSSlide.play.index].name)}>
-                                        <Icon name='arrow-down' size={20} color='--primary-tint' />
+                                        <Icon name='arrow-down' size={20} color='--tint' />
                                     </button>
                                 </>
                                 : <>
@@ -113,7 +113,7 @@ export const Slides = () => {
                                                 <div className={sty.slideItem} key={index} onClick={() => playSlide(index)}>
                                                     <img className={sty.slideItemImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.webp`} />
                                                     {SSSlide.active.index === index && <div className={sty.slideItemLive}>
-                                                        <Icon name='radio-button-on' size={20} color='--system-red' />
+                                                        <Icon name='radio-button-on' size={20} color='--red' />
                                                     </div>}
                                                 </div>
                                             )
@@ -136,7 +136,7 @@ export const Slides = () => {
                                 {Array(SSSlides.list[SSSlide.play.index].pageCount).fill().map((page, index) => {
                                     return (
                                         <div key={index} className={sty.slidePage} onClick={() => { STSlide.active.page = (index + 1) }}
-                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
+                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--yellow)' : 'var(--fill-1)' }}>
                                             <img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.play.index].name}/${index + 1}.webp`} />
                                             <h5 className={sty.slidePageNumber}>{index + 1}</h5>
                                         </div>

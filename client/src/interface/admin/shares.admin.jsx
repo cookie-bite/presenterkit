@@ -125,16 +125,16 @@ export const Shares = ({ ws }) => {
                 <div className={sty.shareSaves}>
                     {SSShares.list.map((share, index) => {
                         return (
-                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === SSShare.active ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={() => switchShare(index)}>
-                                <h3 className={sty.shareSaveLbl} style={{ color: index === SSShare.active ? 'var(--primary-label)' : 'var(--secondary-label)' }}>{share.body ? share.body : 'Empty'}</h3>
-                                {SSShares.list.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === SSShare.active ? 'var(--system-gray3)' : 'var(--system-gray5)' }} onClick={(e) => closeShare(e, index)}>
-                                    <Icon name='close' size={20} color='--system-red' />
+                            <div className={sty.shareSave} key={index} style={{ backgroundColor: index === SSShare.active ? 'var(--gray-3)' : 'var(--gray-5)' }} onClick={() => switchShare(index)}>
+                                <h3 className={sty.shareSaveLbl} style={{ color: index === SSShare.active ? 'var(--label-1)' : 'var(--label-2)' }}>{share.body ? share.body : 'Empty'}</h3>
+                                {SSShares.list.length !== 1 && <button className={sty.shareCloseBtn} style={{ backgroundColor: index === SSShare.active ? 'var(--gray-3)' : 'var(--gray-5)' }} onClick={(e) => closeShare(e, index)}>
+                                    <Icon name='close' size={20} color='--red' />
                                 </button>}
                             </div>
                         )
                     })}
                     <button className={sty.urlBtn} onClick={() => addShare()}>
-                        <Icon name='add' size={20} color='--primary-tint' />
+                        <Icon name='add' size={20} color='--tint' />
                     </button>
                 </div>
                 <div className={sty.share}>
@@ -148,10 +148,10 @@ export const Shares = ({ ws }) => {
                     <div className={sty.sharePreview}>
                         <div className={sty.sharePreviewView}>
                             <div className={sty.previewIc}>
-                                <Icon name='notifications-o' size={24} color='--system-blue' />
+                                <Icon name='notifications-o' size={24} color='--blue' />
                             </div>
                             <div className={sty.previewBody}>
-                                <h2 className={sty.previewBodyLbl} style={{ color: body ? 'var(--primary-label)' : 'var(--tertiary-label)' }}>{body ? body : 'Body'}</h2>
+                                <h2 className={sty.previewBodyLbl} style={{ color: body ? 'var(--label-1)' : 'var(--label-3)' }}>{body ? body : 'Body'}</h2>
                             </div>
                             <div className={sty.previewBtns}>
                                 {SSShares.list[SSShare.active].urls.map((url, index) => {
@@ -168,7 +168,7 @@ export const Shares = ({ ws }) => {
                     <div className={sty.shareUrls}>
                         {SSShares.list[SSShare.active].urls.map((url, index) => {
                             return (
-                                <input className={sty.shareInput} style={{ marginBottom: 15, color: 'var(--system-blue)' }} key={index} value={url.link} type='text' name='text' autoComplete='off' placeholder='Url'
+                                <input className={sty.shareInput} style={{ marginBottom: 15, color: 'var(--blue)' }} key={index} value={url.link} type='text' name='text' autoComplete='off' placeholder='Url'
                                     ref={(ref) => urlsRef[index] = ref}
                                     autoFocus={true}
                                     onChange={(e) => setUrl(e.target.value, index)}

@@ -38,7 +38,7 @@
     border-radius: 15px;
     overflow: hidden;
     margin-top: 40px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
@@ -91,14 +91,14 @@
     font-size: 22px;
     font-weight: 400;
     margin-top: 5px;
-    color: var(--tertiary-label);
+    color: var(--label-3);
 }
 
 .cooldownTimer {
     text-align: center;
     font-size: 24px;
     font-weight: 600;
-    color: var(--system-red);
+    color: var(--red);
     opacity: 0.6;
 }
 
@@ -125,7 +125,7 @@
     height: 0;
     padding: 5px;
     border-radius: 32px;
-    background-color: var(--ultrathin-material);
+    background-color: var(--glass-4);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     transition: all .3s ease-in-out;
@@ -169,7 +169,7 @@
     min-width: 44px;
     border-radius: 22px;
     margin: 0 -5px;
-    background-color: var(--system-gray3);
+    background-color: var(--gray-3);
     transform: scale(0);
     transition: all .3s ease-in-out;
 }
@@ -213,7 +213,7 @@
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     cursor: pointer;
 }
 
@@ -244,7 +244,7 @@
 }
 
 .qrInputLbl {
-    color: var(--secondary-label);
+    color: var(--label-2);
     font-size: 17px;
     font-weight: 500;
 }
@@ -262,7 +262,7 @@
     height: 30px;
     padding: 0 10px;
     border-radius: 8px;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
     transition: all .3s ease-in-out;
 }
 
@@ -273,7 +273,7 @@
     height: 30px;
     padding: 0 10px;
     border-radius: 8px;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
 }
 
 .qrHostLbl {
@@ -305,7 +305,7 @@
 }
 
 .panelEmptySbtl {
-    color: var(--secondary-label);
+    color: var(--label-2);
     font-size: 18px;
     font-weight: 400;
     margin-top: 6px;
@@ -385,13 +385,13 @@
     transform: translateY(calc(-100% - 8px));
     font-size: 17px;
     font-weight: 500;
-    color: var(--primary-label);
+    color: var(--label-1);
     padding: 4px 8px;
     border-radius: 8px;
-    border: 1px solid var(--nonopaque-separator);
+    border: 1px solid var(--line-no);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .input {
@@ -400,12 +400,12 @@
     line-height: 18px;
     border-radius: 15px;
     border: none;
-    box-shadow: 0 0 1px 1px var(--nonopaque-separator);
+    box-shadow: 0 0 1px 1px var(--line-no);
     padding: 5px 10px;
-    color: var(--primary-label);
+    color: var(--label-1);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     resize: none;
     transition: color .3s ease-in-out;
 }
@@ -477,7 +477,7 @@
 
 .userListItemInput:focus {
     padding: 0 10px;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
     transition: all .3s ease-in-out;
 }
 
@@ -493,15 +493,15 @@
     height: 24px;
     margin-left: 10px;
     border-radius: 12px;
-    background-color: var(--secondary-fill);
+    background-color: var(--fill-2);
     cursor: pointer;
 }
 
 .userInfo {
     align-items: center;
     padding: 10px 16px;
-    border-top: 1px solid var(--nonopaque-separator);
-    background-color: var(--regular-material);
+    border-top: 1px solid var(--line-no);
+    background-color: var(--glass-2);
 }
 
 .userInfoBody {
@@ -532,7 +532,7 @@
 .userInfoLbl {
     font-size: 15px;
     font-weight: 500;
-    color: var(--primary-label);
+    color: var(--label-1);
     margin-left: 10px;
 }
 
@@ -562,7 +562,7 @@
     border-radius: 26px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .slidesLeft {
@@ -573,7 +573,7 @@
     padding: 5px 10px;
     margin-right: 10px;
     border-radius: 14px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -605,7 +605,7 @@
     border-radius: 20px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .slidesRight {
@@ -616,7 +616,7 @@
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     overflow: hidden;
 }
 
@@ -627,7 +627,7 @@
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 10px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
 }
 
 .slidesHeaderMiddle {
@@ -644,7 +644,7 @@
     width: 100%;
     min-height: 136px;
     border-radius: 10px;
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     overflow-x: auto;
     overflow-y: hidden;
 }
@@ -654,7 +654,7 @@
     margin: 10px 5px;
     padding: 5px;
     border-radius: 8px;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
     cursor: pointer;
 }
 
@@ -803,7 +803,7 @@
     border-radius: 20px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
 }
 
 .theatreItemLive {

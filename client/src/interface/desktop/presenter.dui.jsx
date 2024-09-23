@@ -164,7 +164,7 @@ export const Presenter = ({ ws }) => {
                         ? <Spinner />
                         : <button className={sty.slideUploadBtn} onClick={() => openFile()}>
                             <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                            <Icon name='add' size={30} color='--primary-tint' />
+                            <Icon name='add' size={30} color='--tint' />
                         </button>
                     : <>
                         <DragDropContext onDragEnd={updateList}>
@@ -180,7 +180,7 @@ export const Presenter = ({ ws }) => {
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
                                                             className={sty.slidePreview}
-                                                            style={{ ...provided.draggableProps.style, border: index === SSSlide.active.index ? '5px solid var(--system-gray2)' : 'none' }}
+                                                            style={{ ...provided.draggableProps.style, border: index === SSSlide.active.index ? '5px solid var(--gray-2)' : 'none' }}
                                                             onClick={() => changeSlide(index)}>
                                                             <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
                                                         </div>
@@ -195,7 +195,7 @@ export const Presenter = ({ ws }) => {
                                             ? <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />
                                             : <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
                                                 <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                                                <Icon name='add' size={26} color='--primary-tint' />
+                                                <Icon name='add' size={26} color='--tint' />
                                             </button>
                                         }
                                     </div>
@@ -206,11 +206,11 @@ export const Presenter = ({ ws }) => {
                             <div className={sty.slidesHeader}>
                                 <div className={sty.slidesHeaderMiddle}>
                                     <button className={sty.slideControlsBtn} onClick={() => toggleTheatre('on')}>
-                                        <Icon name='tv-o' size={25} color='--primary-tint' />
+                                        <Icon name='tv-o' size={25} color='--tint' />
                                         <div className='tooltip tooltipBottom'>Play</div>
                                     </button>
                                     <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
-                                        <Icon name='trash-o' size={25} color='--system-red' />
+                                        <Icon name='trash-o' size={25} color='--red' />
                                         <div className='tooltip tooltipBottom'>Remove</div>
                                     </button>
                                 </div>
@@ -222,11 +222,11 @@ export const Presenter = ({ ws }) => {
                                 </div>
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
-                                        <Icon name='chevron-back' size={25} color='--primary-tint' />
+                                        <Icon name='chevron-back' size={25} color='--tint' />
                                     </button>
                                     <h3 className={sty.slideControlsLbl}>{`${SSSlide.active.page} / ${pageCount}`}</h3>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('>')}>
-                                        <Icon name='chevron-forward' size={25} color='--primary-tint' />
+                                        <Icon name='chevron-forward' size={25} color='--tint' />
                                     </button>
                                 </div>
                             </div>
@@ -237,7 +237,7 @@ export const Presenter = ({ ws }) => {
                                             key={index}
                                             className={sty.slidePage}
                                             style={{
-                                                backgroundColor: (index + 1) === SSSlide.active.page ? 'var(--system-gray2)' : 'var(--tertiary-fill)',
+                                                backgroundColor: (index + 1) === SSSlide.active.page ? 'var(--gray-2)' : 'var(--fill-3)',
                                                 margin: index === 0 ? '10px 5px 10px 10px' : index === pageCount - 1 ? '10px 10px 10px 5px' : '10px 5px'
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}

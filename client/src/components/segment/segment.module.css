@@ -1,8 +1,8 @@
 .segments {
     padding: 4px;
-    border: 1px solid var(--nonopaque-separator);
+    border: 1px solid var(--line-no);
     border-radius: 10px;
-    background-color: var(--quarternary-fill);
+    background-color: var(--fill-4);
     z-index: 1;
 }
 

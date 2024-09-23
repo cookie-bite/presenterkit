@@ -9,7 +9,7 @@
     border-radius: 14px;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--thin-material);
+    background-color: var(--glass-3);
     overflow: hidden;
 }
 
@@ -17,7 +17,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    border: 0 solid var(--nonopaque-separator);
+    border: 0 solid var(--line-no);
     border-bottom-width: 1px;
     padding: 10px 16px;
 }
@@ -37,13 +37,13 @@
     border-radius: 6px;
     padding: 2px 10px;
     margin-right: 10px;
-    background-color: var(--tertiary-fill);
+    background-color: var(--fill-3);
 }
 
 .panelCountLbl {
     font-size: 20px;
     font-weight: 700;
-    color: var(--system-green);
+    color: var(--green);
 }
 
 .panelBtns {
@@ -58,5 +58,5 @@
     width: 30px;
     height: 30px;
     border-radius: 15px;
-    background-color: var(--primary-fill);
+    background-color: var(--fill-1);
 }

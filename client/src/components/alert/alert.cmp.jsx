@@ -48,8 +48,8 @@ const Container = () => {
                 exit={{ y: '-100%', x: '-50%' }}
                 transition={{ ease: 'easeInOut', duration: 0.5 }}
             >
-                {alertSnap.icon && <div className={sty.alertIc} style={{ backgroundColor: `${getColor(alertSnap.icon.color || '--primary-tint')}27` }}>
-                    <Icon name={alertSnap.icon.name || 'notifications'} size={alertSnap.icon.size || 26} color={alertSnap.icon.color || '--primary-tint'} />
+                {alertSnap.icon && <div className={sty.alertIc} style={{ backgroundColor: `${getColor(alertSnap.icon.color || '--tint')}27` }}>
+                    <Icon name={alertSnap.icon.name || 'notifications'} size={alertSnap.icon.size || 26} color={alertSnap.icon.color || '--tint'} />
                 </div>}
                 <div className={sty.alertBody} style={{ marginLeft: alertSnap.icon ? 20 : 10, marginRight: alertSnap.buttons ? 20 : 10 }}>
                     <h4 className={sty.alertTtl}>{alertSnap.title}</h4>

@@ -43,39 +43,39 @@ export const Controls = () => {
                 transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
             >
                 {SSUser.isPresenter && <button className={sty[cmpr('Remote') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Remote')}>
-                    <Icon name='phone-o' size={28} color={cmpr('Remote') ? '--white' : '--secondary-label'} />
+                    <Icon name='phone-o' size={28} color={cmpr('Remote') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Remote</div>
                 </button>}
                 <button className={sty[cmpr('QRScreen') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('QRScreen')}>
-                    <Icon name='qr' size={26} color={cmpr('QRScreen') ? '--white' : '--secondary-label'} />
+                    <Icon name='qr' size={26} color={cmpr('QRScreen') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>QR</div>
                 </button>
                 <button className={sty[cmpr('Quests') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Quests')}>
-                    <Icon name='chatbubble-o' size={30} color={cmpr('Quests') ? '--white' : '--secondary-label'} />
+                    <Icon name='chatbubble-o' size={30} color={cmpr('Quests') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Messages</div>
                 </button>
                 <button className={sty[cmpr('Users') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Users')}>
-                    <Icon name='people' size={30} color={cmpr('Users') ? '--white' : '--secondary-label'} />
+                    <Icon name='people' size={30} color={cmpr('Users') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Users</div>
                 </button>
                 {!SSUser.isPresenter && <button className={sty[cmpr('Shares') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Shares')}>
-                    <Icon name='paper-plane' size={26} color={cmpr('Shares') ? '--white' : '--secondary-label'} />
+                    <Icon name='paper-plane' size={26} color={cmpr('Shares') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Shares</div>
                 </button>}
                 {SSUser.isPresenter && <button className={sty[cmpr('Presenter') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Presenter')}>
-                    <Icon name='albums' size={30} color={cmpr('Presenter') ? '--white' : '--secondary-label'} />
+                    <Icon name='albums' size={30} color={cmpr('Presenter') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Presenter</div>
                 </button>}
                 {!SSUser.isPresenter && <button className={sty[cmpr('Slides') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Slides')}>
-                    <Icon name='albums' size={30} color={cmpr('Slides') ? '--white' : '--secondary-label'} />
+                    <Icon name='albums' size={30} color={cmpr('Slides') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Slides</div>
                 </button>}
                 {(SSUser.isPresenter || SSAdmin.privileged) && <button className={sty[cmpr('Admin') ? 'controlsBtnActive' : 'controlsBtn']} onClick={() => toggleScreen('Admin')}>
-                    <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--white' : '--secondary-label'} />
+                    <Icon name='person-circle-o' size={33} color={cmpr('Admin') ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>Admin</div>
                 </button>}
                 {!SSUser.isPresenter && <button className={sty.controlsBtn} onClick={() => resizeWindow()}>
-                    <Icon name={SSApp.isFullscreen ? 'contract' : 'expand'} size={30} color={SSApp.isFullscreen ? '--white' : '--secondary-label'} />
+                    <Icon name={SSApp.isFullscreen ? 'contract' : 'expand'} size={30} color={SSApp.isFullscreen ? '--white' : '--label-2'} />
                     <div className='tooltip tooltipTop'>{SSApp.isFullscreen ? 'Exit' : 'Full screen'}</div>
                 </button>}
             </motion.div>

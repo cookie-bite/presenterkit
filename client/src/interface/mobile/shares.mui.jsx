@@ -32,10 +32,10 @@ export const Shares = () => {
                         <Icon name='close' size={20} color='--white' />
                     </button>
                     <button className={sty.previewIc} onClick={() => STShare.show = false}>
-                        <Icon name='notifications-o' size={30} color='--system-blue' />
+                        <Icon name='notifications-o' size={30} color='--blue' />
                     </button>
                     {SSShares.list[SSShare.active].body && <div className={sty.previewBody}>
-                        <h2 className={sty.previewBodyLbl} style={{ color: SSShares.list[SSShare.active].body ? 'var(--primary-label)' : 'var(--tertiary-label)' }}>{SSShares.list[SSShare.active].body}</h2>
+                        <h2 className={sty.previewBodyLbl} style={{ color: SSShares.list[SSShare.active].body ? 'var(--label-1)' : 'var(--label-3)' }}>{SSShares.list[SSShare.active].body}</h2>
                     </div>}
                     {SSShares.list[SSShare.active].urls[0].link && <div className={sty.previewBtns}>
                         {SSShares.list[SSShare.active].urls.map((url, index) => {
@@ -73,7 +73,7 @@ export const Shares = () => {
                                 {SSShares.list.map((share, index) => {
                                     return (
                                         <div key={index} className={sty.sharePage} onClick={() => { STSlide.active.page = (index + 1) }}
-                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--system-yellow)' : 'var(--primary-fill)' }}>
+                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--yellow)' : 'var(--fill-1)' }}>
                                             {share.body && <h2 className={sty.shareBody}>{share.body}</h2>}
                                             {share.urls[0].link && <div className={sty.shareBtns} style={{ marginTop: share.body ? 20 : 0 }}>
                                                 {share.urls.map((url, index) => {

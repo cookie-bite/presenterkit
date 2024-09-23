@@ -128,7 +128,7 @@ export const Controls = ({ ws }) => {
                         transition={{ ease: 'easeInOut', duration: 0.3 }}
                         onClick={() => STUI.name = 'Menu'}
                     >
-                        <Icon name='ellipsis-horizontal-circle' size={30} color='--primary-tint' />
+                        <Icon name='ellipsis-horizontal-circle' size={30} color='--tint' />
                     </motion.button>}
                 </AnimatePresence>
                 <motion.textarea className={sty.controlsInput} rows={1} maxLength={140} type='text' name='text' autoComplete='off' placeholder='Type a question...' value={text}
@@ -143,7 +143,7 @@ export const Controls = ({ ws }) => {
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
                     onClick={() => send()}
                 >
-                    <Icon name='arrow-up-circle-o' size={35} color='--primary-tint' />
+                    <Icon name='arrow-up-circle-o' size={35} color='--tint' />
                 </motion.button>
             </motion.div>
 
@@ -223,7 +223,7 @@ export const Controls = ({ ws }) => {
                         transition={{ ease: 'easeInOut', duration: 0.3 }}
                         onClick={() => closeScreen()}
                     >
-                        <Icon name='close-circle-o' size={30} color='--system-blue' />
+                        <Icon name='close-circle-o' size={30} color='--blue' />
                     </motion.button>
                 </>}
             </AnimatePresence>

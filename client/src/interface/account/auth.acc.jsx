@@ -52,8 +52,8 @@ export const Auth = () => {
             <div className={sty.auth}>
                 <div className={sty.authForm}>
                     <div className={sty.authNav}>
-                        <button style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
-                        <button style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--primary-fill)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
+                        <button style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--fill-1)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
+                        <button style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--fill-1)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
                     </div>
 
                     {SSAuthUI.name === 'SignIn' && <div className={sty.authInputs}>
