@@ -4,7 +4,7 @@ const Joi = require('joi')
 // Auth
 
 exports.signup = Joi.object({
-    username: Joi.string().required(), // Joi.string().min(6).required(),
+    username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(), // Joi.string().pattern(new RegExp(/^(((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])))(?=.{8,15})/)).message({ 'string.pattern.base': 'Password is not valid' }),
     color: Joi.string().required()
