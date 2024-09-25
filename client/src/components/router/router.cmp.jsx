@@ -37,8 +37,6 @@ export const Router = (props) => {
 
 
 export const goTo = (path = '/') => {
-    console.log('goTo', window.location.toString())
-    
     const url = new URL(window.location.origin + path)
     window.history.pushState({}, '', path)
 

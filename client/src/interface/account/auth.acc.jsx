@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { RTAuth } from '../../routes/routes'
 
 import { STAuthUI, STUser } from '../../stores/app.store'
 
-import { goTo, Icon } from '../../components/core.cmp'
+import { goTo, Icon, Segment } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/account.module.css'
 
@@ -19,20 +19,44 @@ export const Auth = () => {
     const [usernameErr, setUsernameErr] = useState(false)
     const [emailErr, setEmailErr] = useState(false)
     const [passErr, setPassErr] = useState(false)
-    const [formValid, setFormValid] = useState(false)
+    const [lowercaseErr, setLowercaseErr] = useState(false)
+    const [uppercaseErr, setUppercaseErr] = useState(false)
+    const [digitErr, setDigitErr] = useState(false)
+    const [specCharErr, setSpecCharErr] = useState(false)
+    const [passLengthErr, setPassLengthErr] = useState(false)
 
-    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const [formErr, setFormErr] = useState(false)
 
+    const RXUsername = /^.{3,30}$/
+    const RXEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const RXPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]).{8,}/
+    const RXLowercase = /[a-z]/
+    const RXUppercase = /[A-Z]/
+    const RXDigit = /[0-9]/
+    const RXSpecChar = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    const RXPassLength = /^.{8,30}$/
+
+    const segments = ['SignIn', 'SignUp']
+    const labels = ['Sign in', 'Sign up']
+
+
+    const onSegmentChange = (segment) => { STAuthUI.name = segment }
 
     const onChange = (label, value, set) => {
         set(value)
 
         if (label === 'username') {
-            if (3 < value.length && value.length < 30) setUsernameErr(false)
+            if (RXUsername.test(value)) setUsernameErr(false)
         } else if (label === 'email') {
-            if (emailPattern.test(value)) setEmailErr(false)
+            if (RXEmail.test(value)) setEmailErr(false)
         } else if (label === 'password') {
-            if (value.length > 5) setPassErr(false)
+            if (RXPassword.test(value)) setPassErr(false)
+
+            setLowercaseErr(!RXLowercase.test(value))
+            setUppercaseErr(!RXUppercase.test(value))
+            setDigitErr(!RXDigit.test(value))
+            setSpecCharErr(!RXSpecChar.test(value))
+            setPassLengthErr(!RXPassLength.test(value))
         }
     }
 
@@ -42,14 +66,19 @@ export const Auth = () => {
         return new Promise((resolve) => {
 
             if (label === 'username') {
-                setUsernameErr(username.length < 3 || username.length > 30)
+                setUsernameErr(!RXUsername.test(username))
             } else if (label === 'email') {
-                setEmailErr(!emailPattern.test(email))
+                setEmailErr(!RXEmail.test(email))
             } else if (label === 'password') {
-                setPassErr(password.length < 6)
+                setPassErr(!RXPassword.test(password))
+                setLowercaseErr(!RXLowercase.test(password))
+                setUppercaseErr(!RXUppercase.test(password))
+                setDigitErr(!RXDigit.test(password))
+                setSpecCharErr(!RXSpecChar.test(password))
+                setPassLengthErr(!RXPassLength.test(password))
             }
 
-            (password.length > 5 && emailPattern.test(email)) ? setFormValid(true) : setFormValid(false)
+            (RXUsername.test(username) && RXEmail.test(email) && RXPassword.test(password)) ? setFormErr(false) : setFormErr(true)
 
             resolve()
         })
@@ -69,9 +98,11 @@ export const Auth = () => {
 
 
     const signUp = async () => {
+        await validate('username')
+        await validate('email')
         await validate('password')
 
-        // formValid && RTAuth.signUp(username, email, password, STUser.color).then((data) => {
+        // (!formErr) && RTAuth.signUp(username, email, password, STUser.color).then((data) => {
         //     if (data.success) {
         //         localStorage.setItem('EMAIL', email)
         //         localStorage.setItem('ACS_TKN', data.accessToken)
@@ -87,41 +118,69 @@ export const Auth = () => {
         <div className={sty.authBg}>
             <div className={sty.auth}>
                 <div className={sty.authForm}>
-                    <div className={sty.authNav}>
-                        <button style={{ backgroundColor: STAuthUI.name === 'SignIn' ? 'var(--fill-1)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignIn'}>Sign in</button>
-                        <button style={{ backgroundColor: STAuthUI.name === 'SignUp' ? 'var(--fill-1)' : 'transparent' }} onClick={() => STAuthUI.name = 'SignUp'}>Sign up</button>
-                    </div>
-
-                    {SSAuthUI.name === 'SignIn' && <div className={sty.authInputs}>
-                        <input name='email' placeholder='Email' type='text' value={email} onChange={(e) => onChange('email', e.target.value, setEmail)} />
-                        <input name='password' placeholder='Password' type='password' value={password} onChange={(e) => onChange('password', e.target.value, setPassword)} />
-                        <button className={sty.authBtn} onClick={() => signIn()}>Sign in</button>
-                    </div>}
-                    {SSAuthUI.name === 'SignUp' && <div className={sty.authInputs}>
-                        <input name='username' placeholder='Username' type='text' value={username}
-                            onBlur={() => onBlur('username')}
-                            onChange={(e) => onChange('username', e.target.value, setUsername)} />
-                        <input name='email' placeholder='Email' type='text' value={email}
-                            onBlur={() => onBlur('email')}
-                            onChange={(e) => onChange('email', e.target.value, setEmail)}
-                        />
-                        <input name='password' placeholder='Password' type='password' value={password}
-                            onBlur={() => onBlur('password')}
-                            onChange={(e) => onChange('password', e.target.value, setPassword)}
-                        />
-                        {usernameErr && <h1 style={{ color: 'red' }}>Invalid Username</h1>}
-                        {emailErr && <h1 style={{ color: 'red' }}>Invalid Email</h1>}
-                        {passErr && <h1 style={{ color: 'red' }}>Invalid Password</h1>}
-                        <button className={sty.authBtn} onClick={() => signUp()}>Sign Up</button>
-                    </div>}
-                </div>
-                <div className={sty.authBanner}>
                     <div className={sty.authLogo}>
                         <img src='/logo.svg' alt='logo' />
-                        <h1>PresenterKit</h1>
+                        <h3>PresenterKit</h3>
                     </div>
 
-                    <h2>Boost interactivity even offline.<br />Slide Share & 3D Messaging.</h2>
+                    <Segment segments={segments} labels={labels} state={SSAuthUI.name} onChange={(index, segment) => onSegmentChange(segment)} />
+
+                    {SSAuthUI.name === 'SignIn' && <>
+                        <div className={sty.authInputs}>
+                            <input name='email' placeholder='Email' type='text' value={email}
+                                onChange={(e) => onChange('email', e.target.value, setEmail)}
+                            />
+                            <input name='password' placeholder='Password' type='password' value={password}
+                                onChange={(e) => onChange('password', e.target.value, setPassword)}
+                            />
+                        </div>
+
+                        <button className={sty.authBtn} onClick={() => signIn()}>Sign in</button>
+                    </>}
+                    {SSAuthUI.name === 'SignUp' && <>
+                        <div className={sty.authInputs}>
+                            <input name='username' placeholder='Username' type='text' value={username}
+                                style={{ color: usernameErr ? 'var(--red)' : 'var(--white)' }}
+                                onBlur={() => onBlur('username')}
+                                onChange={(e) => onChange('username', e.target.value, setUsername)}
+                            />
+
+                            <input name='email' placeholder='Email' type='text' value={email}
+                                style={{ color: emailErr ? 'var(--red)' : 'var(--white)' }}
+                                onBlur={() => onBlur('email')}
+                                onChange={(e) => onChange('email', e.target.value, setEmail)}
+                                />
+
+                            <input name='password' placeholder='Password' type='password' value={password}
+                                onBlur={() => onBlur('password')}
+                                onChange={(e) => onChange('password', e.target.value, setPassword)}
+                            />
+
+                            {passErr && <div className={sty.authPassErrs}>
+                                <div className={sty.authPassErr} style={{ border: `1px solid ${lowercaseErr ? 'var(--red)' : 'var(--green)'}`, backgroundColor: lowercaseErr ? 'var(--red-bg)' : 'var(--green-bg)' }}>
+                                    <h4 style={{ color: lowercaseErr ? 'var(--red)' : 'var(--green)' }}>ab</h4>
+                                </div>
+                                <div className={sty.authPassErr} style={{ border: `1px solid ${uppercaseErr ? 'var(--red)' : 'var(--green)'}`, backgroundColor: uppercaseErr ? 'var(--red-bg)' : 'var(--green-bg)' }}>
+                                    <h4 style={{ color: uppercaseErr ? 'var(--red)' : 'var(--green)' }}>AB</h4>
+                                </div>
+                                <div className={sty.authPassErr} style={{ border: `1px solid ${digitErr ? 'var(--red)' : 'var(--green)'}`, backgroundColor: digitErr ? 'var(--red-bg)' : 'var(--green-bg)' }}>
+                                    <h4 style={{ color: digitErr ? 'var(--red)' : 'var(--green)' }}>12</h4>
+                                </div>
+                                <div className={sty.authPassErr} style={{ border: `1px solid ${specCharErr ? 'var(--red)' : 'var(--green)'}`, backgroundColor: specCharErr ? 'var(--red-bg)' : 'var(--green-bg)' }}>
+                                    <h4 style={{ color: specCharErr ? 'var(--red)' : 'var(--green)' }}>@#</h4>
+                                </div>
+                                <div className={sty.authPassErr} style={{ border: `1px solid ${passLengthErr ? 'var(--red)' : 'var(--green)'}`, backgroundColor: passLengthErr ? 'var(--red-bg)' : 'var(--green-bg)' }}>
+                                    <h4 style={{ color: passLengthErr ? 'var(--red)' : 'var(--green)' }}>8+</h4>
+                                </div>
+                            </div>}
+                        </div>
+                        <button className={sty.authBtn} onClick={() => signUp()}>Sign Up</button>
+                    </>}
+                </div>
+                <div className={sty.authBanner}>
+                    <img src='/imgs/auth.webp' />
+
+                    <h2>Presentation and audience<br />engagement in one SaaS.</h2>
                 </div>
             </div>
         </div>

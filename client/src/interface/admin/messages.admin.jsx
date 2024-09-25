@@ -59,6 +59,7 @@ export const Messages = ({ ws }) => {
     const SSMessages = useSnapshot(STMessages)
 
     const segments = ['Pass', 'Stop']
+    const labels = ['Pass', 'Stop']
 
 
     const forwarding = (state) => {
@@ -81,7 +82,7 @@ export const Messages = ({ ws }) => {
     return (
         <div className={sty.pageBg}>
             <div className={sty.page} style={{ width: 800 }}>
-                <Segment segments={segments} state={SSMessages.tab} onChange={(index, segment) => onSegmentChange(segment)} />
+                <Segment segments={segments} labels={labels} state={SSMessages.tab} onChange={(index, segment) => onSegmentChange(segment)} />
 
                 {SSQueue.list.length !== 0
                     ? <div className={sty.msgList}>
