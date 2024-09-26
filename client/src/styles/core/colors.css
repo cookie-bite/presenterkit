@@ -53,9 +53,16 @@
     --red:           #FF453A;
     --teal:          #64D2FF;
     --yellow:        #FFD60A;
-
-    --red-bg:        #ff453a2b;
-    --green-bg:      #30d15824;
+   
+    --blue-bg:       #0A84FF2B;
+    --green-bg:      #30D15824;
+    --indigo-bg:     #5E5CE633;
+    --orange-bg:     #FF9F0A26;
+    --pink-bg:       #FF375F2B;
+    --purple-bg:     #BF5AF233;
+    --red-bg:        #FF453A2B;
+    --teal-bg:       #64D2FF26;
+    --yellow-bg:     #FFD60A24;
 
     --d1:            #64D2FF;
     --d2:            #BF5AF2;
