@@ -9,6 +9,7 @@ import sty from '../../styles/modules/desktop.module.css'
 
 
 export const Entry = ({ ws }) => {
+    const SSEntry = useSnapshot(STEntry)
     const SSUser = useSnapshot(STUser)
     const SSCooldown = useSnapshot(STCooldown)
 
@@ -65,7 +66,7 @@ export const Entry = ({ ws }) => {
 
 
     return (
-        <motion.div className={sty.entryPage}
+        SSEntry.showUI && <motion.div className={sty.entryPage}
             exit={{ opacity: 0 }}
             transition={{ ease: 'easeInOut', duration: SSUser.isPresenter ? 0 : 0.5 }}
         >

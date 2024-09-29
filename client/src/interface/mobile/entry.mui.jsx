@@ -8,6 +8,7 @@ import sty from '../../styles/modules/mobile.module.css'
 
 
 export const Entry = ({ ws }) => {
+    const SSEntry = useSnapshot(STEntry)
     const SSCooldown = useSnapshot(STCooldown)
 
     const inputAnim = useAnimation()
@@ -61,7 +62,7 @@ export const Entry = ({ ws }) => {
 
 
     return (
-        <motion.div className={sty.entryPage}
+        SSEntry.showUI && <motion.div className={sty.entryPage}
             exit={{ opacity: 0 }}
             transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.4 }}
         >

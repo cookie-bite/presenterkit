@@ -22,10 +22,10 @@ router.post('/signup', async (req, res) => {
 
     const { error } = joiSchema.signup.validate(req.body)
     console.log(error)
-    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+    if (error) return res.status(400).json({ success: false, error: 'Invalid credentials' })
 
     const user = await collection('users').findOne({ email })
-    if (user) return res.status(400).json({ success: false, error: 'User already exists' })
+    if (user) return res.status(400).json({ success: false, error: 'This email is already registered' })
 
     try {
         const hash = await argon2.hash(password + process.env.PEPPER, { type: argon2.argon2id, memoryCost: 15360, timeCost: 2 })
@@ -42,13 +42,13 @@ router.post('/signup', async (req, res) => {
 router.post('/signin', async (req, res) => {
     const { email, password } = req.body
     const { error } = joiSchema.signin.validate(req.body)
-    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+    if (error) return res.status(400).json({ success: false, error: 'Invalid email or password' })
 
     const user = await collection('users').findOne({ email })
-    if (!user) return res.status(400).json({ success: false, error: 'User not found' })
+    if (!user) return res.status(400).json({ success: false, error: 'Invalid email or password' })
 
     const isMatch = await argon2.verify(user.password, password + process.env.PEPPER)
-    if (!isMatch) return res.status(400).json({ success: false, error: 'Invalid password' })
+    if (!isMatch) return res.status(400).json({ success: false, error: 'Invalid email or password' })
 
     try {
         const accessToken = genAcsToken({ sub: user._id })

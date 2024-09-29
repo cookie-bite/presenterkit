@@ -65,6 +65,7 @@ export const initWS = () => {
                 STConfig.forwarding = res.config.forwarding
             } else {
                 if (!res.user.isInLobby) STEntry.show = false
+                else STEntry.showUI = true
                 STSlide.active = res.activeSlide
             }
 

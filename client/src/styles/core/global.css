@@ -68,3 +68,13 @@ input::placeholder {
 input::selection, textarea::selection {
     background-color: var(--fill-1);
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-background-clip: text !important;
+    -webkit-box-shadow: 0 0 0 30px var(--fill-4) inset !important;
+    -webkit-text-fill-color: var(--label-1) !important;
+    caret-color: var(--label-1) !important;
+}

@@ -18,6 +18,13 @@
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--glass-3);
+    
+    @media (max-width: 910px) {
+        background-color: unset;
+        box-shadow: unset;
+        backdrop-filter: unset;
+        -webkit-backdrop-filter: unset;
+    }
 }
 
 .authForm {
@@ -25,11 +32,15 @@
     align-items: center;
     height: 570px;
     padding: 40px 40px 10px;
+    
+    @media (max-width: 910px) {
+        padding: 0;
+    }
 }
 
 .authLogo {
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 
     img {
         width: 80px;
@@ -42,41 +53,65 @@
     }
 }
 
+.authApiErr {
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin-top: 10px;
+
+    h4 {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.4px;
+        color: var(--red);
+    }
+}
+
 .authInputs {
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin-top: 45px;
+
+    .authInput {
+        align-items: center;
+        position: relative;
+        margin: 0 10px 10px;
+    }
 
     input {
         align-items: center;
         font-size: 15px;
         font-weight: 500;
-        width: 350px;
+        width: 330px;
         height: 40px;
-        padding: 0 10px;
-        margin: 0 10px;
+        padding: 0 30px 0 10px;
         border: 1px solid var(--line-no);
         border-radius: 8px;
         background-color: var(--fill-4);
-        transition: all .3s ease-in-out;
     }
-    
+
+    .authInputIcon {
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 10px;
+        height: 20px;
+    }
+
     .authPassErrs {
         gap: 8px;
         margin-bottom: 5px;
     }
-    
+
     .authPassErr {
         align-items: center;
         justify-content: center;
+        position: relative;
         width: 30px;
         height: 25px;
-        border: 1px solid var(--line-no);
         border-radius: 6px;
         background-color: var(--fill-4);
         transition: all .3s ease-in-out;
-        
+
         h4 {
             font-size: 13px;
             font-weight: 500;
@@ -84,14 +119,15 @@
         }
     }
 }
-    
+
 .authBtn {
     align-items: center;
     justify-content: center;
+    position: relative;
     width: fit-content;
     height: 40px;
     padding: 0 40px;
-    margin-top: 25px;
+    margin-top: 20px;
     border-radius: 8px;
     background-color: var(--indigo);
     font-size: 15px;
@@ -110,6 +146,10 @@
     border-radius: 8px;
     background-color: var(--fill-4);
     overflow: hidden;
+    
+    @media (max-width: 910px) {
+        display: none;
+    }
 
     img {
         height: 100%;

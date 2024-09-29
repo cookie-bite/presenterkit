@@ -21,6 +21,15 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
                     d="M368 96H144a16 16 0 010-32h224a16 16 0 010 32zM400 144H112a16 16 0 010-32h288a16 16 0 010 32zM419.13 448H92.87A44.92 44.92 0 0148 403.13V204.87A44.92 44.92 0 0192.87 160h326.26A44.92 44.92 0 01464 204.87v198.26A44.92 44.92 0 01419.13 448z" />
             </svg>}
 
+            {name === 'alert-circle-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none"
+                    stroke={getColor(color)} strokeMiterlimit="10" strokeWidth="32" />
+                <path d="M250.26 166.05L256 288l5.73-121.95a5.74 5.74 0 00-5.79-6h0a5.74 5.74 0 00-5.68 6z"
+                    fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
+                    strokeWidth="32" />
+                <path fill={getColor(color)} d="M256 367.91a20 20 0 1120-20 20 20 0 01-20 20z" />
+            </svg>}
+
             {name === 'arrow-down' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
                 <path fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
                     strokeWidth="48" d="M112 268l144 144 144-144M256 392V100" />

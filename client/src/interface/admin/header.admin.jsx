@@ -91,7 +91,7 @@ export const Header = ({ ws, core }) => {
                 <h3 className={sty.headlineLbl}>3D Title</h3>
                 <input className={sty.headlineInput} type='text' name='title' autoComplete='off' placeholder={SSDisplay.quest} value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send(); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') send() }}
                 />
                 <button className={sty.headlineBtn} style={{ backgroundColor: (title !== SSDisplay.quest && title !== '') ? 'var(--blue)' : 'var(--fill-3)' }} onClick={() => send()}>
                     <Icon name='sync' size={20} color='--white' />
