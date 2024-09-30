@@ -67,6 +67,13 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
                     stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" />
             </svg>}
 
+            {name === 'card-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <rect x="48" y="96" width="416" height="320" rx="56" ry="56" fill="none" stroke={getColor(color)}
+                    strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" />
+                <path fill="none" stroke={getColor(color)} strokeLinejoin="round" strokeWidth="60"
+                    d="M48 192h416M128 300h48v20h-48z" />
+            </svg>}
+
             {name === 'chatbubble-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
                 <path
                     d="M87.48 380c1.2-4.38-1.43-10.47-3.94-14.86a42.63 42.63 0 00-2.54-3.8 199.81 199.81 0 01-33-110C47.64 139.09 140.72 48 255.82 48 356.2 48 440 117.54 459.57 209.85a199 199 0 014.43 41.64c0 112.41-89.49 204.93-204.59 204.93-18.31 0-43-4.6-56.47-8.37s-26.92-8.77-30.39-10.11a31.14 31.14 0 00-11.13-2.07 30.7 30.7 0 00-12.08 2.43L81.5 462.78a15.92 15.92 0 01-4.66 1.22 9.61 9.61 0 01-9.58-9.74 15.85 15.85 0 01.6-3.29z"
@@ -290,6 +297,14 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
                     strokeWidth="32" />
                 <path fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
                     strokeWidth="32" d="M32 256l44-44 46 44M480 256l-44 44-46-44" />
+            </svg>}
+
+            {name === 'ticket-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <path fill="none" stroke={getColor(color)} strokeMiterlimit="10" strokeWidth="32"
+                    d="M366.05 146a46.7 46.7 0 01-2.42-63.42 3.87 3.87 0 00-.22-5.26l-44.13-44.18a3.89 3.89 0 00-5.5 0l-70.34 70.34a23.62 23.62 0 00-5.71 9.24h0a23.66 23.66 0 01-14.95 15h0a23.7 23.7 0 00-9.25 5.71L33.14 313.78a3.89 3.89 0 000 5.5l44.13 44.13a3.87 3.87 0 005.26.22 46.69 46.69 0 0165.84 65.84 3.87 3.87 0 00.22 5.26l44.13 44.13a3.89 3.89 0 005.5 0l180.4-180.39a23.7 23.7 0 005.71-9.25h0a23.66 23.66 0 0114.95-15h0a23.62 23.62 0 009.24-5.71l70.34-70.34a3.89 3.89 0 000-5.5l-44.13-44.13a3.87 3.87 0 00-5.26-.22 46.7 46.7 0 01-63.42-2.32z" />
+                <path fill="none" stroke={getColor(color)} strokeMiterlimit="10" strokeWidth="32"
+                    strokeLinecap="round"
+                    d="M250.5 140.44l-16.51-16.51M294.52 184.46l-11.01-11M338.54 228.49l-11-11.01M388.07 278.01l-16.51-16.51" />
             </svg>}
 
             {name === 'timer-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">

@@ -7,7 +7,7 @@ import { STAuthUI, STUser } from '../../stores/app.store'
 
 import { goTo, Segment, Icon } from '../../components/core.cmp'
 
-import sty from '../../styles/modules/account.module.css'
+import sty from '../../styles/modules/dashboard.module.css'
 
 
 export const Auth = () => {

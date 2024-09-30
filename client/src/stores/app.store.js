@@ -3,6 +3,8 @@ import { proxy } from 'valtio'
 
 export const STAuthUI = proxy({ name: 'SignIn' })
 
+export const STBoardUI = proxy({ name: 'Events' })
+
 export const STRoute = proxy({ path: window.location.pathname, params: {} })
 
 export const STEvent = proxy({ id: '', name: '' })

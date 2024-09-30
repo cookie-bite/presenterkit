@@ -14,7 +14,6 @@ export const Router = (props) => {
         }
         
         const onNavigation = (e) => {
-            console.log('location changed!', e.target.location)
             STRoute.path = e.target.location.pathname
             window.history.replaceState({}, '', e.target.location.pathname)
         }

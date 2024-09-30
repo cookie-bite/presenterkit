@@ -4,10 +4,10 @@ import { RTAuth, RTEvent, RTUser } from '../../routes/routes'
 import { STEvent, STUser } from '../../stores/app.store'
 import { goTo, Icon } from '../../components/core.cmp'
 
-import sty from '../../styles/modules/account.module.css'
+import sty from '../../styles/modules/dashboard.module.css'
 
 
-export const Dashboard = () => {
+export const Events = () => {
     const [eventName, setEventName] = useState('')
 
     const SSUser = useSnapshot(STUser)
@@ -62,7 +62,7 @@ export const Dashboard = () => {
 
 
     return (
-        <div className={sty.dashboard}>
+        <div className={sty.eventsPage}>
             <div className={sty.profile}>
                 <Icon name='person-circle-o' size={60} color='--gray-1' />
                 <div className={sty.info}>

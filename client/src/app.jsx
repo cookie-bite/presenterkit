@@ -1,6 +1,6 @@
 import { Router } from './components/core.cmp'
-import { Dashboard } from './interface/account/dashboard.acc'
-import { Auth } from './interface/account/auth.acc'
+import { Dashboard } from './interface/dashboard/core.board'
+import { Auth } from './interface/dashboard/auth.board'
 import { Event } from './event'
 
 
