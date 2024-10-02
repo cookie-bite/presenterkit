@@ -13,7 +13,7 @@ import sty from '../../styles/modules/desktop.module.css'
 var reqTimeout = null
 
 
-export const Presenter = ({ ws }) => {
+export const Presenter = () => {
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
     const SSSpinner = useSnapshot(STSpinner)
@@ -86,7 +86,7 @@ export const Presenter = ({ ws }) => {
         STSlides.list.splice(destination.index, 0, reorderedItem)
 
         clearTimeout(reqTimeout)
-        reqTimeout = setTimeout(() => ws.send(JSON.stringify({ command: 'SWAP_SLDS', eventID: STEvent.id, slides: STSlides.list })), 5000)
+        reqTimeout = setTimeout(() => window.ws.send(JSON.stringify({ command: 'SWAP_SLDS', eventID: STEvent.id, slides: STSlides.list })), 5000)
     }
 
     const changePage = (to) => {
@@ -137,7 +137,7 @@ export const Presenter = ({ ws }) => {
     }
 
     const sendSlideUpdate = (isStarted, pageUpdate = false) => {
-        ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
+        window.ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
     }
 
 

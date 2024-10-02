@@ -11,7 +11,7 @@ import sty from '../../styles/modules/mobile.module.css'
 var delay = null
 const timeout = 1500
 
-export const Controls = ({ ws }) => {
+export const Controls = () => {
     const SSApp = useSnapshot(STApp)
     const SSUI = useSnapshot(STUI)
     const SSUser = useSnapshot(STUser)
@@ -34,7 +34,7 @@ export const Controls = ({ ws }) => {
         if (text.trim() !== '') {
             let temp = text
             while (temp.includes('\n\n')) temp = temp.replace('\n\n', '\n')
-            ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, quest: { label: temp, color: STUser.color } }))
+            window.ws.send(JSON.stringify({ command: 'SEND_MSG', eventID: STEvent.id, quest: { label: temp, color: STUser.color } }))
             sendBtn.start({ scale: 0, marginLeft: '0px' })
             inputHeight.start({ height: '33px', 'min-width': 'calc(100vw - 77px)' })
             setText('')
@@ -60,14 +60,14 @@ export const Controls = ({ ws }) => {
         }
 
         if (!isTyping) {
-            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color }))
+            window.ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: true, color: STUser.color }))
             setIsTyping(true)
         }
 
         clearTimeout(delay)
         delay = setTimeout(() => {
             setIsTyping(false)
-            ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color }))
+            window.ws.send(JSON.stringify({ command: 'SEND_TYP', eventID: STEvent.id, isTyping: false, color: STUser.color }))
         }, timeout)
     }
 
@@ -94,7 +94,7 @@ export const Controls = ({ ws }) => {
     const submitUser = () => {
         if (STUser.name !== username) {
             STUser.name = username
-            ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'updated' }))
+            window.ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'updated' }))
         }
     }
 

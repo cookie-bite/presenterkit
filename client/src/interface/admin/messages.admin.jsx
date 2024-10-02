@@ -11,16 +11,16 @@ import { Segment } from '../../components/core.cmp'
 import sty from '../../styles/modules/admin.module.css'
 
 
-const Message = ({ ws, msg, index }) => {
+const Message = ({ msg, index }) => {
     const [isPresent, safeToRemove] = usePresence()
 
 
     const aprReq = (index) => {
-        ws.send(JSON.stringify({ command: 'SEND_USERS', eventID: STEvent.id, id: STQueue.list[index].id, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
+        window.ws.send(JSON.stringify({ command: 'SEND_USERS', eventID: STEvent.id, id: STQueue.list[index].id, quest: { label: STQueue.list[index].label, color: STQueue.list[index].color, index } }))
     }
 
     const rejectReq = (index) => {
-        ws.send(JSON.stringify({ command: 'CLDW_USER', eventID: STEvent.id, userID: STQueue.list[index].userID, quest: { index } }))
+        window.ws.send(JSON.stringify({ command: 'CLDW_USER', eventID: STEvent.id, userID: STQueue.list[index].userID, quest: { index } }))
     }
 
 
@@ -54,7 +54,7 @@ const Message = ({ ws, msg, index }) => {
 
 
 
-export const Messages = ({ ws }) => {
+export const Messages = () => {
     const SSQueue = useSnapshot(STQueue)
     const SSMessages = useSnapshot(STMessages)
 
@@ -65,7 +65,7 @@ export const Messages = ({ ws }) => {
     const forwarding = (state) => {
         if ((SSMessages.tab === 'Pass') === state) {
             STMessages.tab = state ? 'Stop' : 'Pass'
-            ws.send(JSON.stringify({ command: 'SET_CNFG', eventID: STEvent.id, config: { name: 'forwarding', is: state } }))
+            window.ws.send(JSON.stringify({ command: 'SET_CNFG', eventID: STEvent.id, config: { name: 'forwarding', is: state } }))
         }
     }
 
@@ -88,7 +88,7 @@ export const Messages = ({ ws }) => {
                     ? <div className={sty.msgList}>
                         <AnimatePresence>
                             {SSQueue.list.map((msg, index) => {
-                                return <Message ws={ws} msg={msg} index={index} key={msg.id} />
+                                return <Message msg={msg} index={index} key={msg.id} />
                             })}
                         </AnimatePresence>
                     </div>

@@ -18,7 +18,7 @@ const UISwap = (props) => {
 }
 
 
-export const Admin = ({ ws, core }) => {
+export const Admin = ({ core }) => {
     const SSAdmin = useSnapshot(STAdmin)
     const SSUser = useSnapshot(STUser)
     const SSUI = useSnapshot(STUI)
@@ -42,10 +42,10 @@ export const Admin = ({ ws, core }) => {
                     exit={{ scale: 0.9, opacity: 0 }}
                     transition={{ ease: 'easeInOut', duration: 0.3 }}
                 >
-                    <Header ws={ws} core={core} />
+                    <Header core={core} />
                     <UISwap>
-                        <Messages ws={ws} uiName={'Messages'} />
-                        <Shares ws={ws} uiName={'Shares'} />
+                        <Messages uiName={'Messages'} />
+                        <Shares uiName={'Shares'} />
                     </UISwap>
                 </motion.div>}
         </AnimatePresence>

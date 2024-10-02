@@ -6,7 +6,7 @@ import { Icon, Panel } from '../../components/core.cmp'
 import sty from '../../styles/modules/desktop.module.css'
 
 
-export const Users = ({ ws, core }) => {
+export const Users = () => {
     const SSUI = useSnapshot(STUI)
     const SSUser = useSnapshot(STUser)
     const SSUsers = useSnapshot(STUsers)
@@ -29,7 +29,7 @@ export const Users = ({ ws, core }) => {
         const submitUser = () => {
             toggleInput()
             if (STUser.name !== username) {
-                ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'updated', token: localStorage.getItem('ACS_TKN') }))
+                window.ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'updated', token: localStorage.getItem('ACS_TKN') }))
                 setTimeout(() => STUser.name = username, 500)
             }
         }

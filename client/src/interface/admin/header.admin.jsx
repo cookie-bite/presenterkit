@@ -10,7 +10,7 @@ import { Icon } from '../../components/core.cmp'
 import sty from '../../styles/modules/admin.module.css'
 
 
-export const Header = ({ ws, core }) => {
+export const Header = () => {
     const SSUsers = useSnapshot(STUsers)
     const SSTab = useSnapshot(STTab)
     const SSModerator = useSnapshot(STModerator)
@@ -56,7 +56,7 @@ export const Header = ({ ws, core }) => {
     const send = () => {
         if (title.trim() !== '' && title !== STDisplay.quest && title !== '') {
             Object.assign(STDisplay, { quest: title, author: '' })
-            ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
+            window.ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
             setTitle('')
         }
     }
@@ -67,7 +67,7 @@ export const Header = ({ ws, core }) => {
 
     const updateStatus = (userID, isAdmin) => {
         setTerm('')
-        ws.send(JSON.stringify({ command: 'SET_STTS', eventID: STEvent.id, userID, isAdmin }))
+        window.ws.send(JSON.stringify({ command: 'SET_STTS', eventID: STEvent.id, userID, isAdmin }))
     }
 
     const toggleModerator = (user) => {

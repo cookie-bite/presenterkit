@@ -7,7 +7,7 @@ import { isValidUrl } from '../../utilities/core.utils'
 import sty from '../../styles/modules/admin.module.css'
 
 
-export const Shares = ({ ws }) => {
+export const Shares = () => {
     const SSShare = useSnapshot(STShare)
     const SSShares = useSnapshot(STShares)
 
@@ -88,19 +88,19 @@ export const Shares = ({ ws }) => {
         e.stopPropagation()
         if (STShare.active === STShares.list.length - 1) STShare.active = STShares.list.length - 2
         STShares.list.splice(index, 1)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'update', shares: STShares.list }))
+        window.ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'update', shares: STShares.list }))
     }
 
     const saveShare = (type, state) => {
         STShares.list[STShare.active][type] = state
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'save', shares: STShares.list }))
+        window.ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'save', shares: STShares.list }))
     }
 
     const sendShare = () => {
         STShares.list[STShare.active].urls = STShares.list[STShare.active].urls.filter(u => STShares.list[STShare.active].urls.length === 1 ? u : u.link)
         STShares.list[STShare.active].isShared = true
         console.log(STShares.list)
-        ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STShares.list, activeShare: STShare.active }))
+        window.ws.send(JSON.stringify({ command: 'SHR_ACT', action: 'send', shares: STShares.list, activeShare: STShare.active }))
     }
 
     const switchShare = (index) => {

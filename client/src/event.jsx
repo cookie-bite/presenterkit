@@ -29,15 +29,15 @@ export const Event = () => {
     useEffect(() => {
         const params = new URL(window.location.toString()).searchParams
         if (!STEvent.id && params.get('id')) STEvent.id = params.get('id')
-        return () => ws.close()
+        return () => window.ws.close()
     }, [])
 
 
     return (
         <>
-            <Scene ws={ws} core={core} />
-            {!core.isMobile && <Desktop ws={ws} core={core} />}
-            {core.isMobile && <Mobile ws={ws} core={core} />}
+            <Scene core={core} />
+            {!core.isMobile && <Desktop core={core} />}
+            {core.isMobile && <Mobile core={core} />}
         </>
     )
 }

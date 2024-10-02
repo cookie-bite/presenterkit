@@ -7,7 +7,7 @@ import { Icon } from '../../components/core.cmp'
 import sty from '../../styles/modules/mobile.module.css'
 
 
-export const Entry = ({ ws }) => {
+export const Entry = () => {
     const SSEntry = useSnapshot(STEntry)
     const SSCooldown = useSnapshot(STCooldown)
 
@@ -18,10 +18,10 @@ export const Entry = ({ ws }) => {
 
     const joinRoom = () => {
         const interval = setInterval(async () => {
-            if (ws.readyState === 1) {
+            if (window.ws.readyState === 1) {
                 clearInterval(interval)
 
-                ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'), userID: localStorage.getItem('userID'), token: localStorage.getItem('ACS_TKN') }))
+                window.ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'), userID: localStorage.getItem('userID'), token: localStorage.getItem('ACS_TKN') }))
             }
         }, 10)
     }
@@ -29,7 +29,7 @@ export const Entry = ({ ws }) => {
     const enterRoom = () => {
         if (username === '') { return inputAnim.start({ x: [15 * 0.789, 15 * -0.478, 15 * 0.29, 15 * -0.176, 15 * 0.107, 15 * -0.065, 0] }) }
 
-        ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'joined' }))
+        window.ws.send(JSON.stringify({ command: 'SET_USER', eventID: STEvent.id, username, roomActivity: 'joined' }))
         STEntry.show = false
         STUser.name = username
         setUsername('')

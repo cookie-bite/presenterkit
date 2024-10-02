@@ -13,7 +13,7 @@ import { Alert } from '../../components/core.cmp'
 import { Controls } from './controls.dui'
 
 
-export const Desktop = ({ ws, core }) => {
+export const Desktop = ({ core }) => {
     const SSUI = useSnapshot(STUI)
     const SSEntry = useSnapshot(STEntry)
 
@@ -21,17 +21,17 @@ export const Desktop = ({ ws, core }) => {
     return (
         <>
             <AnimatePresence mode='wait'>
-                {SSEntry.show && <Entry ws={ws} core={core} />}
+                {SSEntry.show && <Entry core={core} />}
             </AnimatePresence>
 
             <AnimatePresence mode='wait'>
                 {!SSEntry.show && <>
                     <QRScreen />
-                    <Users ws={ws} core={core} />
-                    <Quests ws={ws} core={core} />
+                    <Users core={core} />
+                    <Quests core={core} />
                     <Slides />
-                    {SSUI.name === 'Presenter' && <Presenter ws={ws} core={core} />}
-                    <Admin ws={ws} core={core} />
+                    {SSUI.name === 'Presenter' && <Presenter core={core} />}
+                    <Admin core={core} />
                     <Alert.Container />
                     <Controls core={core} />
                 </>

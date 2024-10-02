@@ -12,7 +12,7 @@ import { Display } from './display.scn'
 import { Users } from './users.scn'
 
 
-export const Scene = ({ ws, core }) => {
+export const Scene = ({ core }) => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
@@ -22,7 +22,7 @@ export const Scene = ({ ws, core }) => {
 
             if (e.key === 'Escape' && STUI.name === '' && STUser.isPresenter) {
                 Object.assign(STDisplay, { quest: core.openingText, author: '' })
-                ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
+                window.ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
             }
         }
 

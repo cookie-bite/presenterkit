@@ -9,19 +9,19 @@ import { Shares } from './shares.mui'
 import { Slides } from './slides.mui'
 
 
-export const Mobile = ({ ws, core }) => {
+export const Mobile = ({ core }) => {
     const SSEntry = useSnapshot(STEntry)
 
 
     return (
         <>
             <AnimatePresence mode='wait'>
-                {SSEntry.show && <Entry ws={ws} core={core} />}
+                {SSEntry.show && <Entry core={core} />}
             </AnimatePresence>
 
             <AnimatePresence mode='wait'>
                 {!SSEntry.show && <>
-                    <Controls ws={ws} core={core} />
+                    <Controls core={core} />
                     <Quests />
                     <Shares />
                     <Slides />
