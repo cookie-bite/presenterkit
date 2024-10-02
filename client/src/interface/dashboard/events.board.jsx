@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import { RTAuth, RTEvent, RTUser } from '../../routes/routes'
+import { RTEvent, RTUser } from '../../routes/routes'
 import { STEvent, STUser } from '../../stores/app.store'
-import { goTo, Icon } from '../../components/core.cmp'
+import { Icon } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/dashboard.module.css'
 
@@ -45,35 +45,15 @@ export const Events = () => {
         })
     }
 
-    const signOut = () => {
-        RTAuth.signOut().then((data) => {
-            if (data.success) {
-                localStorage.removeItem('EMAIL')
-                localStorage.removeItem('ACS_TKN')
-                localStorage.removeItem('RFS_TKN')
-                localStorage.removeItem('SIGNED_IN')
-                goTo('/auth')
-            }
-        })
-    }
-
 
     useEffect(() => getData(), [STEvent])
 
 
     return (
         <div className={sty.eventsPage}>
-            <div className={sty.profile}>
-                <Icon name='person-circle-o' size={60} color='--gray-1' />
-                <div className={sty.info}>
-                    <h2 className={sty.username}>{SSUser.name}</h2>
-                    <h4 className={sty.email}>{localStorage.getItem('EMAIL')}</h4>
-                </div>
-                <button className={sty.exitBtn} onClick={() => signOut()} style={{ backgroundColor: 'var(--red)' }}>
-                    <Icon name='exit-o' size={24} color='--white' style={{ marginRight: 5 }} />Sign out
-                </button>
+            <div className={sty.header}>
+                <h1>Events</h1>
             </div>
-
             <div className={sty.eventForm}>
                 <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName} onChange={(e) => onChange(e.target.value, setEventName)} />
                 <button className={sty.eventBtn} onClick={() => create()}>Create</button>

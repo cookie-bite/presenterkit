@@ -193,7 +193,7 @@
 .menuLogo {
     align-items: center;
     width: 100%;
-    height: 70px;
+    min-height: 70px;
     border-bottom: 1px solid var(--line-no);
 
     img {
@@ -207,6 +207,12 @@
     }
 }
 
+.menuList {
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
 .menuNav {
     flex-direction: column;
 }
@@ -214,7 +220,7 @@
 .menuNavList {
     flex-direction: column;
     gap: 5px;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .menuNavListItem {
@@ -242,6 +248,71 @@
     margin-left: 15px;
 }
 
+.profile {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.user {
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-no);
+}
+
+.info {
+    flex-direction: column;
+    width: 169px;
+    margin-left: 5px;
+}
+
+.username {
+    font-size: 17px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.email {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--label-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.exitBtn {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 30px;
+    margin: 15px 0;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: var(--red-bg);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--red);
+}
+
+.header {
+    align-items: center;
+    width: 100%;
+    height: 70px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--line-no);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--glass-3);
+
+    h1 {
+        font-size: 28px;
+        font-weight: 600;
+    }
+}
+
 
 
 /* Dashboard Events */
@@ -250,41 +321,6 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-}
-
-.profile {
-    align-items: center;
-    margin-top: 20px;
-    padding: 10px;
-}
-
-.info {
-    flex-direction: column;
-    margin: 0 50px 0 5px;
-}
-
-.username {
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.email {
-    font-weight: 500;
-    color: var(--label-2);
-}
-
-.exitBtn {
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: 30px;
-    margin-top: 15px;
-    padding: 5px 10px;
-    margin-bottom: 5px;
-    border-radius: 8px;
-    background-color: var(--blue);
-    font-size: 15px;
-    font-weight: 500;
 }
 
 .eventForm {
@@ -383,4 +419,14 @@
     background-color: var(--indigo);
     font-size: 20px;
     font-weight: 600;
+}
+
+
+
+/* Dashboard Events */
+
+.payments {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
