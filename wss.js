@@ -48,7 +48,7 @@ const interval = setInterval(() => {
         client.isAlive = false
         if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
     })
-}, 30000)
+}, 20000)
 
 
 

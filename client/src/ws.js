@@ -12,7 +12,7 @@ export const initWS = () => {
 
     const heartbeat = () => {
         clearTimeout(pingTimeout)
-        pingTimeout = setTimeout(() => window.ws.close(), 35000)
+        pingTimeout = setTimeout(() => window.ws.close(), 25000)
     }
 
 
