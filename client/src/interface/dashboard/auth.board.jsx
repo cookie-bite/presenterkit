@@ -67,7 +67,8 @@ export const Auth = () => {
             setSpecCharErr(!RXSpecChar.test(value))
             setPassLengthErr(!RXPassLength.test(value))
 
-            setTimeout(() => setPassErr(!RXPassword.test(value)), 300)
+            if (STAuthUI.name !== 'SignUp' && RXPassword.test(value)) setTimeout(() => setPassErr(false), 300)
+            else setTimeout(() => setPassErr(!RXPassword.test(value)), 300)
         }
     }
 
