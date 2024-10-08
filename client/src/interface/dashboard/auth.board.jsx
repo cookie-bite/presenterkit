@@ -67,7 +67,7 @@ export const Auth = () => {
             setSpecCharErr(!RXSpecChar.test(value))
             setPassLengthErr(!RXPassLength.test(value))
 
-            if (RXPassword.test(value)) setTimeout(() => setPassErr(false), 300)
+            setTimeout(() => setPassErr(!RXPassword.test(value)), 300)
         }
     }
 
@@ -175,7 +175,7 @@ export const Auth = () => {
                         </AnimatePresence>
 
                         <div className={sty.authInput}>
-                            <input name='email' placeholder='Email' type='text' value={email}
+                            <input name='email' placeholder='Email' type='email' value={email}
                                 style={{ color: emailErr ? 'var(--red)' : 'var(--white)' }}
                                 onBlur={() => onBlur('email')}
                                 onChange={(e) => onChange('email', e.target.value, setEmail)}
@@ -188,12 +188,12 @@ export const Auth = () => {
 
                         <div className={sty.authInput}>
                             <input name='password' placeholder='Password' type='password' value={password}
-                                style={{ color: passErr ? 'var(--red)' : 'var(--white)' }}
+                                style={{ color: passErr ? 'var(--red)' : 'var(--white)', paddingRight: SSAuthUI.name !== 'SignUp' ? 30 : 10 }}
                                 onBlur={() => onBlur('password')}
                                 onChange={(e) => onChange('password', e.target.value, setPassword)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') SSAuthUI.name === 'SignIn' ? signIn() : signUp() }}
                             />
-                            {passErr && <div className={sty.authInputIcon}>
+                            {SSAuthUI.name !== 'SignUp' && passErr && <div className={sty.authInputIcon}>
                                 <Icon name='alert-circle-o' size={20} color='--red' />
                                 <div className='tooltip tooltipTop'>Invalid password</div>
                             </div>}
