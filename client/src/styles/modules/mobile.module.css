@@ -273,6 +273,7 @@
 }
 
 .menuList {
+    flex-direction: column;
     margin-top: 10px;
     background-color: var(--glass-2);
 }
