@@ -58,7 +58,10 @@ export const Events = () => {
             <div className={sty.pageInner}>
                 <div className={sty.eventsPage}>
                     <div className={sty.eventForm}>
-                        <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName} onChange={(e) => onChange(e.target.value, setEventName)} />
+                        <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName}
+                            onChange={(e) => onChange(e.target.value, setEventName)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') create() }}
+                        />
                         <button className={sty.eventBtn} onClick={() => create()}>Create</button>
                     </div>
 
