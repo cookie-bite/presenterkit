@@ -59,7 +59,7 @@ export const Menu = () => {
                         </div>
                     </div>
                     <button className={sty.exitBtn} onClick={() => signOut()}>
-                        <Icon name='exit-o' size={24} color='--red' style={{ marginRight: 5 }} />Sign out
+                        <Icon name='exit-o' size={20} color='--red' style={{ marginRight: 5 }} />Sign out
                     </button>
                 </div>
             </div>

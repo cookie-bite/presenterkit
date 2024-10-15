@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { RTEvent, RTUser } from '../../routes/routes'
-import { STEvent, STUser } from '../../stores/app.store'
-import { Icon } from '../../components/core.cmp'
+import { STEvent, STSpinner, STUser } from '../../stores/app.store'
+import { Icon, Spinner } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/dashboard.module.css'
 
 
 export const Events = () => {
     const [eventName, setEventName] = useState('')
+    const [copyLbl, setCopyLbl] = useState('Copy')
 
     const SSUser = useSnapshot(STUser)
+    const SSSpinner = useSnapshot(STSpinner)
 
 
     const onChange = (value, set) => {
@@ -18,12 +20,21 @@ export const Events = () => {
     }
 
     const create = () => {
+        STSpinner.isActive = true
         setEventName('')
+
         RTEvent.create(eventName).then((data) => {
+            STSpinner.isActive = false
             if (data.success) {
-                STUser.events.push({ eventID: data.event.id, name: data.event.name })
+                STUser.events.unshift({ eventID: data.event.id, name: data.event.name })
             }
         })
+    }
+
+    const copyUrl = (url) => {
+        navigator.clipboard.writeText(url)
+        setCopyLbl('Copied')
+        setTimeout(() => setCopyLbl('Copy'), 750)
     }
 
     const joinEvent = (eventID) => {
@@ -40,7 +51,7 @@ export const Events = () => {
         RTUser.getData().then((data) => {
             if (data.success) {
                 STUser.name = data.user.username
-                STUser.events = data.user.events
+                STUser.events = data.user.events.reverse()
             }
         })
     }
@@ -57,31 +68,45 @@ export const Events = () => {
 
             <div className={sty.pageInner}>
                 <div className={sty.eventsPage}>
-                    <div className={sty.eventForm}>
-                        <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName}
-                            onChange={(e) => onChange(e.target.value, setEventName)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') create() }}
-                        />
-                        <button className={sty.eventBtn} onClick={() => create()}>Create</button>
+                    <div className={sty.eventCreation}>
+                        <h1>Create Event</h1>
+                        <div className={sty.eventForm}>
+                            <input className={sty.eventInput} name='eventName' placeholder='Event name' type='text' value={eventName}
+                                onChange={(e) => onChange(e.target.value, setEventName)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') create() }}
+                            />
+                            {SSSpinner.isActive
+                                ? <Spinner style={{ marginTop: -40, transform: 'scale(.5) translateY(50%)' }} />
+                                : <button className={sty.eventBtn} onClick={() => create()}>Create</button>
+                            }
+                        </div>
                     </div>
-
                     <div className={sty.events}>
                         {SSUser.events.map((event) => {
                             return (
                                 <div className={sty.event} key={event.eventID}>
                                     <div className={sty.eventDetails}>
                                         <h1 className={sty.eventName}>{event.name}</h1>
-                                        <h3 className={sty.eventCodeLbl}>Code: <strong className={sty.eventCode}>{event.eventID}</strong></h3>
+                                        <div className={sty.eventUrl}>
+                                            <h4>{process.env.REACT_APP_HOST_URL.split('//')[1]}/event?id={event.eventID}</h4>
+                                            <button className={sty.copyBtn} onClick={() => copyUrl(`${process.env.REACT_APP_HOST_URL}/event?id=${event.eventID}`)}>
+                                                <Icon name='copy-o' size={16} color='--blue' />
+                                                <div className='tooltip tooltipTop'>{copyLbl}</div>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className={sty.eventBtns}>
-                                        <button className={sty.deleteBtn} onClick={() => deleteBy(event.eventID)}>
-                                            <Icon name='trash-o' size={24} color='--red' />
-                                        </button>
-                                        <button className={sty.joinBtn} onClick={() => joinEvent(event.eventID)}>
-                                            <Icon name='open-o' size={24} color='--white' style={{ marginRight: 5 }} />Start
-                                        </button>
+                                        <div className={sty.presenterInfo}>
+                                            <div className={sty.avatarView} style={{ background: `linear-gradient(45deg, ${STUser.color}24, ${STUser.color}2B)` }}>
+                                                <h1 className={sty.avatarLbl} style={{ color: STUser.color }}>{STUser.name.charAt()}</h1>
+                                            </div>
+                                            <h2 className={sty.presenterLbl}>{STUser.name}</h2>
+                                        </div>
+                                        <button className={sty.joinBtn} onClick={() => joinEvent(event.eventID)}>Join</button>
                                     </div>
-                                    <br />
+                                    <button className={sty.deleteBtn} onClick={() => deleteBy(event.eventID)}>
+                                        <Icon name='trash-o' size={24} color='--red' />
+                                    </button>
                                 </div>
                             )
                         })}

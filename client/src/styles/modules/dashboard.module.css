@@ -1,4 +1,6 @@
-/* Auth */
+/*
+    MARK: Auth
+*/
 
 .authBg {
     flex-direction: column;
@@ -171,7 +173,10 @@
 
 
 
-/* Dashboard */
+
+/*
+    MARK: Dashboard
+*/
 
 .dashboard {
     width: 100%;
@@ -297,6 +302,13 @@
     color: var(--red);
 }
 
+
+
+
+/*
+    MARK: Dashboard Page
+*/
+
 .header {
     position: fixed;
     align-items: center;
@@ -324,8 +336,9 @@
 .pageInner {
     flex-direction: column;
     width: 100%;
+    height: 100%;
     padding-top: 70px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .pageInner::-webkit-scrollbar-track-piece:start {
@@ -335,27 +348,45 @@
 
 
 
-/* Dashboard Events */
+
+/*
+    MARK: Events
+*/
 
 .eventsPage {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    padding: 20px;
+}
+
+.eventCreation {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    border-radius: 14px;
+    background-color: var(--fill-4);
+
+    h1 {
+        font-size: 36px;
+        font-weight: 600;
+        margin-bottom: 40px;
+    }
 }
 
 .eventForm {
-    align-items: center;
-    margin-top: 50px;
+    gap: 10px;
 }
 
 .eventInput {
     align-items: center;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 400;
-    width: 300px;
-    height: 30px;
+    width: 350px;
+    height: 40px;
     padding: 0 8px;
-    margin: 0 10px;
     border-radius: 8px;
     background-color: var(--fill-4);
     transition: all .3s ease-in-out;
@@ -365,88 +396,154 @@
     align-items: center;
     justify-content: center;
     width: fit-content;
-    height: 30px;
-    padding: 0 20px;
+    height: 40px;
+    padding: 0 25px;
     border-radius: 8px;
-    background-color: var(--indigo);
-    font-size: 15px;
-    font-weight: 500;
+    background-color: var(--blue-bg);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--blue);
 }
 
 .events {
-    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
     gap: 20px;
+    padding: 0 50px;
     margin-top: 50px;
 }
 
 .event {
+    flex-direction: column;
     justify-content: space-between;
-    width: 500px;
-    height: 200px;
+    width: calc((100% - 40px) / 3);
+    max-width: 500px;
+    height: 250px;
     padding: 15px;
     border-radius: 14px;
     border: 1px solid var(--line-no);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--glass-3);
+    cursor: pointer;
+}
+
+.event:hover>.deleteBtn {
+    opacity: 1;
+    transition: opacity .3s ease-in-out;
 }
 
 .eventDetails {
     flex-direction: column;
-    justify-content: space-between;
     width: 100%;
 }
 
 .eventName {
     font-size: 30px;
     font-weight: 600;
+    margin-right: 55px;
 }
 
-.eventCodeLbl {
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--label-2);
+.eventUrl {
+    align-items: center;
+    margin-top: 5px;
+
+    h4 {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--link);
+        margin-right: 5px;
+    }
 }
 
-.eventCode {
-    font-family: monospace, monospace;
-    font-size: 26px;
-    color: var(--indigo);
+.copyBtn {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background-color: var(--blue-bg);
 }
 
 .eventBtns {
-    flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: var(--fill-3);
 }
 
-.deleteBtn {
+.presenterInfo {
     align-items: center;
+}
+
+.avatarView {
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    background-color: var(--fill-2);
+    align-items: center;
+    min-width: 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+    margin-right: 8px;
+}
+
+.avatarLbl {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.presenterLbl {
+    font-size: 17px;
+    font-weight: 600;
 }
 
 .joinBtn {
     align-items: center;
     justify-content: center;
     width: fit-content;
-    height: 40px;
-    padding: 0 25px;
-    border-radius: 10px;
-    background-color: var(--indigo);
-    font-size: 20px;
+    height: 34px;
+    padding: 0 20px;
+    border-radius: 8px;
+    background-color: var(--green-bg);
+    font-size: 17px;
     font-weight: 600;
+    color: var(--green);
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: var(--red-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
 }
 
 
 
-/* Dashboard Events */
+
+/*
+    MARK: Payments
+*/
 
 .payments {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
+    height: 100%;
+
+    h1 {
+        font-size: 36px;
+        font-weight: 600;
+    }
 }

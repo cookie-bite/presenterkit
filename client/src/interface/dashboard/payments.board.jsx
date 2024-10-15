@@ -11,7 +11,7 @@ export const Payments = () => {
             </div>
             <div className={sty.pageInner}>
                 <div className={sty.payments}>
-                    
+                    <h1>Enjoy until we enable payment 😁</h1>
                 </div>
             </div>
         </div>

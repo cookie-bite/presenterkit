@@ -11,9 +11,9 @@ export const CamCon = ({ core }) => {
     const controls = useRef()
 
     const orbitOptions = {
-        enablePan: false,
-        enableZoom: false,
-        enableRotate: false
+        enablePan: core.isMobile,
+        enableZoom: core.isMobile,
+        enableRotate: core.isMobile
     }
 
     const zoomOut = core.isMobile ? [3.5] : [1]

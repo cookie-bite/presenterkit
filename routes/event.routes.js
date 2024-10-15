@@ -25,7 +25,7 @@ router.post('/create', authUser, async (req, res) => {
         const event = {
             eventID,
             name,
-            presenter: { id: req.user.id },
+            presenter: { id: req.user.id }, // color and username
             queue: [],
             quests: [],
             slides: [],
