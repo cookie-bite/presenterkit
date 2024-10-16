@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const Datastore = require('@seald-io/nedb')
+const jwt = require('jsonwebtoken')
 
 const { collection, db } = require('../api')
 const { authUser } = require('../middlewares/user.middlewares')
@@ -20,10 +21,28 @@ router.post('/verify', async (req, res) => {
     if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
     try {
-        const event = await collection('events').findOne({ eventID }, { projection: { _id: 0 } })
-        if (!event) return res.status(404).json({ success: false, err: 'Event doesn\'t exist.' })
+        const dbEvent = await collection('events').findOne({ eventID }, { projection: { _id: 0 } })
+        if (!dbEvent) return res.status(404).json({ success: false, status: 'NONEXIST', err: 'Event does not exist.' })
 
-        res.status(200).json({ success: true, event })
+        let event = await db.events.findOneAsync({ eventID })
+
+        if (!event) {
+            try {
+                const payload = jwt.verify(req.headers.authorization.split(' ')[1], process.env.ACS_TKN_SCT)
+                
+                if (dbEvent.presenter.id === payload.sub) {
+                    await db.events.insertAsync(dbEvent)
+                    db[`event-${eventID}`] = new Datastore()
+                } else {
+                    return res.status(403).json({ success: false, status: 'UNOPENED', err: 'Event is not open.' })
+                }
+            } catch (err) {
+                return res.status(403).json({ success: false, status: 'UNOPENED', err: 'Event is not open.' })
+            }
+        }
+
+
+        res.status(200).json({ success: true, status: 'OPEN', event })
     } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
@@ -77,7 +96,7 @@ router.delete('/delete', authUser, async (req, res) => {
 
         const user = await collection('users').findOne({ _id: req.user._id })
         const newEvents = user.events.filter((e) => e.eventID !== eventID)
-        
+
         await collection('users').updateOne({ _id: req.user._id }, { $set: { events: newEvents } })
 
         res.status(200).json({ success: true, message: 'Event deleted successfully.' })

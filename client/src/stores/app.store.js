@@ -7,7 +7,7 @@ export const STBoardUI = proxy({ name: 'Events' })
 
 export const STRoute = proxy({ path: window.location.pathname, params: {} })
 
-export const STEvent = proxy({ id: '', name: '', showUI: false, exists: false })
+export const STEvent = proxy({ id: '', name: '', showUI: false, status: '' })
 
 export const STApp = proxy({ isFullscreen: false })
 

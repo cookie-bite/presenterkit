@@ -71,25 +71,23 @@ wss.on('connection', async (ws) => {
 
             let event = await db.events.findOneAsync({ eventID: req.eventID })
 
-            if (!event) {
-                event = await collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
+            // if (!event) {
+            //     event = await collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
 
-                if (!event) {
-                    // handle nonexistent event
-                }
+            //     if (!event) return
 
-                try {
-                    const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
-                    if (event.presenter.id === payload.sub) {
-                        await db.events.insertAsync(event)
-                        db[`event-${req.eventID}`] = new Datastore()
-                    } else {
-                        // handle first user join
-                    }
-                } catch (err) {
-                    // handle first user join
-                }
-            }
+            //     try {
+            //         const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
+            //         if (event.presenter.id === payload.sub) {
+            //             await db.events.insertAsync(event)
+            //             db[`event-${req.eventID}`] = new Datastore()
+            //         } else {
+            //             // handle first user join
+            //         }
+            //     } catch (err) {
+            //         // handle first user join
+            //     }
+            // }
 
 
             let user = {
