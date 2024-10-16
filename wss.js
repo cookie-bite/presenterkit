@@ -39,6 +39,12 @@ const sendUser = (eventID, userID, obj) => {
 
 
 
+// MARK: Exports
+
+module.exports = { sendRoom, sendUser }
+
+
+
 // MARK: Websocket
 
 const interval = setInterval(() => {
@@ -49,12 +55,6 @@ const interval = setInterval(() => {
         if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
     })
 }, 20000)
-
-
-
-// MARK: Exports
-
-module.exports = { sendRoom, sendUser }
 
 
 
@@ -280,25 +280,30 @@ wss.on('connection', async (ws) => {
 
 
     ws.on('close', async () => {
-        await db[`event-${ws.eventID}`].updateAsync({ userID: ws.userID }, { $set: { isActive: false } })
-        const activeUsers = await db[`event-${ws.eventID}`].findAsync({ isActive: true })
-        const userList = await db[`event-${ws.eventID}`].findAsync({})
+        console.log('[WS Close] ws.eventID:', ws.eventID)
+        console.log('NeDB', db[`event-${ws.eventID}`])
 
-        const roomActivity = { user: { id: ws.userID, name: ws.username }, activity: 'left' }
-        await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
+        if (db[`event-${ws.eventID}`]) {
+            await db[`event-${ws.eventID}`].updateAsync({ userID: ws.userID }, { $set: { isActive: false } })
+            const activeUsers = await db[`event-${ws.eventID}`].findAsync({ isActive: true })
+            const userList = await db[`event-${ws.eventID}`].findAsync({})
+
+            const roomActivity = { user: { id: ws.userID, name: ws.username }, activity: 'left' }
+            await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
 
 
-        if (activeUsers.length === 0) {
-            const event = await db.events.findOneAsync({ eventID: ws.eventID }, { _id: 0 })
-            event.activeSlide = {}
-            await collection('events').replaceOne({ eventID: ws.eventID }, event)
-            await db.events.removeAsync({ eventID: ws.eventID })
-            delete db[`event-${ws.eventID}`]
+            if (activeUsers.length === 0) {
+                const event = await db.events.findOneAsync({ eventID: ws.eventID }, { _id: 0 })
+                event.activeSlide = {}
+                await collection('events').replaceOne({ eventID: ws.eventID }, event)
+                await db.events.removeAsync({ eventID: ws.eventID })
+                delete db[`event-${ws.eventID}`]
+            }
+
+
+            sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
+            sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
         }
-
-
-        sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
-        sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
     })
 
 

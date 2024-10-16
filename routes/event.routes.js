@@ -13,6 +13,22 @@ module.exports = router
 
 
 
+router.post('/verify', async (req, res) => {
+    const { eventID } = req.body
+
+    const { error } = joiSchema.verifyEvent.validate(req.body)
+    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+
+    try {
+        const event = await collection('events').findOne({ eventID }, { projection: { _id: 0 } })
+        if (!event) return res.status(404).json({ success: false, err: 'Event doesn\'t exist.' })
+
+        res.status(200).json({ success: true, event })
+    } catch (err) { res.status(500).json({ success: false, err: err }) }
+})
+
+
+
 router.post('/create', authUser, async (req, res) => {
     const { name } = req.body
 

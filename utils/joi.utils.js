@@ -41,3 +41,7 @@ exports.confirm = Joi.object({
 exports.createEvent = Joi.object({
     name: Joi.string().required()
 })
+
+exports.verifyEvent = Joi.object({
+    eventID: Joi.number().integer().required()
+})

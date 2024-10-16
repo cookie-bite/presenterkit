@@ -10,6 +10,7 @@ import sty from '../../styles/modules/desktop.module.css'
 
 export const Entry = () => {
     const SSEntry = useSnapshot(STEntry)
+    const SSEvent = useSnapshot(STEvent)
     const SSUser = useSnapshot(STUser)
     const SSCooldown = useSnapshot(STCooldown)
 
@@ -92,15 +93,20 @@ export const Entry = () => {
                     transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.2 }}
                 >
                     <h1 className={sty.entryLogo}>PresenterKit</h1>
-                    <div className={sty.entryInputView}>
-                        <motion.input className={sty.entryInput} placeholder='Username' value={username} autoFocus={true} animate={inputAnim}
-                            onChange={(e) => setUsername(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') enterRoom() }}
-                        />
-                        <button className={sty.entryInputBtn} onClick={() => enterRoom()}>
-                            <Icon name='arrow-forward-circle-o' size={28} color='--blue' />
-                        </button>
-                    </div>
+                    {SSEvent.isEmpty
+                        ? <div>
+                            <h1>Empty Event</h1>
+                        </div>
+                        : <div className={sty.entryInputView}>
+                            <motion.input className={sty.entryInput} placeholder='Username' value={username} autoFocus={true} animate={inputAnim}
+                                onChange={(e) => setUsername(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') enterRoom() }}
+                            />
+                            <button className={sty.entryInputBtn} onClick={() => enterRoom()}>
+                                <Icon name='arrow-forward-circle-o' size={28} color='--blue' />
+                            </button>
+                        </div>
+                    }
                 </motion.div>
             }
         </motion.div>

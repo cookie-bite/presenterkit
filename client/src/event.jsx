@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
+import { useSnapshot } from 'valtio'
 
 import { STApp, STEvent } from './stores/app.store'
+import { RTEvent } from './routes/routes'
 
 import { Scene } from './scene/core.scn'
 import { Desktop } from './interface/desktop/core.dui'
 import { Mobile } from './interface/mobile/core.mui'
-import { initWS, ws } from './ws'
+import { initWS } from './ws'
 
 
 const core = {
@@ -23,21 +25,41 @@ window.addEventListener('resize', () => {
 
 
 export const Event = () => {
-    initWS()
-
+    const SSEvent = useSnapshot(STEvent)
 
     useEffect(() => {
         const params = new URL(window.location.toString()).searchParams
-        if (!STEvent.id && params.get('id')) STEvent.id = params.get('id')
+        if (!STEvent.id && params.get('id')) {
+            STEvent.id = params.get('id')
+
+            RTEvent.verify(STEvent.id).then((data) => {
+                console.log('RTEvent.verify() data:', data)
+                STEvent.showUI = true
+
+                if (data.success) {
+                    initWS()
+                    STEvent.exists = true
+                } else {
+                    STEvent.exists = false
+                }
+            })
+        }
+
+
         return () => window.ws.close()
     }, [])
 
 
     return (
-        <>
-            <Scene core={core} />
-            {!core.isMobile && <Desktop core={core} />}
-            {core.isMobile && <Mobile core={core} />}
-        </>
+        SSEvent.showUI && (SSEvent.exists
+            ? <>
+                <Scene core={core} />
+                {!core.isMobile && <Desktop core={core} />}
+                {core.isMobile && <Mobile core={core} />}
+            </>
+            : <div>
+                <h2>Event does not exist</h2>
+            </div>
+        )
     )
 }
