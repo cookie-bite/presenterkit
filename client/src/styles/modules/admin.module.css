@@ -1,4 +1,6 @@
-/* Admin */
+/* 
+    MARK: Admin
+*/
 
 .pageView {
     flex: 1;
@@ -16,7 +18,9 @@
 
 
 
-/* Header */
+/* 
+    MARK: Header
+*/
 
 .header {
     justify-content: space-between;
@@ -233,7 +237,9 @@
 
 
 
-/* Page */
+/* 
+    MARK: Page
+*/
 
 .pageBg {
     flex-direction: column;
@@ -261,7 +267,9 @@
 
 
 
-/* Messages */
+/* 
+    MARK: Messages
+*/
 
 .msgList {
     flex-direction: column;
@@ -347,7 +355,9 @@
 
 
 
-/* Share */
+/* 
+    MARK: Share
+*/
 
 .shareSaves {
     align-items: center;

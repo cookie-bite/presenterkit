@@ -1,4 +1,6 @@
-/* Entry */
+/* 
+    MARK: Entry
+*/
 
 .entryPage {
     justify-content: center;
@@ -105,7 +107,9 @@
 
 
 
-/* Controls */
+/* 
+    MARK: Controls
+*/
 
 .controlsHitSlop {
     justify-content: center;
@@ -177,7 +181,9 @@
 
 
 
-/* QR */
+/* 
+    MARK: QR
+*/
 
 .pageView {
     flex: 1;
@@ -315,7 +321,9 @@
 
 
 
-/* Quest Panel */
+/* 
+    MARK: Quest Panel
+*/
 
 .questList {
     flex-direction: column;
@@ -351,7 +359,9 @@
 
 
 
-/* Input */
+/* 
+    MARK: Input
+*/
 
 .inputView {
     align-items: flex-end;
@@ -429,7 +439,9 @@
 
 
 
-/* Users Panel */
+/* 
+    MARK: User Panel
+*/
 
 .userList {
     flex-direction: column;
@@ -539,7 +551,9 @@
 
 
 
-/* Presenter */
+/* 
+    MARK: Presenter
+*/
 
 .slides {
     justify-content: center;
@@ -757,7 +771,9 @@
 
 
 
-/* Slides */
+/* 
+    MARK: Slides
+*/
 
 .theatre {
     flex-direction: column;
