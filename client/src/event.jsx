@@ -9,6 +9,9 @@ import { Desktop } from './interface/desktop/core.dui'
 import { Mobile } from './interface/mobile/core.mui'
 import { initWS } from './ws'
 
+import { Icon } from './components/core.cmp'
+import sty from './styles/modules/desktop.module.css'
+
 
 const core = {
     openingText: 'Welcome to Event',
@@ -52,13 +55,21 @@ export const Event = () => {
 
     return (
         SSEvent.showUI && <>
-            {SSEvent.status === 'OPEN' && <>
+            {SSEvent.status.code === 'OPEN' && <>
                 <Scene core={core} />
                 {!core.isMobile && <Desktop core={core} />}
                 {core.isMobile && <Mobile core={core} />}
             </>}
-            {SSEvent.status === 'UNOPENED' && <div>
-                <h2>{SSEvent.status}</h2>
+            {SSEvent.status.code !== 'OPEN' && <div className={sty.cooldown}>
+                <div className={sty.cooldownIc}>
+                    {SSEvent.status.code === 'NONEXIST' && <Icon name='timer-o' size={30} color='--red' />}
+                    {SSEvent.status.code === 'UNOPENED' && <Icon name='timer-o' size={30} color='--red' />}
+                </div>
+                <div className={sty.cooldownLbl}>
+                    <h1 className={sty.cooldownTtl}>{SSEvent.status.title}</h1>
+                    <h3 className={sty.cooldownSbtl}>{SSEvent.status.subtitle}</h3>
+                </div>
+                <h2 className={sty.cooldownTimer}></h2>
             </div>}
         </>
     )

@@ -22,7 +22,7 @@ router.post('/verify', async (req, res) => {
 
     try {
         const dbEvent = await collection('events').findOne({ eventID }, { projection: { _id: 0 } })
-        if (!dbEvent) return res.status(404).json({ success: false, status: 'NONEXIST', err: 'Event does not exist.' })
+        if (!dbEvent) return res.status(404).json({ success: false, status: { code: 'NONEXIST', title: 'Event is not exist', subtitle: 'Either link is incorrect or event deleted' }, err: 'Event does not exist.' })
 
         let event = await db.events.findOneAsync({ eventID })
 
@@ -34,15 +34,15 @@ router.post('/verify', async (req, res) => {
                     await db.events.insertAsync(dbEvent)
                     db[`event-${eventID}`] = new Datastore()
                 } else {
-                    return res.status(403).json({ success: false, status: 'UNOPENED', err: 'Event is not open.' })
+                    return res.status(403).json({ success: false, status: { code: 'UNOPENED', title: 'Event is not started', subtitle: 'You can join after event start' }, err: 'Event is not open.' })
                 }
             } catch (err) {
-                return res.status(403).json({ success: false, status: 'UNOPENED', err: 'Event is not open.' })
+                return res.status(403).json({ success: false, status: { code: 'UNOPENED', title: 'Event is not started', subtitle: 'You can join after event start' }, err: 'Event is not open.' })
             }
         }
 
 
-        res.status(200).json({ success: true, status: 'OPEN', event })
+        res.status(200).json({ success: true, status: { code: 'OPEN' }, event })
     } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
