@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
 
-import { Icon, Spinner } from '../../components/core.cmp'
+import { Alert, Icon, Spinner } from '../../components/core.cmp'
 
 import sty from '../../styles/modules/desktop.module.css'
 
@@ -33,6 +33,16 @@ export const Presenter = () => {
         const file = e.target.files[0]
 
         if (file) {
+            if (file.type !== 'application/pdf') returnAlert.show({
+                icon: { name: 'alert-circle-o', color: '--red' },
+                title: 'Only PDF files are accepted'
+            })
+
+            if (file.size > 29 * 1000 * 1000) return Alert.show({
+                icon: { name: 'alert-circle-o', color: '--red' },
+                title: 'File size exceeds the maximum limit (30 MB)'
+            })
+            
             STSpinner.isActive = true
 
             const formData = new FormData()
