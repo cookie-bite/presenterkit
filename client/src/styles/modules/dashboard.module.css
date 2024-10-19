@@ -34,8 +34,9 @@
     align-items: center;
     height: 570px;
     padding: 40px 40px 10px;
-
+    
     @media (max-width: 910px) {
+        height: 470px;
         padding: 0;
     }
 }
