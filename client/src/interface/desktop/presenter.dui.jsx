@@ -33,7 +33,7 @@ export const Presenter = () => {
         const file = e.target.files[0]
 
         if (file) {
-            if (file.type !== 'application/pdf') returnAlert.show({
+            if (file.type !== 'application/pdf') return Alert.show({
                 icon: { name: 'alert-circle-o', color: '--red' },
                 title: 'Only PDF files are accepted'
             })
