@@ -51,7 +51,9 @@ export const Auth = () => {
         STAuthUI.name = segment
     }
 
-    const onBlur = async (label) => validate(label)
+    const onBlur = (label) => {
+        validate(label)
+    }
 
     const onChange = (label, value, set) => {
         set(value)
