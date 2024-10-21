@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
 
@@ -16,6 +16,7 @@ var reqTimeout = null
 export const Presenter = () => {
     const SSSlide = useSnapshot(STSlide)
     const SSSlides = useSnapshot(STSlides)
+    const SSSlidePanels = useSnapshot(STSlidePanels)
     const SSSpinner = useSnapshot(STSpinner)
     const SSTheatre = useSnapshot(STTheatre)
     const SSEvent = useSnapshot(STEvent)
@@ -24,6 +25,10 @@ export const Presenter = () => {
     const pageCount = STSlides.list[STSlide.active.index]?.pageCount
     const pagesRef = []
 
+
+    const togglePanel = (label) => {
+        STSlidePanels[label] = !STSlidePanels[label]
+    }
 
     const openFile = () => {
         inputRef.current.click()
@@ -42,7 +47,7 @@ export const Presenter = () => {
                 icon: { name: 'alert-circle-o', color: '--red' },
                 title: 'File size exceeds the maximum limit (30 MB)'
             })
-            
+
             STSpinner.isActive = true
 
             const formData = new FormData()
@@ -112,6 +117,10 @@ export const Presenter = () => {
         if (STTheatre.show) sendSlideUpdate(true, true)
     }
 
+    const playSlide = () => {
+        window.open(`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+    }
+
     const deleteSlide = () => {
         const headers = { 'Content-type': 'application/json' }
         const body = JSON.stringify({ eventID: STEvent.id, slide: STSlides.list[STSlide.active.index] })
@@ -177,59 +186,73 @@ export const Presenter = () => {
                             <Icon name='add' size={30} color='--tint' />
                         </button>
                     : <>
-                        <DragDropContext onDragEnd={updateList}>
-                            <Droppable droppableId='slidesLeft'>
-                                {(provided) => (
-                                    <div className={sty.slidesLeft} {...provided.droppableProps} ref={provided.innerRef}>
-                                        {SSSlides.list.map((slide, index) => {
-                                            return (
-                                                <Draggable draggableId={slide.id} index={index} key={slide.id}>
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className={sty.slidePreview}
-                                                            style={{ ...provided.draggableProps.style, border: index === SSSlide.active.index ? '5px solid var(--gray-2)' : 'none' }}
-                                                            onClick={() => changeSlide(index)}>
-                                                            <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            )
-                                        })}
-
-                                        {provided.placeholder}
-
-                                        {SSSpinner.isActive
-                                            ? <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />
-                                            : <button className={sty.slideUploadBtnSml} onClick={() => openFile()}>
-                                                <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
-                                                <Icon name='add' size={26} color='--tint' />
-                                            </button>
-                                        }
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                        <div className={sty.slidesRight}>
-                            <div className={sty.slidesHeader}>
-                                <div className={sty.slidesHeaderMiddle}>
-                                    <button className={sty.slideControlsBtn} onClick={() => toggleTheatre('on')}>
-                                        <Icon name='tv-o' size={25} color='--tint' />
-                                        <div className='tooltip tooltipBottom'>Play</div>
-                                    </button>
-                                    <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
-                                        <Icon name='trash-o' size={25} color='--red' />
-                                        <div className='tooltip tooltipBottom'>Remove</div>
+                        {SSSlidePanels.files && <div className={sty.slidesPanel} style={{ marginRight: 10 }}>
+                            <div className={sty.slidesPanelHead}>
+                                <h1>Files</h1>
+                                <div className={sty.slidesPanelBtns}>
+                                    <button onClick={() => openFile()}>
+                                        <input type='file' accept='.pdf' style={{ display: 'none' }} ref={inputRef} onChange={(e) => uploadFile(e)} />
+                                        <Icon name='add' size={20} color='--tint' />
                                     </button>
                                 </div>
                             </div>
-                            <div className={sty.activeSlide}>
-                                <div className={sty.activeSlideBg} style={{ backgroundImage: `url('${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp')` }}></div>
-                                <div className={sty.activePage} onClick={() => previewTheatre()}>
-                                    <img className={sty.activePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} />
+                            <DragDropContext onDragEnd={updateList}>
+                                <Droppable droppableId='slidesFiles'>
+                                    {(provided) => (
+                                        <div className={sty.slidesFiles} {...provided.droppableProps} ref={provided.innerRef}>
+                                            {SSSlides.list.map((slide, index) => {
+                                                return (
+                                                    <Draggable draggableId={slide.id} index={index} key={slide.id}>
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className={sty.slidePreview}
+                                                                style={{ ...provided.draggableProps.style, border: index === SSSlide.active.index ? '5px solid var(--gray-2)' : 'none' }}
+                                                                onClick={() => changeSlide(index)}>
+                                                                <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[index].name}/1.webp`} />
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                )
+                                            })}
+
+                                            {provided.placeholder}
+
+                                            {SSSpinner.isActive && <Spinner style={{ marginTop: -15, transform: 'scale(.7)' }} />}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        </div>}
+
+                        <div className={sty.slidesMain}>
+                            <div className={sty.slidesHeader}>
+                                <button className={sty.slideControlsBtn} onClick={() => togglePanel('files')}>
+                                    <Icon name={SSSlidePanels.files ? 'folder' : 'folder-o'} size={24} color='--tint' />
+                                    <div className='tooltip tooltipBottom'>Files</div>
+                                </button>
+                                <div className={sty.slidesHeaderMiddle}>
+                                    <button className={sty.slideControlsBtn} onClick={() => playSlide()}>
+                                        <Icon name='play-circle-o' size={28} color='--tint' />
+                                        <div className='tooltip tooltipBottom'>Play</div>
+                                    </button>
+                                    <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
+                                        <Icon name='trash-o' size={24} color='--red' />
+                                        <div className='tooltip tooltipBottom'>Remove</div>
+                                    </button>
                                 </div>
+                                <button className={sty.slideControlsBtn} onClick={() => togglePanel('display')}>
+                                    <Icon name={SSSlidePanels.display ? 'tv' : 'tv-o'} size={26} color='--tint' />
+                                    <div className='tooltip tooltipBottom'>Display</div>
+                                </button>
+                            </div>
+                            <div className={sty.activeSlide}>
+                                <img className={sty.activeSlideBgImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} alt={`Page ${SSSlide.active.page}`} />
+
+                                <img className={sty.activePageImg} onClick={() => previewTheatre()} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} alt={`Page ${SSSlide.active.page}`} />
+
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
                                         <Icon name='chevron-back' size={25} color='--tint' />
@@ -258,6 +281,20 @@ export const Presenter = () => {
                                 })}
                             </div>
                         </div>
+
+                        {SSSlidePanels.display && <div className={sty.slidesPanel} style={{ marginLeft: 10 }}>
+                            <div className={sty.slidesPanelHead}>
+                                <h1>Displays</h1>
+                                <div className={sty.slidesPanelBtns}>
+                                    <button onClick={() => togglePanel('display')}>
+                                        <Icon name='add' size={20} color='--tint' />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className={sty.slidesDisplay}>
+
+                            </div>
+                        </div>}
                     </>
                 }
 

@@ -179,6 +179,18 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
                     d="M432 320v112H320M421.8 421.77L304 304M80 192V80h112M90.2 90.23L208 208M320 80h112v112M421.77 90.2L304 208M192 432H80V320M90.23 421.8L208 304" />
             </svg>}
 
+            {name === 'folder' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <path fill={getColor(color)}
+                    d="M496 152a56 56 0 00-56-56H220.11a23.89 23.89 0 01-13.31-4L179 73.41A55.77 55.77 0 00147.89 64H72a56 56 0 00-56 56v48a8 8 0 008 8h464a8 8 0 008-8zM16 392a56 56 0 0056 56h368a56 56 0 0056-56V216a8 8 0 00-8-8H24a8 8 0 00-8 8z" />
+            </svg>}
+
+            {name === 'folder-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <path
+                    d="M440 432H72a40 40 0 01-40-40V120a40 40 0 0140-40h75.89a40 40 0 0122.19 6.72l27.84 18.56a40 40 0 0022.19 6.72H440a40 40 0 0140 40v240a40 40 0 01-40 40zM32 192h448"
+                    fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
+                    strokeWidth="32" />
+            </svg>}
+
             {name === 'link-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
                 <path d="M208 352h-64a96 96 0 010-192h64M304 160h64a96 96 0 010 192h-64M163.29 256h187.42"
                     fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
@@ -260,6 +272,13 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
             {name === 'play' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
                 <path fill={getColor(color)}
                     d="M133 440a35.37 35.37 0 01-17.5-4.67c-12-6.8-19.46-20-19.46-34.33V111c0-14.37 7.46-27.53 19.46-34.33a35.13 35.13 0 0135.77.45l247.85 148.36a36 36 0 010 61l-247.89 148.4A35.5 35.5 0 01133 440z" />
+            </svg>}
+
+            {name === 'play-circle-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
+                <path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none"
+                    stroke={getColor(color)} strokeMiterlimit="10" strokeWidth="32" />
+                <path fill={getColor(color)}
+                    d="M216.32 334.44l114.45-69.14a10.89 10.89 0 000-18.6l-114.45-69.14a10.78 10.78 0 00-16.32 9.31v138.26a10.78 10.78 0 0016.32 9.31z" />
             </svg>}
 
             {name === 'qr' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">

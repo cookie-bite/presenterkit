@@ -27,6 +27,8 @@ export const STSlide = proxy({ active: { index: 0, page: 1 }, play: { index: 0, 
 
 export const STSlides = proxy({ list: [] })
 
+export const STSlidePanels = proxy({ files: true, display: false })
+
 export const STSpinner = proxy({ isActive: false })
 
 export const STEntry = proxy({ show: true, showUI: false })
