@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useSnapshot } from 'valtio'
 
-import { STApp, STEvent } from './stores/app.store'
+import { STApp, STDisplay, STEvent, STRoute } from './stores/app.store'
 import { RTAuth, RTEvent } from './routes/routes'
 
 import { Scene } from './scene/core.scn'
@@ -29,8 +29,10 @@ window.addEventListener('resize', () => {
 
 export const Event = () => {
     const SSEvent = useSnapshot(STEvent)
+    const SSDisplay = useSnapshot(STDisplay)
 
     useEffect(async () => {
+        console.log('event useEffect', STRoute.params)
         const params = new URL(window.location.toString()).searchParams
         if (!STEvent.id && params.get('id')) {
             STEvent.id = params.get('id')
@@ -38,28 +40,35 @@ export const Event = () => {
             if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
 
             RTEvent.verify(STEvent.id).then((data) => {
-                console.log('RTEvent.verify() data:', data)
                 STEvent.status = data.status
                 STEvent.showUI = true
 
                 if (data.success) {
                     initWS()
+                    if (params.get('d')) {
+                        STDisplay.id = params.get('d')
+                    }
                 }
             })
         }
 
 
-        return () => window.ws.close()
+        return () => window.ws.close() // fix warning
     }, [])
 
 
     return (
-        SSEvent.showUI && <>
-            {SSEvent.status.code === 'OPEN' && <>
-                <Scene core={core} />
-                {!core.isMobile && <Desktop core={core} />}
-                {core.isMobile && <Mobile core={core} />}
-            </>}
+        SSEvent.showUI && <div>
+            {SSEvent.status.code === 'OPEN' && (SSDisplay.id
+                ? <div className={sty.cooldown}>
+                    <h1>Display: {SSDisplay.id}</h1>
+                </div>
+                : <>
+                    <Scene core={core} />
+                    {!core.isMobile && <Desktop core={core} />}
+                    {core.isMobile && <Mobile core={core} />}
+                </>)
+            }
             {SSEvent.status.code !== 'OPEN' && <div className={sty.cooldown}>
                 <div className={sty.cooldownIc}>
                     {SSEvent.status.code === 'NONEXIST' && <Icon name='timer-o' size={30} color='--red' />}
@@ -71,6 +80,6 @@ export const Event = () => {
                 </div>
                 <h2 className={sty.cooldownTimer}></h2>
             </div>}
-        </>
+        </div>
     )
 }

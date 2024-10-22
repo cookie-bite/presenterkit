@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplay } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
+import { RTDisplay } from '../../routes/routes'
 
 import sty from '../../styles/modules/desktop.module.css'
 
@@ -15,6 +15,7 @@ var reqTimeout = null
 
 export const Presenter = () => {
     const SSSlide = useSnapshot(STSlide)
+    const SSDisplays = useSnapshot(STDisplays)
     const SSSlides = useSnapshot(STSlides)
     const SSSlidePanels = useSnapshot(STSlidePanels)
     const SSSpinner = useSnapshot(STSpinner)
@@ -117,8 +118,30 @@ export const Presenter = () => {
         if (STTheatre.show) sendSlideUpdate(true, true)
     }
 
+    const createDisplay = (label, slide) => {
+        RTDisplay.create(STEvent.id, label, slide).then((data) => {
+            if (data.success) {
+                STSlidePanels.display = true
+                STDisplays.list.push(data.display)
+
+                window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+            }
+        })
+    }
+
     const playSlide = () => {
-        window.open(`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+        if (!STDisplays.list.length) {
+            RTDisplay.create(STEvent.id, 'Display 1', STSlides.list[STSlide.active.index].name).then((data) => {
+                if (data.success) {
+                    STSlidePanels.display = true
+                    STDisplays.list.push(data.display)
+
+                    window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+                }
+            })
+        } else {
+
+        }
     }
 
     const deleteSlide = () => {
@@ -292,7 +315,13 @@ export const Presenter = () => {
                                 </div>
                             </div>
                             <div className={sty.slidesDisplay}>
-
+                                {SSDisplays.list.map((display, index) => {
+                                    return (
+                                        <div key={display.id} className={sty.slidePreview}>
+                                            <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>}
                     </>

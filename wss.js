@@ -71,25 +71,6 @@ wss.on('connection', async (ws) => {
 
             let event = await db.events.findOneAsync({ eventID: req.eventID })
 
-            // if (!event) {
-            //     event = await collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
-
-            //     if (!event) return
-
-            //     try {
-            //         const payload = jwt.verify(req.token, process.env.ACS_TKN_SCT)
-            //         if (event.presenter.id === payload.sub) {
-            //             await db.events.insertAsync(event)
-            //             db[`event-${req.eventID}`] = new Datastore()
-            //         } else {
-            //             // handle first user join
-            //         }
-            //     } catch (err) {
-            //         // handle first user join
-            //     }
-            // }
-
-
             let user = {
                 userID: genRandom(8, 10),
                 username: 'In lobby',
@@ -145,6 +126,7 @@ wss.on('connection', async (ws) => {
                     eventID: req.eventID,
                     queue: user.isPresenter ? event.queue : [],
                     quests: event.quests,
+                    displays: event.displays,
                     slides: event.slides,
                     activeSlide: event.activeSlide,
                     shares: user.isPresenter ? event.shares : userShares,

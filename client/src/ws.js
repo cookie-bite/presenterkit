@@ -1,4 +1,4 @@
-import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent } from './stores/app.store'
+import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays } from './stores/app.store'
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
 
@@ -31,6 +31,7 @@ export const initWS = () => {
                 STUser.name = res.user.name
                 STUser.color = res.user.color
                 STUser.isPresenter = res.user.isPresenter
+                STDisplays.list = res.displays
                 STSlides.list = res.slides
                 STShares.list = res.shares
                 Object.assign(STDisplay, res.display)

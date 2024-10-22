@@ -45,3 +45,13 @@ exports.createEvent = Joi.object({
 exports.verifyEvent = Joi.object({
     eventID: Joi.number().integer().required()
 })
+
+
+
+// Display
+
+exports.createDisplay = Joi.object({
+    eventID: Joi.number().integer().required(),
+    label: Joi.string().required(),
+    slide: Joi.string().required()
+})

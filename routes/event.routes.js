@@ -63,6 +63,7 @@ router.post('/create', authUser, async (req, res) => {
             presenter: { id: req.user.id }, // color and username
             queue: [],
             quests: [],
+            displays: [],
             slides: [],
             activeSlide: {},
             shares: [{ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false }],
