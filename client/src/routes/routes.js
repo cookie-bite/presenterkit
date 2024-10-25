@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import { refreshToken, signIn, signUp, signOut } from './auth.routes'
 import { verify, create, deleteBy } from './event.routes'
-import { create as createDisplay } from './display.routes'
+import { create as createDisplay, init } from './display.routes'
 import { getData } from './user.routes'
 
 
@@ -62,4 +62,4 @@ export const send = async (url, config) => new Promise(async (resolve, reject) =
 export const RTAuth = { refreshToken, signIn, signUp, signOut }
 export const RTEvent = { verify, create, deleteBy }
 export const RTUser = { getData }
-export const RTDisplay = { create: createDisplay }
+export const RTDisplay = { create: createDisplay, init }

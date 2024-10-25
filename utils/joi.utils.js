@@ -55,3 +55,8 @@ exports.createDisplay = Joi.object({
     label: Joi.string().required(),
     slide: Joi.string().required()
 })
+
+exports.initDisplay = Joi.object({
+    eventID: Joi.number().integer().required(),
+    displayID: Joi.number().integer()
+})

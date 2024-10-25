@@ -12,6 +12,7 @@
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: var(--glass-3);
+    z-index: 1;
 }
 
 *:hover > .tooltip {

@@ -24,3 +24,19 @@ router.post('/create', async (req, res) => {
         res.json({ success: true, message: 'Display created', display: newDisplay })
     } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
+
+
+
+router.post('/init', async (req, res) => {
+    const { eventID, displayID } = req.body
+
+    const { error } = joiSchema.initDisplay.validate(req.body)
+    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+
+    try {
+        const event = await db.events.findOneAsync({ eventID })
+        const display = event.displays.filter(d => d.id === displayID)
+
+        res.json({ success: true, message: 'Display initiated', display })
+    } catch (err) { res.status(500).json({ success: false, err: err }) }
+})

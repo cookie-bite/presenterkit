@@ -68,6 +68,7 @@ wss.on('connection', async (ws) => {
 
         if (req.command === 'JOIN_ROOM') {
             ws.eventID = req.eventID
+            ws.displayID = req.displayID
 
             let event = await db.events.findOneAsync({ eventID: req.eventID })
 
@@ -252,8 +253,12 @@ wss.on('connection', async (ws) => {
             sendRoom(req.eventID, 'user', { command: 'SWAP_SLDS', slides: req.slides })
         }
 
+        // if (req.command === 'INIT_DSPL') {
+
+        // }
+
         if (req.command === 'PONG') {
-            console.log(`[${ws.username}-${ws.userID}] \x1b[33mPONG is received\x1b[0m`)
+            console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)
             ws.isAlive = true
         }
     })
@@ -262,6 +267,14 @@ wss.on('connection', async (ws) => {
     ws.on('close', async () => {
         console.log('[WS Close] ws.eventID:', ws.eventID)
         console.log('NeDB', db[`event-${ws.eventID}`])
+
+        if (ws.displayID) {
+            const event = await db.events.findOneAsync({ eventID: ws.eventID })
+            event.displays = event.displays.filter((d) => d.id !== ws.displayID)
+            await db.events.updateAsync({ eventID: ws.eventID }, { $set: { displays: event.displays } })
+
+            return sendRoom(ws.eventID, 'user', { command: 'UPDT_DSPL', displays: event.displays })
+        }
 
         if (db[`event-${ws.eventID}`]) {
             await db[`event-${ws.eventID}`].updateAsync({ userID: ws.userID }, { $set: { isActive: false } })

@@ -1,4 +1,4 @@
-import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays } from './stores/app.store'
+import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays, STDisplay as STSlideDisplay } from './stores/app.store'
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
 
@@ -24,6 +24,8 @@ export const initWS = () => {
 
         window.ws.onmessage = (msg) => {
             const res = JSON.parse(msg.data)
+
+            if (res.command === 'PING') res.time = (new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]
             console.log(res)
 
             if (res.command === 'INIT_USER') {
@@ -117,7 +119,8 @@ export const initWS = () => {
                 if (res.roomActivity.activity !== 'in lobby' && res.roomActivity.activity !== 'updated') Object.assign(STUserPanel, res.roomActivity)
                 if ((res.roomActivity.activity === 'updated' && res.roomActivity.user.id !== STUser.id) || res.roomActivity.activity !== 'updated') STUsers.list = res.userList
             } else if (res.command === 'UPDT_SLDS') {
-                if (!STUser.isPresenter) {
+                if (!STUser.isPresenter || STSlideDisplay.id) {
+                    console.log('Inside [UPDT_SLDS]')
                     if (res.slidesUpdate) STSlides.list = res.slides
                     else {
                         STSlide.active = res.activeSlide
@@ -164,6 +167,10 @@ export const initWS = () => {
                 STEntry.show = true
             }
 
+            if (res.command === 'UPDT_DSPL') {
+                STDisplays.list = res.displays
+            }
+
             if (res.command === 'PING') {
                 heartbeat()
                 window.ws.send(JSON.stringify({ command: 'PONG' }))
@@ -181,11 +188,17 @@ export const initWS = () => {
 
                 if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
 
-                window.ws.send(JSON.stringify({ command: 'JOIN_ROOM', eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'), userID: localStorage.getItem('userID'), token: localStorage.getItem('ACS_TKN') }))
+                window.ws.send(JSON.stringify({
+                    command: 'JOIN_ROOM',
+                    eventID: STEvent.id ? STEvent.id : localStorage.getItem('eventID'),
+                    userID: localStorage.getItem('userID'),
+                    displayID: STSlideDisplay.id,
+                    token: localStorage.getItem('ACS_TKN')
+                }))
             }
         }, 10)
     }
 
-    
+
     connect()
 }

@@ -33,6 +33,8 @@ export const STDisplay = proxy({ id: '', label: '', slide: {} })
 
 export const STDisplays = proxy({ list: [] })
 
+export const STDisplayList = proxy({ show: false })
+
 export const STSpinner = proxy({ isActive: false })
 
 export const STEntry = proxy({ show: true, showUI: false })

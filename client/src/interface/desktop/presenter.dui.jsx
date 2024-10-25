@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplay } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplay, STDisplayList } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
 import { RTDisplay } from '../../routes/routes'
@@ -16,6 +16,7 @@ var reqTimeout = null
 export const Presenter = () => {
     const SSSlide = useSnapshot(STSlide)
     const SSDisplays = useSnapshot(STDisplays)
+    const SSDisplayList = useSnapshot(STDisplayList)
     const SSSlides = useSnapshot(STSlides)
     const SSSlidePanels = useSnapshot(STSlidePanels)
     const SSSpinner = useSnapshot(STSpinner)
@@ -23,6 +24,7 @@ export const Presenter = () => {
     const SSEvent = useSnapshot(STEvent)
 
     const inputRef = useRef()
+    const displayListRef = useRef()
     const pageCount = STSlides.list[STSlide.active.index]?.pageCount
     const pagesRef = []
 
@@ -114,7 +116,7 @@ export const Presenter = () => {
             else toPage = STSlide.active.page === pageCount ? 1 : STSlide.active.page + 1
         }
         STSlide.active.page = toPage
-        pagesRef[toPage - 1].scrollIntoView()
+        pagesRef[toPage - 1]?.scrollIntoView()
         if (STTheatre.show) sendSlideUpdate(true, true)
     }
 
@@ -130,17 +132,23 @@ export const Presenter = () => {
     }
 
     const playSlide = () => {
-        if (!STDisplays.list.length) {
+        console.log('Presenter', STDisplays)
+
+        if (STDisplays.list.length) {
+            STDisplayList.show = !STDisplayList.show
+        } else {
+            STSlide.active.page = 1
+            sendSlideUpdate(true)
+
             RTDisplay.create(STEvent.id, 'Display 1', STSlides.list[STSlide.active.index].name).then((data) => {
+                console.log('[playSlide] data', data)
                 if (data.success) {
                     STSlidePanels.display = true
                     STDisplays.list.push(data.display)
 
-                    window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+                    window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
                 }
             })
-        } else {
-
         }
     }
 
@@ -181,6 +189,16 @@ export const Presenter = () => {
     const sendSlideUpdate = (isStarted, pageUpdate = false) => {
         window.ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
     }
+
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (!STDisplayList.show) return
+            if (!displayListRef.current.contains(e.target)) STDisplayList.show = false
+        }
+        document.addEventListener('click', handler, true)
+        return () => document.removeEventListener('click', handler)
+    }, [STDisplayList.show])
 
 
     useEffect(() => {
@@ -259,7 +277,27 @@ export const Presenter = () => {
                                 <div className={sty.slidesHeaderMiddle}>
                                     <button className={sty.slideControlsBtn} onClick={() => playSlide()}>
                                         <Icon name='play-circle-o' size={28} color='--tint' />
-                                        <div className='tooltip tooltipBottom'>Play</div>
+                                        {SSDisplayList.show
+                                            ? <div className={sty.displayList} ref={displayListRef}>
+                                                {SSDisplays.list.map((display) => {
+                                                    return (
+                                                        <div className={sty.displayListItem} key={display.id}>
+                                                            <div className={sty.displayListItemIcon}>
+                                                                <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
+                                                            </div>
+                                                            <h4>{display.label}</h4>
+                                                        </div>
+                                                    )
+                                                })}
+                                                <div className={sty.displayListItem}>
+                                                    <div className={sty.displayListItemIcon}>
+                                                        <Icon name='add' size={20} color='--tint' />
+                                                    </div>
+                                                    <h4>Add Display</h4>
+                                                </div>
+                                            </div>
+                                            : <div className='tooltip tooltipBottom'>Play</div>
+                                        }
                                     </button>
                                     <button className={sty.slideControlsBtn} onClick={() => deleteSlide()}>
                                         <Icon name='trash-o' size={24} color='--red' />
@@ -317,8 +355,8 @@ export const Presenter = () => {
                             <div className={sty.slidesDisplay}>
                                 {SSDisplays.list.map((display, index) => {
                                     return (
-                                        <div key={display.id} className={sty.slidePreview}>
-                                            <img className={sty.slidePreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
+                                        <div key={display.id} className={sty.displayPreview}>
+                                            <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
                                         </div>
                                     )
                                 })}

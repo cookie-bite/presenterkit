@@ -9,3 +9,13 @@ export const create = (eventID, label, slide) => new Promise(async (resolve, rej
         .then((data) => resolve(data))
         .catch((err) => reject(err))
 })
+
+
+export const init = (eventID, displayID) => new Promise(async (resolve, reject) => {
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({ eventID, displayID })
+
+    send('/display/init', { method: 'POST', headers, body })
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+})

@@ -9,6 +9,8 @@ import { Desktop } from './interface/desktop/core.dui'
 import { Mobile } from './interface/mobile/core.mui'
 import { initWS } from './ws'
 
+import { Display } from './interface/desktop/display.dui'
+
 import { Icon } from './components/core.cmp'
 import sty from './styles/modules/desktop.module.css'
 
@@ -31,44 +33,43 @@ export const Event = () => {
     const SSEvent = useSnapshot(STEvent)
     const SSDisplay = useSnapshot(STDisplay)
 
-    useEffect(async () => {
-        console.log('event useEffect', STRoute.params)
+    useEffect(() => {
         const params = new URL(window.location.toString()).searchParams
+        
         if (!STEvent.id && params.get('id')) {
             STEvent.id = params.get('id')
 
-            if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
+            if (localStorage.getItem('ACS_TKN')) RTAuth.refreshToken().then(() => {
+                RTEvent.verify(STEvent.id).then((data) => {
+                    STEvent.status = data.status
+                    STEvent.showUI = true
 
-            RTEvent.verify(STEvent.id).then((data) => {
-                STEvent.status = data.status
-                STEvent.showUI = true
+                    if (data.success) {
+                        initWS()
 
-                if (data.success) {
-                    initWS()
-                    if (params.get('d')) {
-                        STDisplay.id = params.get('d')
+                        if (params.get('d')) STDisplay.id = params.get('d')
                     }
-                }
+                })
             })
         }
 
 
-        return () => window.ws.close() // fix warning
+        return () => window.ws.close()
     }, [])
 
 
     return (
-        SSEvent.showUI && <div>
-            {SSEvent.status.code === 'OPEN' && (SSDisplay.id
-                ? <div className={sty.cooldown}>
-                    <h1>Display: {SSDisplay.id}</h1>
-                </div>
-                : <>
-                    <Scene core={core} />
-                    {!core.isMobile && <Desktop core={core} />}
-                    {core.isMobile && <Mobile core={core} />}
-                </>)
-            }
+        SSEvent.showUI && <>
+            {SSEvent.status.code === 'OPEN' && <>
+                {SSDisplay.id
+                    ? <Display />
+                    : <>
+                        <Scene core={core} />
+                        {!core.isMobile && <Desktop core={core} />}
+                        {core.isMobile && <Mobile core={core} />}
+                    </>
+                }
+            </>}
             {SSEvent.status.code !== 'OPEN' && <div className={sty.cooldown}>
                 <div className={sty.cooldownIc}>
                     {SSEvent.status.code === 'NONEXIST' && <Icon name='timer-o' size={30} color='--red' />}
@@ -80,6 +81,6 @@ export const Event = () => {
                 </div>
                 <h2 className={sty.cooldownTimer}></h2>
             </div>}
-        </div>
+        </>
     )
 }

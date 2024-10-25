@@ -688,9 +688,60 @@
     align-items: center;
 }
 
-.slidesTopBody {
+.displayList {
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
+    width: 220px;
+    max-height: 185px;
+    padding: 5px;
+    border-radius: 15px;
+    border: 1px solid var(--line-no);
+    overflow-x: hidden;
+    overflow-y: scroll;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: var(--glass-3);
+    transform: translateY(calc(100% + 5px));
+    z-index: 1;
+}
+
+.displayList::-webkit-scrollbar {
+    display: none;
+}
+
+.displayListItem {
+    align-items: center;
     width: 100%;
-    height: calc(100% - 60px);
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    h4 {
+        margin-left: 10px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+}
+
+.displayListItem:hover {
+    background-color: var(--fill-3);
+}
+
+.displayListItemIcon {
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 30px;
+    border-radius: 5px;
+    background-color: var(--fill-4);
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 }
 
 .slidePages {
@@ -730,6 +781,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    height: 100%;
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -750,7 +802,8 @@
 }
 
 .activePageImg {
-    height: 90%;
+    max-width: 90%;
+    max-height: 90%;
     cursor: pointer;
 }
 
@@ -780,9 +833,27 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    padding: 5px 10px;
+    gap: 10px;
+    padding: 10px;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+.slidesDisplay::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.displayPreview {
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.displayPreviewImg {
+    width: 100%;
+    border-radius: 6px;
 }
 
 .theatrePresenter {
@@ -873,4 +944,37 @@
     position: absolute;
     top: 8px;
     left: 8px;
+}
+
+
+
+
+/* 
+    MARK: Display
+*/
+
+.display {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.displayBgImg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: saturate(200%) brightness(40%) blur(100px);
+    -webkit-filter: saturate(200%) brightness(40%) blur(100px);
+    transition: all .3s ease-in-out;
+}
+
+.displayImg {
+    max-height: 100%;
+    max-width: 100%;
+    cursor: pointer;
 }

@@ -6,7 +6,7 @@ export const Icon = ({ name, size = 20, color = '--white', style }) => {
         <div style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center', width: +size, height: +size }}>
             {name === 'add' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
                 <path fill="none" stroke={getColor(color)} strokeLinecap="round" strokeLinejoin="round"
-                    strokeWidth="44" d="M256 112v288M400 256H112" />
+                    strokeWidth="50" d="M256 112v288M400 256H112" />
             </svg>}
 
             {name === 'add-circle-o' && <svg xmlns="http://www.w3.org/2000/svg" className="ionicon" width={+size} heigth={+size} viewBox="0 0 512 512">
