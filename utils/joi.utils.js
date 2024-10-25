@@ -52,9 +52,8 @@ exports.verifyEvent = Joi.object({
 
 exports.createDisplay = Joi.object({
     eventID: Joi.number().integer().required(),
-    label: Joi.string().required(),
-    slide: Joi.string().required()
-})
+    label: Joi.string().required()
+}).options({ allowUnknown: true })
 
 exports.initDisplay = Joi.object({
     eventID: Joi.number().integer().required(),

@@ -251,10 +251,21 @@ wss.on('connection', async (ws) => {
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
 
             sendRoom(req.eventID, 'user', { command: 'TOGL_SLD', state: req.state, activeSlide: req.activeSlide })
-        } else if (req.command === 'UPDT_PAGE') {
-            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
+        }
+        
+        if (req.command === 'UPDT_DISP') {
+            const { eventID, displayID, slide } = req
+            const event = await db.events.findOneAsync({ eventID })
 
-            sendRoom(req.eventID, 'user', { command: 'UPDT_PAGE', activeSlide: req.activeSlide })
+            event.displays.filter((display) => { if (display.id === displayID) {
+                if (slide.name) display.slide.name = slide.name
+                if (slide.pageCount) display.slide.pageCount = slide.pageCount
+                if (slide.page) display.slide.page = slide.page
+            } })
+
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { displays: event.displays } })
+
+            sendRoom(req.eventID, 'user', { command: 'UPDT_DISP', displayID, slide })
         }
 
 
@@ -274,7 +285,7 @@ wss.on('connection', async (ws) => {
             event.displays = event.displays.filter((d) => d.id !== ws.displayID)
             await db.events.updateAsync({ eventID: ws.eventID }, { $set: { displays: event.displays } })
 
-            return sendRoom(ws.eventID, 'user', { command: 'UPDT_DSPL', displays: event.displays })
+            return sendRoom(ws.eventID, 'user', { command: 'UPDT_DISPS', displays: event.displays })
         }
 
         if (db[`event-${ws.eventID}`]) {

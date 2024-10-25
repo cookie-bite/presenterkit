@@ -1,6 +1,7 @@
 const router = require('express').Router()
 
 const { db } = require('../api')
+const { sendRoom } = require('../wss')
 const { genRandom } = require('../utils/core.utils')
 const joiSchema = require('../utils/joi.utils')
 
@@ -18,9 +19,11 @@ router.post('/create', async (req, res) => {
     if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
     try {
-        const newDisplay = { id: genRandom(4, 10), label, slide }
+        const newDisplay = { id: genRandom(4, 10), label, slide: { name: slide.name, pageCount: slide.pageCount, page: 1 }}
         await db.events.updateAsync({ eventID }, { $push: { displays: newDisplay } })
 
+        const event = await db.events.findOneAsync({ eventID })
+        sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays: event.displays })
         res.json({ success: true, message: 'Display created', display: newDisplay })
     } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
@@ -35,7 +38,7 @@ router.post('/init', async (req, res) => {
 
     try {
         const event = await db.events.findOneAsync({ eventID })
-        const display = event.displays.filter(d => d.id === displayID)
+        const display = event.displays.filter(d => d.id === displayID)[0]
 
         res.json({ success: true, message: 'Display initiated', display })
     } catch (err) { res.status(500).json({ success: false, err: err }) }

@@ -136,8 +136,6 @@ export const initWS = () => {
                         })
                     }
                 }
-            } else if (res.command === 'UPDT_PAGE') {
-                if (!STUser.isPresenter || STSlideDisplay.id) STSlide.active = res.activeSlide
             }
 
             if (res.command === 'SEND_MSG') {
@@ -164,7 +162,10 @@ export const initWS = () => {
                 STEntry.show = true
             }
 
-            if (res.command === 'UPDT_DSPL') {
+            if (res.command === 'UPDT_DISP') {
+                STDisplays.list.filter((display) => { if (display.id === res.displayID) display.slide = res.slide })
+                if (STSlideDisplay.id === res.displayID) STSlideDisplay.slide = res.slide
+            } else if (res.command === 'UPDT_DISPS') {
                 STDisplays.list = res.displays
             }
 

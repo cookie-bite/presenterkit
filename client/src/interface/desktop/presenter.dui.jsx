@@ -25,7 +25,7 @@ export const Presenter = () => {
 
     const inputRef = useRef()
     const displayListRef = useRef()
-    const pageCount = STSlides.list[STSlide.active.index]?.pageCount
+    const pageCountActive = STSlides.list[STSlide.active.index]?.pageCount
     const pagesRef = []
 
 
@@ -69,8 +69,7 @@ export const Presenter = () => {
                             .then((res) => {
                                 STSpinner.isActive = false
                                 STSlide.active.page = 1
-                                STSlide.active.index = STSlides.list.length
-                                STSlides.list.push(res.slide)
+                                STSlide.active.index = STSlides.list.length - 1
                             })
                     } else {
                         STSpinner.isActive = false
@@ -110,46 +109,33 @@ export const Presenter = () => {
     const changePage = (to) => {
         var toPage = 1
         if (to === '<') {
-            toPage = STSlide.active.page === 1 ? STTheatre.show ? 1 : pageCount : STSlide.active.page - 1
+            toPage = STSlide.active.page === 1 ? STTheatre.show ? 1 : pageCountActive : STSlide.active.page - 1
         } else if (to === '>') {
-            if (STSlide.active.page === pageCount && STTheatre.show) { return toggleTheatre(false) }
-            else toPage = STSlide.active.page === pageCount ? 1 : STSlide.active.page + 1
+            if (STSlide.active.page === pageCountActive && STTheatre.show) { return toggleTheatre(false) }
+            else toPage = STSlide.active.page === pageCountActive ? 1 : STSlide.active.page + 1
         }
         STSlide.active.page = toPage
         pagesRef[toPage - 1]?.scrollIntoView()
-        if (STTheatre.show) updatePage()
+    }
+    
+    const changeDisplayPage = (to, display) => {
+        const page = display.slide.page
+        var toPage = 1
+
+        if (to === '<' && page !== 1) { toPage = page - 1 }
+        else if (to === '>' && page !== display.slide.pageCount) { toPage = page + 1 }
+
+        if (STTheatre.show) updateDisplay({ displayID: display.id, page: toPage })
     }
 
     const createDisplay = (label, slide) => {
         RTDisplay.create(STEvent.id, label, slide).then((data) => {
             if (data.success) {
                 STSlidePanels.display = true
-                STDisplays.list.push(data.display)
 
-                window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=no')
+                window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
             }
         })
-    }
-
-    const playSlide = () => {
-        console.log('Presenter', STDisplays)
-
-        if (STDisplays.list.length) {
-            STDisplayList.show = !STDisplayList.show
-        } else {
-            STSlide.active.page = 1
-            toggleSlide(true)
-
-            RTDisplay.create(STEvent.id, 'Display 1', STSlides.list[STSlide.active.index].name).then((data) => {
-                console.log('[playSlide] data', data)
-                if (data.success) {
-                    STSlidePanels.display = true
-                    STDisplays.list.push(data.display)
-
-                    window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
-                }
-            })
-        }
     }
 
     const deleteSlide = () => {
@@ -174,12 +160,12 @@ export const Presenter = () => {
         STTheatre.show = state
     }
 
-    const toggleSlide = (state) => {
-        window.ws.send(JSON.stringify({ command: 'TOGL_SLD', eventID: STEvent.id, state, activeSlide: state ? STSlide.active : {} }))
+    const updateDisplay = ({ displayID, slideName = null, pageCount = null, page = 1 }) => {
+        window.ws.send(JSON.stringify({ command: 'UPDT_DISP', eventID: STEvent.id, displayID, slide: { name: slideName, page, pageCount } }))
     }
 
-    const updatePage = () => {
-        window.ws.send(JSON.stringify({ command: 'UPDT_PAGE', eventID: STEvent.id, activeSlide: STSlide.active }))
+    const toggleSlideShare = (state) => {
+        window.ws.send(JSON.stringify({ command: 'TOGL_SLD', eventID: STEvent.id, state, activeSlide: state ? STSlide.active : {} }))
     }
 
 
@@ -268,15 +254,15 @@ export const Presenter = () => {
                                     <div className='tooltip tooltipBottom'>Files</div>
                                 </button>
                                 <div className={sty.slidesHeaderMiddle}>
-                                    <button className={sty.slideControlsBtn} onClick={() => playSlide()}>
+                                    <button className={sty.slideControlsBtn} onClick={() => SSDisplays.list.length ? STDisplayList.show = !STDisplayList.show : createDisplay('Display 1', SSSlides.list[SSSlide.active.index])}>
                                         <Icon name='play-circle-o' size={28} color='--tint' />
                                         {SSDisplayList.show
                                             ? <div className={sty.displayList} ref={displayListRef}>
                                                 {SSDisplays.list.map((display) => {
                                                     return (
-                                                        <div className={sty.displayListItem} key={display.id}>
+                                                        <div className={sty.displayListItem} onClick={() => updateDisplay({displayID: display.id, slideName: SSSlides.list[SSSlide.active.index].name, pageCount: SSSlides.list[SSSlide.active.index].pageCount })} key={display.id}>
                                                             <div className={sty.displayListItemIcon}>
-                                                                <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
+                                                                <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
                                                             </div>
                                                             <h4>{display.label}</h4>
                                                         </div>
@@ -311,21 +297,21 @@ export const Presenter = () => {
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>
                                         <Icon name='chevron-back' size={25} color='--tint' />
                                     </button>
-                                    <h3 className={sty.slideControlsLbl}>{`${SSSlide.active.page} / ${pageCount}`}</h3>
+                                    <h3 className={sty.slideControlsLbl}>{`${SSSlide.active.page} / ${pageCountActive}`}</h3>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('>')}>
                                         <Icon name='chevron-forward' size={25} color='--tint' />
                                     </button>
                                 </div>
                             </div>
                             <div className={sty.slidePages}>
-                                {Array(pageCount).fill().map((page, index) => {
+                                {Array(pageCountActive).fill().map((page, index) => {
                                     return (
                                         <div
                                             key={index}
                                             className={sty.slidePage}
                                             style={{
                                                 backgroundColor: (index + 1) === SSSlide.active.page ? 'var(--gray-2)' : 'var(--fill-3)',
-                                                margin: index === 0 ? '10px 5px 10px 10px' : index === pageCount - 1 ? '10px 10px 10px 5px' : '10px 5px'
+                                                margin: index === 0 ? '10px 5px 10px 10px' : index === pageCountActive - 1 ? '10px 10px 10px 5px' : '10px 5px'
                                             }}
                                             ref={(ref) => pagesRef[index] = ref}
                                             onClick={() => { STSlide.active.page = (index + 1) }}>
@@ -349,7 +335,7 @@ export const Presenter = () => {
                                 {SSDisplays.list.map((display, index) => {
                                     return (
                                         <div key={display.id} className={sty.displayPreview}>
-                                            <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide}/1.webp`} />
+                                            <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/1.webp`} />
                                         </div>
                                     )
                                 })}
