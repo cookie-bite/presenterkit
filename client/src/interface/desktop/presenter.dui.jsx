@@ -104,7 +104,7 @@ export const Presenter = () => {
         STSlides.list.splice(destination.index, 0, reorderedItem)
 
         clearTimeout(reqTimeout)
-        reqTimeout = setTimeout(() => window.ws.send(JSON.stringify({ command: 'SWAP_SLDS', eventID: STEvent.id, slides: STSlides.list })), 5000)
+        reqTimeout = setTimeout(() => window.ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, slides: STSlides.list })), 5000)
     }
 
     const changePage = (to) => {
@@ -112,12 +112,12 @@ export const Presenter = () => {
         if (to === '<') {
             toPage = STSlide.active.page === 1 ? STTheatre.show ? 1 : pageCount : STSlide.active.page - 1
         } else if (to === '>') {
-            if (STSlide.active.page === pageCount && STTheatre.show) { return toggleTheatre('off') }
+            if (STSlide.active.page === pageCount && STTheatre.show) { return toggleTheatre(false) }
             else toPage = STSlide.active.page === pageCount ? 1 : STSlide.active.page + 1
         }
         STSlide.active.page = toPage
         pagesRef[toPage - 1]?.scrollIntoView()
-        if (STTheatre.show) sendSlideUpdate(true, true)
+        if (STTheatre.show) updatePage()
     }
 
     const createDisplay = (label, slide) => {
@@ -138,7 +138,7 @@ export const Presenter = () => {
             STDisplayList.show = !STDisplayList.show
         } else {
             STSlide.active.page = 1
-            sendSlideUpdate(true)
+            toggleSlide(true)
 
             RTDisplay.create(STEvent.id, 'Display 1', STSlides.list[STSlide.active.index].name).then((data) => {
                 console.log('[playSlide] data', data)
@@ -170,25 +170,18 @@ export const Presenter = () => {
             })
     }
 
-    const toggleTheatre = (mode) => {
-        if (mode === 'on') {
-            STTheatre.show = !STTheatre.show
-            STSlide.active.page = 1
-            sendSlideUpdate(true)
-        } else if (mode === 'off') {
-            STTheatre.show = false
-            sendSlideUpdate(false)
-        }
+    const toggleTheatre = (state) => {
+        STTheatre.show = state
     }
 
-    const previewTheatre = () => {
-        STTheatre.show = true
-        sendSlideUpdate(true)
+    const toggleSlide = (state) => {
+        window.ws.send(JSON.stringify({ command: 'TOGL_SLD', eventID: STEvent.id, state, activeSlide: state ? STSlide.active : {} }))
     }
 
-    const sendSlideUpdate = (isStarted, pageUpdate = false) => {
-        window.ws.send(JSON.stringify({ command: 'UPDT_SLDS', eventID: STEvent.id, isStarted, pageUpdate, activeSlide: isStarted ? STSlide.active : {} }))
+    const updatePage = () => {
+        window.ws.send(JSON.stringify({ command: 'UPDT_PAGE', eventID: STEvent.id, activeSlide: STSlide.active }))
     }
+
 
 
     useEffect(() => {
@@ -207,8 +200,8 @@ export const Presenter = () => {
             if ((e.key === 'ArrowRight' || e.key === 'PageDown') && STSlides.list.length) changePage('>')
             if (e.key === 'ArrowUp' && !STTheatre.show) changeSlide(STSlide.active.index - 1)
             if (e.key === 'ArrowDown' && !STTheatre.show) changeSlide(STSlide.active.index + 1)
-            if (e.key === 'F5') toggleTheatre('on')
-            if (e.key === 'Escape') STTheatre.show ? toggleTheatre('off') : STUI.name = ''
+            if (e.key === 'F5') toggleTheatre(true)
+            if (e.key === 'Escape') STTheatre.show ? toggleTheatre(false) : STUI.name = ''
         }
 
         window.addEventListener('keyup', onKeyUp)
@@ -312,7 +305,7 @@ export const Presenter = () => {
                             <div className={sty.activeSlide}>
                                 <img className={sty.activeSlideBgImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} alt={`Page ${SSSlide.active.page}`} />
 
-                                <img className={sty.activePageImg} onClick={() => previewTheatre()} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} alt={`Page ${SSSlide.active.page}`} />
+                                <img className={sty.activePageImg} onClick={() => toggleTheatre(true)} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp`} alt={`Page ${SSSlide.active.page}`} />
 
                                 <div className={sty.slideControls}>
                                     <button className={sty.slideControlsBtn} onClick={() => changePage('<')}>

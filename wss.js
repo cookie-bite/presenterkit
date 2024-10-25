@@ -244,18 +244,19 @@ wss.on('connection', async (ws) => {
 
             sendRoom(req.eventID, 'admin', { command: 'UPDT_CNFG', name: req.config.name, updateTo: { is: req.config.is } })
         } else if (req.command === 'UPDT_SLDS') {
-            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
-
-            sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: false, isStarted: req.isStarted, pageUpdate: req.pageUpdate, activeSlide: req.activeSlide })
-        } else if (req.command === 'SWAP_SLDS') {
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { slides: req.slides } })
 
-            sendRoom(req.eventID, 'user', { command: 'SWAP_SLDS', slides: req.slides })
+            sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slides: req.slides })
+        } else if (req.command === 'TOGL_SLD') {
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
+
+            sendRoom(req.eventID, 'user', { command: 'TOGL_SLD', state: req.state, activeSlide: req.activeSlide })
+        } else if (req.command === 'UPDT_PAGE') {
+            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
+
+            sendRoom(req.eventID, 'user', { command: 'UPDT_PAGE', activeSlide: req.activeSlide })
         }
 
-        // if (req.command === 'INIT_DSPL') {
-
-        // }
 
         if (req.command === 'PONG') {
             console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)

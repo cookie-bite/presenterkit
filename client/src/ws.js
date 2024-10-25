@@ -119,28 +119,25 @@ export const initWS = () => {
                 if (res.roomActivity.activity !== 'in lobby' && res.roomActivity.activity !== 'updated') Object.assign(STUserPanel, res.roomActivity)
                 if ((res.roomActivity.activity === 'updated' && res.roomActivity.user.id !== STUser.id) || res.roomActivity.activity !== 'updated') STUsers.list = res.userList
             } else if (res.command === 'UPDT_SLDS') {
+                STSlides.list = res.slides
+            } else if (res.command === 'TOGL_SLD') {
                 if (!STUser.isPresenter || STSlideDisplay.id) {
-                    console.log('Inside [UPDT_SLDS]')
-                    if (res.slidesUpdate) STSlides.list = res.slides
-                    else {
-                        STSlide.active = res.activeSlide
-                        if (res.isStarted && !res.pageUpdate) {
-                            Alert.show({
-                                icon: { name: 'tv-o', color: '--green' },
-                                title: 'Presenter shares slide now',
-                                buttons: [{ label: 'Open', onClick: () => { STSlide.play = res.activeSlide, STTheatre.show = true, STUI.name = 'Slides' } }]
-                            })
-                        } else if (!res.isStarted) {
-                            STTheatre.show = false
-                            Alert.show({
-                                icon: { name: 'tv-o', color: '--red' },
-                                title: 'Presenter finished slide sharing'
-                            })
-                        }
+                    if (res.state) {
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--green' },
+                            title: 'Presenter shares slide now',
+                            buttons: [{ label: 'Open', onClick: () => { STSlide.play = res.activeSlide, STTheatre.show = true, STUI.name = 'Slides' } }]
+                        })
+                    } else {
+                        STTheatre.show = false
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--red' },
+                            title: 'Presenter finished slide sharing'
+                        })
                     }
                 }
-            } else if (res.command === 'SWAP_SLDS') {
-                STSlides.list = res.slides
+            } else if (res.command === 'UPDT_PAGE') {
+                if (!STUser.isPresenter || STSlideDisplay.id) STSlide.active = res.activeSlide
             }
 
             if (res.command === 'SEND_MSG') {

@@ -18,7 +18,7 @@ router.post('/create', async (req, res) => {
     await db.events.updateAsync({ eventID }, { $push: { slides: newSlide } })
     const event = await db.events.findOneAsync({ eventID })
 
-    sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
+    sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slides: event.slides })
     res.json({ success: true, message: 'Slide uploaded', slide: newSlide })
 })
 
@@ -43,6 +43,6 @@ router.delete('/delete', async (req, res) => {
     event.slides = event.slides.filter((s) => s.name !== slide.name)
     await db.events.updateAsync({ eventID }, { $set: { slides: event.slides } })
 
-    sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slidesUpdate: true, slides: event.slides })
+    sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slides: event.slides })
     res.json({ success: true, message: 'Slide deleted' })
 })
