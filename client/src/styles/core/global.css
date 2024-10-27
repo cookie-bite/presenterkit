@@ -43,6 +43,10 @@ a {
     cursor: pointer;
 }
 
+hr {
+    all: unset;
+}
+
 button {
     display: flex;
     cursor: pointer;

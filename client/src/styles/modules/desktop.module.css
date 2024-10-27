@@ -137,18 +137,18 @@
 
 .controlsHitSlop:hover {
     padding: 0 0 10px;
-    transition: all .3s ease-in-out;    
+    transition: all .3s ease-in-out;
 }
 
-.controlsHitSlop:hover > .controls {
+.controlsHitSlop:hover>.controls {
     width: 334px;
     height: 64px;
     padding: 10px 5px;
     transition: all .3s ease-in-out;
 }
 
-.controlsHitSlop:hover > .controls > .controlsBtn,
-.controlsHitSlop:hover > .controls > .controlsBtnActive {
+.controlsHitSlop:hover>.controls>.controlsBtn,
+.controlsHitSlop:hover>.controls>.controlsBtnActive {
     margin: 0 5px;
     transform: scale(1);
     transition: all .3s .1s ease-in-out;
@@ -231,9 +231,17 @@
 }
 
 @keyframes neontext {
-    0% { text-shadow: 0 0 0 transparent; }
-    25% { text-shadow: 0 0 15px #fff, 0 0 20px #fff5; }
-    50% { text-shadow: 0 0 0 transparent; }
+    0% {
+        text-shadow: 0 0 0 transparent;
+    }
+
+    25% {
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff5;
+    }
+
+    50% {
+        text-shadow: 0 0 0 transparent;
+    }
 }
 
 .qrForm {
@@ -385,8 +393,7 @@
     cursor: pointer;
 }
 
-.msgColor:hover > .msgColorPrvw {
-}
+.msgColor:hover>.msgColorPrvw {}
 
 .msgColorPrvw {
     display: none;
@@ -523,10 +530,21 @@
 }
 
 @keyframes in-out {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
 .userInfoIcView {
@@ -834,7 +852,7 @@
     width: 100%;
     height: 100%;
     gap: 10px;
-    padding: 10px;
+    padding: 15px 10px;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -844,16 +862,139 @@
     /* Safari and Chrome */
 }
 
+.displayForm {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 10px; 
+    border-radius: 8px;
+    background-color: var(--fill-4);
+}
+
+.displayFormCloseBtn {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 24px;
+    width: 24px;
+    border-radius: 12px;
+    background-color: var(--fill-1);
+}
+
+.displayFormBody {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    margin-top: 25px;
+
+    h3 {
+        font-size: 20px;
+        font-weight: 600;
+    }
+}
+
+.displayInput {
+    align-items: center;
+    font-size: 15px;
+    font-weight: 500;
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background-color: var(--fill-1);
+    transition: all .3s ease-in-out;
+}
+
+.displayInputBtn {
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    margin-bottom: 15px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tint);
+    background-color: var(--fill-1);
+}
+
+.displayFormLine {
+    width: 100%;
+    margin: 15px 0 5px;
+    border-bottom: 1px solid var(--line-no);
+}
+
+.displayBg {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    transition: all .3s ease-in-out;
+}
+
+.displayBgActive {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: var(--fill-4);
+    transition: all .3s ease-in-out;
+}
+
+.displayLbl {
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    transition: all .3s ease-in-out;
+}
+
+.displayLblActive {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 5px 0 15px;
+    transition: all .3s ease-in-out;
+}
+
 .displayPreview {
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.1), 0 5px 10px 3px #0004;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .displayPreviewImg {
     width: 100%;
-    border-radius: 6px;
+}
+
+.displayMenu {
+}
+
+.displayControls {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.displayControlsBtn {
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    margin: 0 5px;
+    border-radius: 12px;
+    background-color: var(--fill-4);
+    transition: all .3s ease-in-out;
+}
+
+.displayControlsLbl {
+    width: 6ch;
+    text-align: center;
 }
 
 .theatrePresenter {
@@ -914,7 +1055,7 @@
     border-radius: 8px;
 }
 
-.theatreItem:hover > .theatreItemBtns {
+.theatreItem:hover>.theatreItemBtns {
     opacity: 1;
     transition: opacity .3s ease-in-out;
 }

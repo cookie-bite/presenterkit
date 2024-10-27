@@ -11,14 +11,15 @@ export const Display = () => {
     const SSDisplay = useSnapshot(STDisplay)
     const SSEvent = useSnapshot(STEvent)
 
+
     const init = () => {
         RTDisplay.init(STEvent.id, STDisplay.id).then((data) => {
             console.log('Display UI', data)
+            
             if (data.success) {
-                // Object.assign(STDisplay, data.display)
-                
                 STDisplay.label = data.display.label
                 STDisplay.slide = data.display.slide
+
 
                 const interval = setInterval(async () => {
                     if (window.ws.readyState === 1) {

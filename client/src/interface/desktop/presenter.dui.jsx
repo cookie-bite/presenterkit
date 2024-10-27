@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplay, STDisplayList } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplayList } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
 import { RTDisplay } from '../../routes/routes'
@@ -15,13 +16,15 @@ var reqTimeout = null
 
 export const Presenter = () => {
     const SSSlide = useSnapshot(STSlide)
-    const SSDisplays = useSnapshot(STDisplays)
-    const SSDisplayList = useSnapshot(STDisplayList)
     const SSSlides = useSnapshot(STSlides)
     const SSSlidePanels = useSnapshot(STSlidePanels)
+    const SSDisplays = useSnapshot(STDisplays)
+    const SSDisplayList = useSnapshot(STDisplayList)
     const SSSpinner = useSnapshot(STSpinner)
     const SSTheatre = useSnapshot(STTheatre)
     const SSEvent = useSnapshot(STEvent)
+
+    const [displayName, setDisplayName] = useState('')
 
     const inputRef = useRef()
     const displayListRef = useRef()
@@ -117,26 +120,6 @@ export const Presenter = () => {
         STSlide.active.page = toPage
         pagesRef[toPage - 1]?.scrollIntoView()
     }
-    
-    const changeDisplayPage = (to, display) => {
-        const page = display.slide.page
-        var toPage = 1
-
-        if (to === '<' && page !== 1) { toPage = page - 1 }
-        else if (to === '>' && page !== display.slide.pageCount) { toPage = page + 1 }
-
-        if (STTheatre.show) updateDisplay({ displayID: display.id, page: toPage })
-    }
-
-    const createDisplay = (label, slide) => {
-        RTDisplay.create(STEvent.id, label, slide).then((data) => {
-            if (data.success) {
-                STSlidePanels.display = true
-
-                window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
-            }
-        })
-    }
 
     const deleteSlide = () => {
         const headers = { 'Content-type': 'application/json' }
@@ -158,6 +141,40 @@ export const Presenter = () => {
 
     const toggleTheatre = (state) => {
         STTheatre.show = state
+    }
+
+    const openDisplayForm = () => {
+        STSlidePanels.display = true
+        STSlidePanels.displayForm = true
+    }
+
+    const closeDisplayForm = () => {
+        STSlidePanels.displayForm = false
+        setDisplayName('')
+    }
+
+    const createDisplay = (label = 'New Display', slide) => {
+        RTDisplay.create(STEvent.id, label, slide).then((data) => {
+            if (data.success) {
+                STSlidePanels.display = true
+                STSlidePanels.displayForm = false
+
+                window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
+            }
+        })
+    }
+
+    const changeDisplayPage = (to, display) => {
+        const page = display.slide.page
+        var toPage = 1
+
+        if (to === '<' && page !== 1) {
+            toPage = page - 1
+            updateDisplay({ displayID: display.id, page: toPage })
+        } else if (to === '>' && page !== display.slide.pageCount) {
+            toPage = page + 1
+            updateDisplay({ displayID: display.id, page: toPage })
+        }
     }
 
     const updateDisplay = ({ displayID, slideName = null, pageCount = null, page = 1 }) => {
@@ -260,7 +277,7 @@ export const Presenter = () => {
                                             ? <div className={sty.displayList} ref={displayListRef}>
                                                 {SSDisplays.list.map((display) => {
                                                     return (
-                                                        <div className={sty.displayListItem} onClick={() => updateDisplay({displayID: display.id, slideName: SSSlides.list[SSSlide.active.index].name, pageCount: SSSlides.list[SSSlide.active.index].pageCount })} key={display.id}>
+                                                        <div className={sty.displayListItem} onClick={() => updateDisplay({ displayID: display.id, slideName: SSSlides.list[SSSlide.active.index].name, pageCount: SSSlides.list[SSSlide.active.index].pageCount })} key={display.id}>
                                                             <div className={sty.displayListItemIcon}>
                                                                 <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
                                                             </div>
@@ -268,7 +285,7 @@ export const Presenter = () => {
                                                         </div>
                                                     )
                                                 })}
-                                                <div className={sty.displayListItem}>
+                                                <div className={sty.displayListItem} onClick={() => openDisplayForm()}>
                                                     <div className={sty.displayListItemIcon}>
                                                         <Icon name='add' size={20} color='--tint' />
                                                     </div>
@@ -326,16 +343,59 @@ export const Presenter = () => {
                             <div className={sty.slidesPanelHead}>
                                 <h1>Displays</h1>
                                 <div className={sty.slidesPanelBtns}>
-                                    <button onClick={() => togglePanel('display')}>
+                                    <button onClick={() => openDisplayForm()}>
                                         <Icon name='add' size={20} color='--tint' />
                                     </button>
                                 </div>
                             </div>
                             <div className={sty.slidesDisplay}>
+                                <AnimatePresence>
+                                    {SSSlidePanels.displayForm && <motion.div
+                                        className='fd-c'
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ ease: 'easeInOut', duration: 0.3 }}
+                                    >
+                                        <div className={sty.displayForm}>
+                                            <button className={sty.displayFormCloseBtn} onClick={() => closeDisplayForm()}>
+                                                <Icon name='close' size={16} color='--tint' />
+                                            </button>
+                                            <div className={sty.displayFormBody}>
+                                                <h3>Add Display</h3>
+                                                <input className={sty.displayInput} type='text' autoComplete='off' autoFocus placeholder='Display name' value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                                                <button className={sty.displayInputBtn} onClick={() => createDisplay(displayName, SSSlides.list[SSSlide.active.index])}>Add</button>
+                                            </div>
+                                        </div>
+                                        <hr className={sty.displayFormLine} />
+                                    </motion.div>}
+                                </AnimatePresence>
                                 {SSDisplays.list.map((display, index) => {
                                     return (
-                                        <div key={display.id} className={sty.displayPreview}>
-                                            <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/1.webp`} />
+                                        <div className={SSSlidePanels.activeDisplayID === display.id ? sty.displayBgActive : sty.displayBg}>
+                                            <h3 className={SSSlidePanels.activeDisplayID === display.id ? sty.displayLblActive : sty.displayLbl}>{display.label}</h3>
+                                            <div key={display.id} className={sty.displayPreview} onClick={() => STSlidePanels.activeDisplayID = SSSlidePanels.activeDisplayID === display.id ? '' : display.id}>
+                                                <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
+                                            </div>
+                                            <AnimatePresence>
+                                                {SSSlidePanels.activeDisplayID === display.id && <motion.div
+                                                    className={sty.displayMenu}
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ ease: 'easeInOut', duration: 0.3 }}
+                                                >
+                                                    <div className={sty.displayControls}>
+                                                        <button className={sty.displayControlsBtn} onClick={() => changeDisplayPage('<', display)}>
+                                                            <Icon name='chevron-back' size={20} color='--tint' />
+                                                        </button>
+                                                        <h3 className={sty.displayControlsLbl}>{`${display.slide.page} / ${display.slide.pageCount}`}</h3>
+                                                        <button className={sty.displayControlsBtn} onClick={() => changeDisplayPage('>', display)}>
+                                                            <Icon name='chevron-forward' size={20} color='--tint' />
+                                                        </button>
+                                                    </div>
+                                                </motion.div>}
+                                            </AnimatePresence>
                                         </div>
                                     )
                                 })}

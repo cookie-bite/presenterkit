@@ -252,22 +252,27 @@ wss.on('connection', async (ws) => {
 
             sendRoom(req.eventID, 'user', { command: 'TOGL_SLD', state: req.state, activeSlide: req.activeSlide })
         }
-        
+
         if (req.command === 'UPDT_DISP') {
             const { eventID, displayID, slide } = req
             const event = await db.events.findOneAsync({ eventID })
 
-            event.displays.filter((display) => { if (display.id === displayID) {
-                if (slide.name) display.slide.name = slide.name
-                if (slide.pageCount) display.slide.pageCount = slide.pageCount
-                if (slide.page) display.slide.page = slide.page
-            } })
+            let newSlide = {}
+
+            event.displays.filter((display) => {
+                if (display.id === displayID) {
+                    if (slide.name) display.slide.name = slide.name
+                    if (slide.pageCount) display.slide.pageCount = slide.pageCount
+                    if (slide.page) display.slide.page = slide.page
+
+                    newSlide = display.slide
+                }
+            })
 
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { displays: event.displays } })
 
-            sendRoom(req.eventID, 'user', { command: 'UPDT_DISP', displayID, slide })
+            sendRoom(req.eventID, 'user', { command: 'UPDT_DISP', displayID, slide: newSlide })
         }
-
 
         if (req.command === 'PONG') {
             console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)

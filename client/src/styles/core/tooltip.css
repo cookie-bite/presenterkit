@@ -5,7 +5,6 @@
     font-weight: 400;
     color: var(--label-1);
     text-wrap: nowrap;
-    letter-spacing: 0.5px;
     padding: 4px 8px;
     border-radius: 8px;
     border: 1px solid var(--line-no);
