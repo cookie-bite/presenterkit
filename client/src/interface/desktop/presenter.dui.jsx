@@ -205,8 +205,8 @@ export const Presenter = () => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if ((e.key === 'ArrowLeft' || e.key === 'PageUp') && STSlides.list.length) changePage('<')
-            if ((e.key === 'ArrowRight' || e.key === 'PageDown') && STSlides.list.length) changePage('>')
+            if ((e.key === 'ArrowLeft' || e.key === 'PageUp') && STSlides.list.length && !STSlidePanels.displayForm) changePage('<')
+            if ((e.key === 'ArrowRight' || e.key === 'PageDown') && STSlides.list.length && !STSlidePanels.displayForm) changePage('>')
             if (e.key === 'ArrowUp' && !STTheatre.show) changeSlide(STSlide.active.index - 1)
             if (e.key === 'ArrowDown' && !STTheatre.show) changeSlide(STSlide.active.index + 1)
             if (e.key === 'F5') toggleTheatre(true)
