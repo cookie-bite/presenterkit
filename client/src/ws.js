@@ -1,4 +1,4 @@
-import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays, STDisplay as STSlideDisplay } from './stores/app.store'
+import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays, STDisplay as STSlideDisplay, STActiveDisplay } from './stores/app.store'
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
 
@@ -49,7 +49,7 @@ export const initWS = () => {
                 } else {
                     if (!res.user.isInLobby) STEntry.show = false
                     else STEntry.showUI = true
-                    STSlide.active = res.activeSlide
+                    Object.assign(STActiveDisplay, res.activeDisplay)
                 }
 
                 if (res.quests.length) {
@@ -120,22 +120,6 @@ export const initWS = () => {
                 if ((res.roomActivity.activity === 'updated' && res.roomActivity.user.id !== STUser.id) || res.roomActivity.activity !== 'updated') STUsers.list = res.userList
             } else if (res.command === 'UPDT_SLDS') {
                 STSlides.list = res.slides
-            } else if (res.command === 'TOGL_SLD') {
-                if (!STUser.isPresenter || STSlideDisplay.id) {
-                    if (res.state) {
-                        Alert.show({
-                            icon: { name: 'tv-o', color: '--green' },
-                            title: 'Presenter shares slide now',
-                            buttons: [{ label: 'Open', onClick: () => { STSlide.play = res.activeSlide, STTheatre.show = true, STUI.name = 'Slides' } }]
-                        })
-                    } else {
-                        STTheatre.show = false
-                        Alert.show({
-                            icon: { name: 'tv-o', color: '--red' },
-                            title: 'Presenter finished slide sharing'
-                        })
-                    }
-                }
             }
 
             if (res.command === 'SEND_MSG') {
@@ -165,8 +149,33 @@ export const initWS = () => {
             if (res.command === 'UPDT_DISP') {
                 STDisplays.list.filter((display) => { if (display.id === res.displayID) display.slide = res.slide })
                 if (STSlideDisplay.id === res.displayID) STSlideDisplay.slide = res.slide
+                if (STActiveDisplay.id === res.displayID) STActiveDisplay.slide = res.slide
             } else if (res.command === 'UPDT_DISPS') {
                 STDisplays.list = res.displays
+            } else if (res.command === 'SHARE_DISP') {
+                STActiveDisplay.id = res.state ? res.displayID : ''
+                STActiveDisplay.slide = res.state ? res.slide : {}
+
+                if (!STUser.isPresenter || STSlideDisplay.id) {
+                    if (res.state) {
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--green' },
+                            title: 'Presenter shares slide now',
+                            buttons: [{ label: 'Open', onClick: () => { STTheatre.show = true, STUI.name = 'Slides' } }]
+                        })
+                    } else {
+                        STTheatre.show = false
+                        Alert.show({
+                            icon: { name: 'tv-o', color: '--red' },
+                            title: 'Presenter finished slide sharing'
+                        })
+                    }
+                }
+            } else if (res.command === 'CLOS_DISP') {
+                if (STSlideDisplay.id === res.displayID) {
+                    const newWindow = window.open('', '_self')
+                    newWindow.close()
+                }
             }
 
             if (res.command === 'PING') {

@@ -33,7 +33,7 @@ router.post('/create', async (req, res) => {
 router.post('/init', async (req, res) => {
     const { eventID, displayID } = req.body
 
-    const { error } = joiSchema.initDisplay.validate(req.body)
+    const { error } = joiSchema.updateDisplay.validate(req.body)
     if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
     try {
@@ -41,5 +41,30 @@ router.post('/init', async (req, res) => {
         const display = event.displays.filter(d => d.id === displayID)[0]
 
         res.json({ success: true, message: 'Display initiated', display })
+    } catch (err) { res.status(500).json({ success: false, err: err }) }
+})
+
+
+
+router.delete('/close', async (req, res) => {
+    const { eventID, displayID } = req.body
+
+    const { error } = joiSchema.updateDisplay.validate(req.body)
+    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+
+    try {
+        const event = await db.events.findOneAsync({ eventID })
+
+        if (displayID === event.activeDisplay.id) {
+            await db.events.updateAsync({ eventID }, { $set: { activeDisplay: { id: '', slide: {} } } })
+            sendRoom(eventID, 'user', { command: 'SHARE_DISP', displayID, state: false, slide: {} })
+        }
+
+        const displays = event.displays.filter(d => d.id !== displayID)
+        await db.events.updateAsync({ eventID }, { $set: { displays } })
+
+        sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays })
+        sendRoom(eventID, 'user', { command: 'CLOS_DISP', displayID })
+        res.json({ success: true, message: 'Display closed' })
     } catch (err) { res.status(500).json({ success: false, err: err }) }
 })

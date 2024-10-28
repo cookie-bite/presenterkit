@@ -65,7 +65,7 @@ router.post('/create', authUser, async (req, res) => {
             quests: [],
             displays: [],
             slides: [],
-            activeSlide: {},
+            activeDisplay: { id: '', slide: {} },
             shares: [{ body: '', urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }], isShared: false }],
             roomActivity: { user: { id: '', name: '' }, activity: '' },
             display: { quest: 'Welcome to Event', author: '' },

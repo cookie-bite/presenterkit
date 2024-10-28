@@ -33,26 +33,30 @@ export const Event = () => {
     const SSEvent = useSnapshot(STEvent)
     const SSDisplay = useSnapshot(STDisplay)
 
-    useEffect(() => {
+
+    const init = async () => {
         const params = new URL(window.location.toString()).searchParams
-        
+
         if (!STEvent.id && params.get('id')) {
             STEvent.id = params.get('id')
 
-            if (localStorage.getItem('ACS_TKN')) RTAuth.refreshToken().then(() => {
-                RTEvent.verify(STEvent.id).then((data) => {
-                    STEvent.status = data.status
-                    STEvent.showUI = true
+            if (localStorage.getItem('ACS_TKN')) await RTAuth.refreshToken()
+            
+            RTEvent.verify(STEvent.id).then((data) => {
+                STEvent.status = data.status
+                STEvent.showUI = true
 
-                    if (data.success) {
-                        initWS()
+                if (data.success) {
+                    initWS()
 
-                        if (params.get('d')) STDisplay.id = params.get('d')
-                    }
-                })
+                    if (params.get('d')) STDisplay.id = params.get('d')
+                }
             })
         }
+    }
 
+    useEffect(() => {
+        init()
 
         return () => window.ws.close()
     }, [])

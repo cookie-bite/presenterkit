@@ -19,3 +19,13 @@ export const init = (eventID, displayID) => new Promise(async (resolve, reject) 
         .then((data) => resolve(data))
         .catch((err) => reject(err))
 })
+
+
+export const close = (eventID, displayID) => new Promise(async (resolve, reject) => {
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({ eventID, displayID })
+
+    send('/display/close', { method: 'DELETE', headers, body })
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+})

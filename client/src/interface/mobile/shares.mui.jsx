@@ -72,8 +72,7 @@ export const Shares = () => {
                             ? <div className={sty.sharePages}>
                                 {SSShares.list.map((share, index) => {
                                     return (
-                                        <div key={index} className={sty.sharePage} onClick={() => { STSlide.active.page = (index + 1) }}
-                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--yellow)' : 'var(--fill-1)' }}>
+                                        <div key={index} className={sty.sharePage}>
                                             {share.body && <h2 className={sty.shareBody}>{share.body}</h2>}
                                             {share.urls[0].link && <div className={sty.shareBtns} style={{ marginTop: share.body ? 20 : 0 }}>
                                                 {share.urls.map((url, index) => {

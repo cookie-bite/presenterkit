@@ -129,7 +129,7 @@ wss.on('connection', async (ws) => {
                     quests: event.quests,
                     displays: event.displays,
                     slides: event.slides,
-                    activeSlide: event.activeSlide,
+                    activeDisplay: event.activeDisplay,
                     shares: user.isPresenter ? event.shares : userShares,
                     roomActivity,
                     display: event.display,
@@ -247,10 +247,6 @@ wss.on('connection', async (ws) => {
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { slides: req.slides } })
 
             sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slides: req.slides })
-        } else if (req.command === 'TOGL_SLD') {
-            await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeSlide: req.activeSlide } })
-
-            sendRoom(req.eventID, 'user', { command: 'TOGL_SLD', state: req.state, activeSlide: req.activeSlide })
         }
 
         if (req.command === 'UPDT_DISP') {
@@ -270,8 +266,18 @@ wss.on('connection', async (ws) => {
             })
 
             await db.events.updateAsync({ eventID: req.eventID }, { $set: { displays: event.displays } })
+            console.log('UPDT_DISP', event)
+            if (displayID === event.activeDisplay.id) await db.events.updateAsync({ eventID: req.eventID }, { $set: { activeDisplay: { id: displayID, slide: newSlide } } })
 
             sendRoom(req.eventID, 'user', { command: 'UPDT_DISP', displayID, slide: newSlide })
+        } else if (req.command === 'SHARE_DISP') {
+            const { eventID, displayID, state, slide } = req
+            const event = await db.events.findOneAsync({ eventID })
+
+            await db.events.updateAsync({ eventID }, { $set: { displays: event.displays } })
+            await db.events.updateAsync({ eventID }, { $set: { activeDisplay: state ? { id: displayID, slide } : { id: '', slide: {} } } })
+
+            sendRoom(eventID, 'user', { command: 'SHARE_DISP', displayID, state, slide })
         }
 
         if (req.command === 'PONG') {
@@ -283,10 +289,16 @@ wss.on('connection', async (ws) => {
 
     ws.on('close', async () => {
         console.log('[WS Close] ws.eventID:', ws.eventID)
-        console.log('NeDB', db[`event-${ws.eventID}`])
+        console.log('NeDB', db[`event-${ws.eventID}`] ? 'DB' : undefined)
 
         if (ws.displayID) {
             const event = await db.events.findOneAsync({ eventID: ws.eventID })
+
+            if (ws.displayID === event.activeDisplay.id) {
+                await db.events.updateAsync({ eventID: ws.eventID }, { $set: { activeDisplay: { id: '', slide: {} } } })
+                sendRoom(ws.eventID, 'user', { command: 'SHARE_DISP', displayID: ws.displayID, state: false, slide: {} })
+            }
+
             event.displays = event.displays.filter((d) => d.id !== ws.displayID)
             await db.events.updateAsync({ eventID: ws.eventID }, { $set: { displays: event.displays } })
 
@@ -304,7 +316,8 @@ wss.on('connection', async (ws) => {
 
             if (activeUsers.length === 0) {
                 const event = await db.events.findOneAsync({ eventID: ws.eventID }, { _id: 0 })
-                event.activeSlide = {}
+                event.activeDisplay = { id: '', slide: {} }
+                event.displays = []
                 await collection('events').replaceOne({ eventID: ws.eventID }, event)
                 await db.events.removeAsync({ eventID: ws.eventID })
                 delete db[`event-${ws.eventID}`]

@@ -55,7 +55,7 @@ exports.createDisplay = Joi.object({
     label: Joi.string().required()
 }).options({ allowUnknown: true })
 
-exports.initDisplay = Joi.object({
+exports.updateDisplay = Joi.object({
     eventID: Joi.number().integer().required(),
     displayID: Joi.number().integer()
 })

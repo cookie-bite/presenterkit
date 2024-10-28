@@ -23,13 +23,15 @@ export const STShare = proxy({ active: 0, show: false })
 
 export const STShares = proxy({ list: [{ body: '', isShared: false, urls: [{ link: '', icon: 'link-o', color: '#0A84FF' }] }] })
 
-export const STSlide = proxy({ active: { index: 0, page: 1 }, play: { index: 0, page: 1 } })
+export const STSlide = proxy({ active: { index: 0, page: 1 } })
 
 export const STSlides = proxy({ list: [] })
 
 export const STSlidePanels = proxy({ files: true, display: false, displayForm: false, activeDisplayID: '' })
 
 export const STDisplay = proxy({ id: '', label: '', slide: { name: '', page: 1, pageCount: 0 } })
+
+export const STActiveDisplay = proxy({ id: '', slide: { name: '', page: 1, pageCount: 0 } })
 
 export const STDisplays = proxy({ list: [] })
 

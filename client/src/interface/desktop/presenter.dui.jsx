@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplayList } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplayList, STActiveDisplay } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
 import { RTDisplay } from '../../routes/routes'
@@ -23,6 +23,7 @@ export const Presenter = () => {
     const SSSpinner = useSnapshot(STSpinner)
     const SSTheatre = useSnapshot(STTheatre)
     const SSEvent = useSnapshot(STEvent)
+    const SSActiveDisplay = useSnapshot(STActiveDisplay)
 
     const [displayName, setDisplayName] = useState('')
 
@@ -158,6 +159,7 @@ export const Presenter = () => {
             if (data.success) {
                 STSlidePanels.display = true
                 STSlidePanels.displayForm = false
+                setDisplayName('')
 
                 window.open(`${process.env.REACT_APP_APP_URL}/event?id=${STEvent.id}&d=${data.display.id}`, '_blank', 'location=yes,height=540,width=954,resizable=yes,scrollbars=yes,status=yes')
             }
@@ -181,8 +183,12 @@ export const Presenter = () => {
         window.ws.send(JSON.stringify({ command: 'UPDT_DISP', eventID: STEvent.id, displayID, slide: { name: slideName, page, pageCount } }))
     }
 
-    const toggleSlideShare = (state) => {
-        window.ws.send(JSON.stringify({ command: 'TOGL_SLD', eventID: STEvent.id, state, activeSlide: state ? STSlide.active : {} }))
+    const toggleShareLive = (display) => {
+        window.ws.send(JSON.stringify({ command: 'SHARE_DISP', eventID: STEvent.id, displayID: display.id, state: display.id !== STActiveDisplay.id, slide: display.slide  }))
+    }
+
+    const closeDisplay = async (displayID) => {
+        await RTDisplay.close(STEvent.id, displayID)
     }
 
 
@@ -363,7 +369,10 @@ export const Presenter = () => {
                                             </button>
                                             <div className={sty.displayFormBody}>
                                                 <h3>Add Display</h3>
-                                                <input className={sty.displayInput} type='text' autoComplete='off' autoFocus placeholder='Display name' value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                                                <input className={sty.displayInput} type='text' autoComplete='off' autoFocus autoCapitalize='words' placeholder='Display name' value={displayName}
+                                                    onChange={(e) => setDisplayName(e.target.value)}
+                                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') createDisplay(displayName, SSSlides.list[SSSlide.active.index]) }}
+                                                />
                                                 <button className={sty.displayInputBtn} onClick={() => createDisplay(displayName, SSSlides.list[SSSlide.active.index])}>Add</button>
                                             </div>
                                         </div>
@@ -372,9 +381,9 @@ export const Presenter = () => {
                                 </AnimatePresence>
                                 {SSDisplays.list.map((display, index) => {
                                     return (
-                                        <div className={SSSlidePanels.activeDisplayID === display.id ? sty.displayBgActive : sty.displayBg}>
+                                        <div className={SSSlidePanels.activeDisplayID === display.id ? sty.displayBgActive : sty.displayBg} key={display.id}>
                                             <h3 className={SSSlidePanels.activeDisplayID === display.id ? sty.displayLblActive : sty.displayLbl}>{display.label}</h3>
-                                            <div key={display.id} className={sty.displayPreview} onClick={() => STSlidePanels.activeDisplayID = SSSlidePanels.activeDisplayID === display.id ? '' : display.id}>
+                                            <div className={sty.displayPreview} onClick={() => STSlidePanels.activeDisplayID = SSSlidePanels.activeDisplayID === display.id ? '' : display.id}>
                                                 <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
                                             </div>
                                             <AnimatePresence>
@@ -392,6 +401,14 @@ export const Presenter = () => {
                                                         <h3 className={sty.displayControlsLbl}>{`${display.slide.page} / ${display.slide.pageCount}`}</h3>
                                                         <button className={sty.displayControlsBtn} onClick={() => changeDisplayPage('>', display)}>
                                                             <Icon name='chevron-forward' size={20} color='--tint' />
+                                                        </button>
+                                                    </div>
+                                                    <div className={sty.displayOptions}>
+                                                        <button className={sty.displayOption} onClick={() => toggleShareLive(display)}>
+                                                            <h4 className={sty.displayOptionLbl} style={{ color: display.id === SSActiveDisplay.id ? 'var(--green)' : 'inherit' }}>Share Live</h4>
+                                                        </button>
+                                                        <button className={sty.displayOption} onClick={() => closeDisplay(display.id)}>
+                                                            <h4 className={sty.displayOptionLbl} style={{ color: 'var(--red)' }}>Close</h4>
                                                         </button>
                                                     </div>
                                                 </motion.div>}

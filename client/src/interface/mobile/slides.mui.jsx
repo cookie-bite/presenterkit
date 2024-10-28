@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STUI, STSlide, STSlides, STPages, STTheatre, STEvent } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STPages, STTheatre, STEvent, STActiveDisplay } from '../../stores/app.store'
 
 import { Icon } from '../../components/core.cmp'
 
@@ -15,16 +15,17 @@ export const Slides = () => {
     const SSPages = useSnapshot(STPages)
     const SSTheatre = useSnapshot(STTheatre)
     const SSEvent = useSnapshot(STEvent)
+    const SSActiveDisplay = useSnapshot(STActiveDisplay)
 
 
     const downloadPdf = (file) => {
         window.open(`${process.env.REACT_APP_BLOB_URL}/event/${STEvent.id}/pdfs/${file}.pdf`, '_blank')
     }
 
-    const playSlide = (index) => {
-        if (index === STSlide.active.index) return STTheatre.show = true
-        if (STSlide.play.index !== index) STSlide.play.page = 1
-        STSlide.play.index = index
+    const playSlide = (slide, index) => {
+        if (slide.name === STActiveDisplay.slide.name) return STTheatre.show = true
+        if (STSlide.active.index !== index) STSlide.active.page = 1
+        STSlide.active.index = index
         STPages.show = true
     }
 
@@ -52,7 +53,7 @@ export const Slides = () => {
                         // animate={{ y: 0 }}
                         // exit={{ y: '100%' }}
                         // transition={{ ease: 'easeInOut', duration: 0.3 }}
-                        style={{ backgroundImage: `url('${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${SSSlide.active.page}.webp')` }}
+                        style={{ backgroundImage: `url('${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSActiveDisplay.slide.name}/${SSActiveDisplay.slide.page}.webp')` }}
                         onClick={() => toggleCloseBtn()}
                     >
                         {SSTheatre.showClose && <button className={sty.theatreCloseBtn} onClick={() => STTheatre.show = false}>
@@ -75,14 +76,14 @@ export const Slides = () => {
                                             <Icon name='chevron-back' size={20} color='--tint' />
                                         </button>
                                     </div>
-                                    {SSSlide.active.index === SSSlide.play.index
+                                    {SSActiveDisplay.slide.name === SSSlides.list[SSSlide.active.index].name
                                         ? <div className={sty.slideHeaderLive}>
                                             <Icon name='radio-button-on' size={20} color='--red' />
                                             <h3 className={sty.slidePageCount} style={{ marginLeft: 5 }}>Live</h3>
                                         </div>
-                                        : <h3 className={sty.slidePageCount}>{`${SSSlides.list[SSSlide.play.index].pageCount} pages`}</h3>
+                                        : <h3 className={sty.slidePageCount}>{`${SSSlides.list[SSSlide.active.index].pageCount} pages`}</h3>
                                     }
-                                    <button className={sty.modalHeadBtn} onClick={() => downloadPdf(SSSlides.list[SSSlide.play.index].name)}>
+                                    <button className={sty.modalHeadBtn} onClick={() => downloadPdf(SSSlides.list[SSSlide.active.index].name)}>
                                         <Icon name='arrow-down' size={20} color='--tint' />
                                     </button>
                                 </>
@@ -110,9 +111,9 @@ export const Slides = () => {
                                     >
                                         {SSSlides.list.map((slide, index) => {
                                             return (
-                                                <div className={sty.slideItem} key={index} onClick={() => playSlide(index)}>
-                                                    <img className={sty.slideItemImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${slide.name}/${SSSlide.active.index === index ? SSSlide.active.page : 1}.webp`} />
-                                                    {SSSlide.active.index === index && <div className={sty.slideItemLive}>
+                                                <div className={sty.slideItem} key={index} onClick={() => playSlide(slide, index)}>
+                                                    <img className={sty.slideItemImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${slide.name}/${SSActiveDisplay.slide.name === slide.name ? SSActiveDisplay.slide.page : 1}.webp`} />
+                                                    {(SSActiveDisplay.id && SSActiveDisplay.slide.name === slide.name) && <div className={sty.slideItemLive}>
                                                         <Icon name='radio-button-on' size={20} color='--red' />
                                                     </div>}
                                                 </div>
@@ -133,11 +134,10 @@ export const Slides = () => {
                                 exit={{ x: '100%' }}
                                 transition={{ ease: 'easeInOut', duration: 0.3 }}
                             >
-                                {Array(SSSlides.list[SSSlide.play.index].pageCount).fill().map((page, index) => {
+                                {Array(SSSlides.list[SSSlide.active.index].pageCount).fill().map((page, index) => {
                                     return (
-                                        <div key={index} className={sty.slidePage} onClick={() => { STSlide.active.page = (index + 1) }}
-                                            style={{ backgroundColor: SSSlide.active.index === SSSlide.play.index && SSSlide.active.page === index + 1 ? 'var(--yellow)' : 'var(--fill-1)' }}>
-                                            <img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.play.index].name}/${index + 1}.webp`} />
+                                        <div key={index} className={sty.slidePage} style={{ backgroundColor: SSActiveDisplay.slide.name === SSSlides.list[SSSlide.active.index].name && SSActiveDisplay.slide.page === index + 1 ? 'var(--tint)' : 'var(--fill-1)' }}>
+                                            <img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
                                             <h5 className={sty.slidePageNumber}>{index + 1}</h5>
                                         </div>
                                     )

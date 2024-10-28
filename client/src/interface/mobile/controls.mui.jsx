@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { useSnapshot } from 'valtio'
-import { STApp, STUI, STUser, STUserPanel, STUsers, STSlide, STTheatre, STEvent } from '../../stores/app.store'
+import { STApp, STUI, STUser, STUserPanel, STUsers, STTheatre, STEvent, STActiveDisplay } from '../../stores/app.store'
 import { Icon } from '../../components/core.cmp'
 import { genColor } from '../../utilities/core.utils'
 
@@ -17,7 +17,7 @@ export const Controls = () => {
     const SSUser = useSnapshot(STUser)
     const SSUsers = useSnapshot(STUsers)
     const SSUserPanel = useSnapshot(STUserPanel)
-    const SSSlide = useSnapshot(STSlide)
+    const SSActiveDisplay = useSnapshot(STActiveDisplay)
 
 
     const inputRef = useRef()
@@ -110,7 +110,7 @@ export const Controls = () => {
                 transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.8 }}
             >
                 <AnimatePresence>
-                    {SSSlide.active.hasOwnProperty('index') &&
+                    {SSActiveDisplay.id &&
                         <motion.div className={sty.controlsLiveBtn}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
