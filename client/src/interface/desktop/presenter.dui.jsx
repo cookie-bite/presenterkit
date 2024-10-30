@@ -184,7 +184,7 @@ export const Presenter = () => {
     }
 
     const toggleShareLive = (display) => {
-        window.ws.send(JSON.stringify({ command: 'SHARE_DISP', eventID: STEvent.id, displayID: display.id, state: display.id !== STActiveDisplay.id, slide: display.slide  }))
+        window.ws.send(JSON.stringify({ command: 'SHARE_DISP', eventID: STEvent.id, displayID: display.id, state: display.id !== STActiveDisplay.id, slide: display.slide }))
     }
 
     const closeDisplay = async (displayID) => {
@@ -205,8 +205,10 @@ export const Presenter = () => {
 
     useEffect(() => {
         const onKeyUp = (e) => {
-            if ((e.key === 'ArrowLeft' || e.key === 'PageUp') && STSlides.list.length && !STSlidePanels.displayForm) changePage('<')
-            if ((e.key === 'ArrowRight' || e.key === 'PageDown') && STSlides.list.length && !STSlidePanels.displayForm) changePage('>')
+            if (e.key === 'PageUp' && STActiveDisplay.id) changeDisplayPage('<', { id: STActiveDisplay.id, slide: STActiveDisplay.slide })
+            if (e.key === 'PageDown' && STActiveDisplay.id) changeDisplayPage('>', { id: STActiveDisplay.id, slide: STActiveDisplay.slide })
+            if (e.key === 'ArrowLeft' && STSlides.list.length && !STSlidePanels.displayForm) changePage('<')
+            if (e.key === 'ArrowRight' && STSlides.list.length && !STSlidePanels.displayForm) changePage('>')
             if (e.key === 'ArrowUp' && !STTheatre.show) changeSlide(STSlide.active.index - 1)
             if (e.key === 'ArrowDown' && !STTheatre.show) changeSlide(STSlide.active.index + 1)
             if (e.key === 'F5') toggleTheatre(true)
