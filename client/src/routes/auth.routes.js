@@ -27,11 +27,22 @@ export const signIn = (email, password) => new Promise(async (resolve, reject) =
 
 
 
-export const signUp = (username, email, password, color) => new Promise(async (resolve, reject) => {
+export const initiateSignUp = (username, email, password, color) => new Promise(async (resolve, reject) => {
     const headers = { 'Content-Type': 'application/json' }
     const body = JSON.stringify({ username, email, password, color })
 
-    sendAuth('/auth/signup', { method: 'POST', headers, body })
+    sendAuth('/auth/signup/initiate', { method: 'POST', headers, body })
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+})
+
+
+
+export const confirmSignUp = (email, otp) => new Promise(async (resolve, reject) => {
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({ email, otp })
+
+    sendAuth('/auth/signup/confirm', { method: 'POST', headers, body })
         .then((data) => resolve(data))
         .catch((err) => reject(err))
 })

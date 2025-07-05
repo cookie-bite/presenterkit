@@ -3,11 +3,16 @@ const Joi = require('joi')
 
 // Auth
 
-exports.signup = Joi.object({
+exports.signupInitiate = Joi.object({
     username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(), // Joi.string().pattern(new RegExp(/^(((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])))(?=.{8,15})/)).message({ 'string.pattern.base': 'Password is not valid' }),
     color: Joi.string().required()
+})
+
+exports.signupConfirm = Joi.object({
+    email: Joi.string().email().required(),
+    otp: Joi.string().required() // Joi.string().pattern(/^\d{6}$/).message('OTP must be a 6-digit code').required()
 })
 
 
