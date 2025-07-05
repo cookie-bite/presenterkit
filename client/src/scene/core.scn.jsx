@@ -14,32 +14,32 @@ import { Users } from './users.scn'
 
 export const Scene = ({ core }) => {
 
-    useEffect(() => {
-        const onKeyUp = (e) => {
-            if (e.altKey && e.code.slice(3) === 'N') window.open(`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`, '_blank')
+  useEffect(() => {
+    const onKeyUp = (e) => {
+      if (e.altKey && e.code.slice(3) === 'N') window.open(`${process.env.REACT_APP_HOST_URL}/event?id=${STEvent.id}`, '_blank')
 
-            if (STEntry.show) return
+      if (STEntry.show) return
 
-            if (e.key === 'Escape' && STUI.name === '' && STUser.isPresenter) {
-                Object.assign(STDisplay, { quest: core.openingText, author: '' })
-                window.ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
-            }
-        }
+      if (e.key === 'Escape' && STUI.name === '' && STUser.isPresenter) {
+        Object.assign(STDisplay, { quest: core.openingText, author: '' })
+        window.ws.send(JSON.stringify({ command: 'DISP_LBL', eventID: STEvent.id, display: STDisplay }))
+      }
+    }
 
-        window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('keyup', onKeyUp)
 
-        return () => { window.removeEventListener('keyup', onKeyUp) }
-    }, [])
+    return () => { window.removeEventListener('keyup', onKeyUp) }
+  }, [])
 
 
-    return (
-        <Canvas shadows>
-            <CamCon core={core} />
-            <Lights />
-            <Env />
-            <Display core={core} />
-            <Users />
-            {false && <Stats />}
-        </Canvas>
-    )
+  return (
+    <Canvas shadows>
+      <CamCon core={core} />
+      <Lights />
+      <Env />
+      <Display core={core} />
+      <Users />
+      {false && <Stats />}
+    </Canvas>
+  )
 }

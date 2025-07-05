@@ -13,58 +13,58 @@ module.exports = router
 
 
 router.post('/create', async (req, res) => {
-    const { eventID, label, slide } = req.body
+  const { eventID, label, slide } = req.body
 
-    const { error } = joiSchema.createDisplay.validate(req.body)
-    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+  const { error } = joiSchema.createDisplay.validate(req.body)
+  if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
-    try {
-        const newDisplay = { id: genRandom(4, 10), label, slide: { name: slide.name, pageCount: slide.pageCount, page: 1 }}
-        await db.events.updateAsync({ eventID }, { $push: { displays: newDisplay } })
+  try {
+    const newDisplay = { id: genRandom(4, 10), label, slide: { name: slide.name, pageCount: slide.pageCount, page: 1 } }
+    await db.events.updateAsync({ eventID }, { $push: { displays: newDisplay } })
 
-        const event = await db.events.findOneAsync({ eventID })
-        sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays: event.displays })
-        res.json({ success: true, message: 'Display created', display: newDisplay })
-    } catch (err) { res.status(500).json({ success: false, err: err }) }
+    const event = await db.events.findOneAsync({ eventID })
+    sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays: event.displays })
+    res.json({ success: true, message: 'Display created', display: newDisplay })
+  } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
 
 
 router.post('/init', async (req, res) => {
-    const { eventID, displayID } = req.body
+  const { eventID, displayID } = req.body
 
-    const { error } = joiSchema.updateDisplay.validate(req.body)
-    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+  const { error } = joiSchema.updateDisplay.validate(req.body)
+  if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
-    try {
-        const event = await db.events.findOneAsync({ eventID })
-        const display = event.displays.filter(d => d.id === displayID)[0]
+  try {
+    const event = await db.events.findOneAsync({ eventID })
+    const display = event.displays.filter(d => d.id === displayID)[0]
 
-        res.json({ success: true, message: 'Display initiated', display })
-    } catch (err) { res.status(500).json({ success: false, err: err }) }
+    res.json({ success: true, message: 'Display initiated', display })
+  } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
 
 
 router.delete('/close', async (req, res) => {
-    const { eventID, displayID } = req.body
+  const { eventID, displayID } = req.body
 
-    const { error } = joiSchema.updateDisplay.validate(req.body)
-    if (error) return res.status(400).json({ success: false, error: error.details[0].message })
+  const { error } = joiSchema.updateDisplay.validate(req.body)
+  if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
-    try {
-        const event = await db.events.findOneAsync({ eventID })
+  try {
+    const event = await db.events.findOneAsync({ eventID })
 
-        if (displayID === event.activeDisplay.id) {
-            await db.events.updateAsync({ eventID }, { $set: { activeDisplay: { id: '', slide: {} } } })
-            sendRoom(eventID, 'user', { command: 'SHARE_DISP', displayID, state: false, slide: {} })
-        }
+    if (displayID === event.activeDisplay.id) {
+      await db.events.updateAsync({ eventID }, { $set: { activeDisplay: { id: '', slide: {} } } })
+      sendRoom(eventID, 'user', { command: 'SHARE_DISP', displayID, state: false, slide: {} })
+    }
 
-        const displays = event.displays.filter(d => d.id !== displayID)
-        await db.events.updateAsync({ eventID }, { $set: { displays } })
+    const displays = event.displays.filter(d => d.id !== displayID)
+    await db.events.updateAsync({ eventID }, { $set: { displays } })
 
-        sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays })
-        sendRoom(eventID, 'user', { command: 'CLOS_DISP', displayID })
-        res.json({ success: true, message: 'Display closed' })
-    } catch (err) { res.status(500).json({ success: false, err: err }) }
+    sendRoom(eventID, 'user', { command: 'UPDT_DISPS', displays })
+    sendRoom(eventID, 'user', { command: 'CLOS_DISP', displayID })
+    res.json({ success: true, message: 'Display closed' })
+  } catch (err) { res.status(500).json({ success: false, err: err }) }
 })

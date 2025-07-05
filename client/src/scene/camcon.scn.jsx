@@ -7,33 +7,33 @@ import { calcRows } from '../utilities/core.utils'
 
 
 export const CamCon = ({ core }) => {
-    const camera = useRef()
-    const controls = useRef()
+  const camera = useRef()
+  const controls = useRef()
 
-    const orbitOptions = {
-        enablePan: core.isMobile,
-        enableZoom: core.isMobile,
-        enableRotate: core.isMobile
-    }
+  const orbitOptions = {
+    enablePan: core.isMobile,
+    enableZoom: core.isMobile,
+    enableRotate: core.isMobile
+  }
 
-    const zoomOut = core.isMobile ? [3.5] : [1]
-
-
-    const camPos = (row) => {
-        if (row === 1) return 24
-        return camPos(row - 1) + (row / 2) + 1
-    }
+  const zoomOut = core.isMobile ? [3.5] : [1]
 
 
-    useEffect(() => {
-        gsap.to(camera.current.position, { duration: 2.5, delay: 0.5, x: 0, y: 0, z: camPos(calcRows(STUsers.list.length)) * zoomOut[0] })
-    }, [])
+  const camPos = (row) => {
+    if (row === 1) return 24
+    return camPos(row - 1) + (row / 2) + 1
+  }
 
 
-    return (
-        <>
-            <PerspectiveCamera ref={camera} position={[0, 0, -4]} fov={30} near={0.01} far={1500} makeDefault />
-            <OrbitControls ref={controls} {...orbitOptions} />
-        </>
-    )
+  useEffect(() => {
+    gsap.to(camera.current.position, { duration: 2.5, delay: 0.5, x: 0, y: 0, z: camPos(calcRows(STUsers.list.length)) * zoomOut[0] })
+  }, [])
+
+
+  return (
+    <>
+      <PerspectiveCamera ref={camera} position={[0, 0, -4]} fov={30} near={0.01} far={1500} makeDefault />
+      <OrbitControls ref={controls} {...orbitOptions} />
+    </>
+  )
 }

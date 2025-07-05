@@ -36,15 +36,15 @@ app.use(express.json())
 let DB
 
 const connectDB = async () => {
-    const client = new MongoClient(process.env.DB_CONNECT)
-    await client.connect()
-    DB = client.db('presenterkit')
+  const client = new MongoClient(process.env.DB_CONNECT)
+  await client.connect()
+  DB = client.db('presenterkit')
 }
 
 
 (async () => await connectDB().then(() => {
-    console.log('Connected to MongoDB')
-    server.listen(process.env.PORT, '0.0.0.0', () => console.log(`\x1b[33mApp running on 🔥 PORT: ${process.env.PORT} \x1b[0m\n`))
+  console.log('Connected to MongoDB')
+  server.listen(process.env.PORT, '0.0.0.0', () => console.log(`\x1b[33mApp running on 🔥 PORT: ${process.env.PORT} \x1b[0m\n`))
 }).catch((err) => console.log(err)))()
 
 

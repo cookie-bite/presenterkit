@@ -13,41 +13,41 @@ import { Shares } from './shares.admin'
 
 
 const UISwap = (props) => {
-    const SSTab = useSnapshot(STTab)
-    return props.children.filter(c => c.props.uiName === SSTab.name)
+  const SSTab = useSnapshot(STTab)
+  return props.children.filter(c => c.props.uiName === SSTab.name)
 }
 
 
 export const Admin = ({ core }) => {
-    const SSAdmin = useSnapshot(STAdmin)
-    const SSUser = useSnapshot(STUser)
-    const SSUI = useSnapshot(STUI)
+  const SSAdmin = useSnapshot(STAdmin)
+  const SSUser = useSnapshot(STUser)
+  const SSUI = useSnapshot(STUI)
 
 
-    useEffect(() => {
-        const onKeyUp = (e) => {
-            if (e.key === 'Escape' && STUI.name === 'Admin') STUI.name = ''
-        }
-        window.addEventListener('keyup', onKeyUp)
-        return () => window.removeEventListener('keyup', onKeyUp)
-    }, [])
+  useEffect(() => {
+    const onKeyUp = (e) => {
+      if (e.key === 'Escape' && STUI.name === 'Admin') STUI.name = ''
+    }
+    window.addEventListener('keyup', onKeyUp)
+    return () => window.removeEventListener('keyup', onKeyUp)
+  }, [])
 
 
-    return (
-        <AnimatePresence>
-            {(SSUI.name === 'Admin' && !core.isMobile) && (SSUser.isPresenter || SSAdmin.privileged) &&
-                <motion.div className={sty.pageView}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    transition={{ ease: 'easeInOut', duration: 0.3 }}
-                >
-                    <Header core={core} />
-                    <UISwap>
-                        <Messages uiName={'Messages'} />
-                        <Shares uiName={'Shares'} />
-                    </UISwap>
-                </motion.div>}
-        </AnimatePresence>
-    )
+  return (
+    <AnimatePresence>
+      {(SSUI.name === 'Admin' && !core.isMobile) && (SSUser.isPresenter || SSAdmin.privileged) &&
+        <motion.div className={sty.pageView}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ ease: 'easeInOut', duration: 0.3 }}
+        >
+          <Header core={core} />
+          <UISwap>
+            <Messages uiName={'Messages'} />
+            <Shares uiName={'Shares'} />
+          </UISwap>
+        </motion.div>}
+    </AnimatePresence>
+  )
 }

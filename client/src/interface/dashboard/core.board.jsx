@@ -10,21 +10,21 @@ import sty from '../../styles/modules/dashboard.module.css'
 
 
 const UISwap = (props) => {
-    const SSBoardUI = useSnapshot(STBoardUI)
-    return props.children.filter(c => c.props.uiName === SSBoardUI.name)
+  const SSBoardUI = useSnapshot(STBoardUI)
+  return props.children.filter(c => c.props.uiName === SSBoardUI.name)
 }
 
 
 export const Dashboard = () => {
 
-    return (
-        <div className={sty.dashboard}>
-            <Menu />
+  return (
+    <div className={sty.dashboard}>
+      <Menu />
 
-            <UISwap>
-                <Events uiName={'Events'} />
-                <Payments uiName={'Payments'} />
-            </UISwap>
-        </div>
-    )
+      <UISwap>
+        <Events uiName={'Events'} />
+        <Payments uiName={'Payments'} />
+      </UISwap>
+    </div>
+  )
 }

@@ -10,23 +10,23 @@ import { Slides } from './slides.mui'
 
 
 export const Mobile = ({ core }) => {
-    const SSEntry = useSnapshot(STEntry)
+  const SSEntry = useSnapshot(STEntry)
 
 
-    return (
-        <>
-            <AnimatePresence mode='wait'>
-                {SSEntry.show && <Entry core={core} />}
-            </AnimatePresence>
+  return (
+    <>
+      <AnimatePresence mode='wait'>
+        {SSEntry.show && <Entry core={core} />}
+      </AnimatePresence>
 
-            <AnimatePresence mode='wait'>
-                {!SSEntry.show && <>
-                    <Controls core={core} />
-                    <Quests />
-                    <Shares />
-                    <Slides />
-                </>}
-            </AnimatePresence>
-        </>
-    )
+      <AnimatePresence mode='wait'>
+        {!SSEntry.show && <>
+          <Controls core={core} />
+          <Quests />
+          <Shares />
+          <Slides />
+        </>}
+      </AnimatePresence>
+    </>
+  )
 }

@@ -11,7 +11,7 @@ module.exports.mailSender = async (receiver, subject, text) => {
     to: receiver,
     subject: subject || ' Password Reset',
     html: text || `Hello ${receiver},\n\n You are receiving this email because you (or someone else) have requested the reset of the password for your account.`,
-  });
+  })
 
   if (error) {
     console.log('Email could not send:', error)

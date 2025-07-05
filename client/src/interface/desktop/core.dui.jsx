@@ -14,29 +14,29 @@ import { Controls } from './controls.dui'
 
 
 export const Desktop = ({ core }) => {
-    const SSUI = useSnapshot(STUI)
-    const SSEntry = useSnapshot(STEntry)
+  const SSUI = useSnapshot(STUI)
+  const SSEntry = useSnapshot(STEntry)
 
 
-    return (
-        <>
-            <AnimatePresence mode='wait'>
-                {SSEntry.show && <Entry core={core} />}
-            </AnimatePresence>
+  return (
+    <>
+      <AnimatePresence mode='wait'>
+        {SSEntry.show && <Entry core={core} />}
+      </AnimatePresence>
 
-            <AnimatePresence mode='wait'>
-                {!SSEntry.show && <>
-                    <QRScreen />
-                    <Users core={core} />
-                    <Quests core={core} />
-                    <Slides />
-                    {SSUI.name === 'Presenter' && <Presenter core={core} />}
-                    <Admin core={core} />
-                    <Alert.Container />
-                    <Controls core={core} />
-                </>
-                }
-            </AnimatePresence>
+      <AnimatePresence mode='wait'>
+        {!SSEntry.show && <>
+          <QRScreen />
+          <Users core={core} />
+          <Quests core={core} />
+          <Slides />
+          {SSUI.name === 'Presenter' && <Presenter core={core} />}
+          <Admin core={core} />
+          <Alert.Container />
+          <Controls core={core} />
         </>
-    )
+        }
+      </AnimatePresence>
+    </>
+  )
 }

@@ -3,16 +3,16 @@
 */
 
 .pageView {
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 
@@ -23,215 +23,215 @@
 */
 
 .header {
-    justify-content: space-between;
-    align-items: center; 
-    height: 50px;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 14px;
-    background-color: var(--glass-3);
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  background-color: var(--glass-3);
 }
 
 .headline {
-    align-items: center;
+  align-items: center;
 }
 
 .headlineLbl {
-    font-size: 15px;
-    font-weight: 500;
-    margin-right: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  margin-right: 10px;
 }
 
 .headlineInput {
-    height: 30px;
-    width: 220px;
-    margin-right: 10px;
-    padding: 10px 15px;
-    font-size: 15px;
-    border-radius: 22px;
-    border: 1px solid var(--line-no);
-    color: var(--label-1);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--glass-3);
+  height: 30px;
+  width: 220px;
+  margin-right: 10px;
+  padding: 10px 15px;
+  font-size: 15px;
+  border-radius: 22px;
+  border: 1px solid var(--line-no);
+  color: var(--label-1);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-color: var(--glass-3);
 }
 
 .headlineBtn {
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
-    border-radius: 15px;
-    background-color: var(--tint);
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+  background-color: var(--tint);
 }
 
 .tabs {
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    margin-left: calc(50% - 30px);
-    transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  margin-left: calc(50% - 30px);
+  transform: translateX(-50%);
 }
 
 .tabBtn {
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    height: 34px;
-    width: 34px;
-    margin: 10px;
-    border-radius: 17px;
-    background-color: transparent;
-    transition: all .3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 34px;
+  width: 34px;
+  margin: 10px;
+  border-radius: 17px;
+  background-color: transparent;
+  transition: all .3s ease-in-out;
 }
 
 .tabBtnActive {
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    height: 34px;
-    width: 34px;
-    margin: 10px;
-    border-radius: 17px;
-    background-color: var(--gray-3);
-    transition: all .3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 34px;
+  width: 34px;
+  margin: 10px;
+  border-radius: 17px;
+  background-color: var(--gray-3);
+  transition: all .3s ease-in-out;
 }
 
 .moderators {
-    align-items: center;
-    justify-content: flex-end;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .moderator {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .moderatorAvtr {
-    justify-content: center;
-    align-items: center;
-    height: 30px;
-    width: 30px;
-    border-radius: 15px;
-    margin-right: 5px;
-    cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 .moderatorLbl {
-    font-size: 17px;
-    font-weight: 700;
-    text-transform: capitalize;
+  font-size: 17px;
+  font-weight: 700;
+  text-transform: capitalize;
 }
 
 .activeModerator {
-    align-items: center;
-    position: absolute;
-    top: 65px;
-    padding: 5px 8px;
-    border-radius: 8px;
-    border: 1px solid var(--line-no);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--glass-3);
+  align-items: center;
+  position: absolute;
+  top: 65px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line-no);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-color: var(--glass-3);
 }
 
 .activeModeratorLbl {
-    font-size: 13px;
-    font-weight: 600;
-    margin-right: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 8px;
 }
 
 .searchBar {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .searchInput {
-    height: 30px;
-    width: 220px;
-    margin: 0 5px;
-    padding: 10px 15px;
-    font-size: 15px;
-    border-radius: 22px;
-    border: 1px solid var(--line-no);
-    color: var(--label-1);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--glass-3);
+  height: 30px;
+  width: 220px;
+  margin: 0 5px;
+  padding: 10px 15px;
+  font-size: 15px;
+  border-radius: 22px;
+  border: 1px solid var(--line-no);
+  color: var(--label-1);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-color: var(--glass-3);
 }
 
 .searchList {
-    flex-direction: column;
-    position: absolute;
-    top: 65px;
-    width: 220px;
-    max-height: 185px;
-    padding: 5px;
-    border-radius: 15px;
-    border: 1px solid var(--line-no);
-    overflow-x: hidden;
-    overflow-y: scroll;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background-color: var(--glass-3);
+  flex-direction: column;
+  position: absolute;
+  top: 65px;
+  width: 220px;
+  max-height: 185px;
+  padding: 5px;
+  border-radius: 15px;
+  border: 1px solid var(--line-no);
+  overflow-x: hidden;
+  overflow-y: scroll;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-color: var(--glass-3);
 }
 
 .searchList::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .searchListItem {
-    align-items: center;
-    width: 100%;
-    padding: 5px;
-    border-radius: 10px;
-    cursor: pointer;
+  align-items: center;
+  width: 100%;
+  padding: 5px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 .searchListItem:hover {
-    background-color: var(--fill-3);
+  background-color: var(--fill-3);
 }
 
 .searchListItemLbl {
-    margin-left: 5px;
-    font-size: 15px;
-    font-weight: 600;
+  margin-left: 5px;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .emptySearch {
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 40px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
 }
 
 .emptySearchLbl {
-    font-size: 15px;
-    font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;
 }
 
 .searchBtn {
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
-    margin-left: 5px;
-    border-radius: 15px;
-    background-color: var(--fill-3);
-    transition: all .3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  margin-left: 5px;
+  border-radius: 15px;
+  background-color: var(--fill-3);
+  transition: all .3s ease-in-out;
 }
 
 .searchBtnActive {
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
-    margin-left: 5px;
-    border-radius: 15px;
-    background-color: var(--fill-3);
-    transform: rotate(-45deg);
-    transition: all .3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  margin-left: 5px;
+  border-radius: 15px;
+  background-color: var(--fill-3);
+  transform: rotate(-45deg);
+  transition: all .3s ease-in-out;
 }
 
 
@@ -242,26 +242,26 @@
 */
 
 .pageBg {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: calc(100% - 60px);
-    padding: 10px;
-    border-radius: 14px;
-    background-color: var(--glass-3);
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 60px);
+  padding: 10px;
+  border-radius: 14px;
+  background-color: var(--glass-3);
 }
 
 .page {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .pageTitle {
-    font-size: 26px;
-    font-weight: 600;
-    margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 
@@ -272,84 +272,85 @@
 */
 
 .msgList {
-    flex-direction: column;
-    height: 100%;
-    margin-top: 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
+  flex-direction: column;
+  height: 100%;
+  margin-top: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .msgItem {
-    align-items: center;
-    justify-content: space-between;
-    width: 800px;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    background-color: var(--fill-3);
+  align-items: center;
+  justify-content: space-between;
+  width: 800px;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  background-color: var(--fill-3);
 }
 
 .msgBody {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 .msgUser {
-    align-items: center;
+  align-items: center;
 }
 
 .msgUserLbl {
-    font-size: 15px;
-    font-weight: 600;
-    margin-right: 5px;
-    opacity: 0.4;
-    transition: opacity .3s ease-in-out;
+  font-size: 15px;
+  font-weight: 600;
+  margin-right: 5px;
+  opacity: 0.4;
+  transition: opacity .3s ease-in-out;
 }
 
 .msgUserBtn {
-    opacity: 0;
-    transition: opacity .3s ease-in-out;
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
 }
 
 .msgUserLbl:has(+ .msgUserBtn:hover) {
-    opacity: 1;
-    transition: opacity .3s ease-in-out;
+  opacity: 1;
+  transition: opacity .3s ease-in-out;
 }
 
 .msgLbl {
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: 3px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 3px;
 }
 
 .msgCheckBtn {
-    opacity: 0;
-    transition: opacity .3s ease-in-out;
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
 }
 
-.msgItem:hover .msgUserBtn, .msgItem:hover .msgCheckBtn {
-    opacity: 1;
-    transition: opacity .3s ease-in-out;
+.msgItem:hover .msgUserBtn,
+.msgItem:hover .msgCheckBtn {
+  opacity: 1;
+  transition: opacity .3s ease-in-out;
 }
 
 .emptyPage {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    height: calc(100% - 120px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  height: calc(100% - 120px);
 }
 
 .emptyPageTtl {
-    font-size: 22px;
-    font-weight: 700;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .emptyPageSbtl {
-    color: var(--label-2);
-    font-size: 18px;
-    font-weight: 400;
-    margin-top: 6px;
-    cursor: pointer;
+  color: var(--label-2);
+  font-size: 18px;
+  font-weight: 400;
+  margin-top: 6px;
+  cursor: pointer;
 }
 
 
@@ -360,165 +361,165 @@
 */
 
 .shareSaves {
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .shareSave {
-    align-items: center;
-    position: relative;
-    width: 150px;
-    height: 30px;
-    margin-right: 10px;
-    padding: 0 10px;
-    border-radius: 10px;
-    background-color: var(--gray-4);
-    cursor: pointer;
+  align-items: center;
+  position: relative;
+  width: 150px;
+  height: 30px;
+  margin-right: 10px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background-color: var(--gray-4);
+  cursor: pointer;
 }
 
-.shareSave:hover > .shareCloseBtn {
-    opacity: 1;
-    transition: opacity .3s ease-in-out;
+.shareSave:hover>.shareCloseBtn {
+  opacity: 1;
+  transition: opacity .3s ease-in-out;
 }
 
 .shareCloseBtn {
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    right: 5px;
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: var(--gray-4);
-    opacity: 0;
-    transition: opacity .3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: var(--gray-4);
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
 }
 
 .shareSaveLbl {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--label-2);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--label-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .share {
-    justify-content: center;
-    height: 100%;
+  justify-content: center;
+  height: 100%;
 }
 
 .shareBody {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .shareInput {
-    min-width: 250px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 18px;
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 0 1px 1px var(--line-no);
-    padding: 5px 15px;
-    color: var(--label-1);
-    background-color: var(--glass-3);
-    resize: none;
+  min-width: 250px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 0 1px 1px var(--line-no);
+  padding: 5px 15px;
+  color: var(--label-1);
+  background-color: var(--glass-3);
+  resize: none;
 }
 
 .sharePreview {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .sharePreviewView {
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    width: 290px;
-    aspect-ratio: 9 / 16;
-    padding: 20px 10px;
-    margin: 0 100px;
-    border-radius: 15px;
-    border: 5px solid var(--gray-4);
-    background-color: var(--fill-4);
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 290px;
+  aspect-ratio: 9 / 16;
+  padding: 20px 10px;
+  margin: 0 100px;
+  border-radius: 15px;
+  border: 5px solid var(--gray-4);
+  background-color: var(--fill-4);
 }
 
 .previewIc {
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 19px;
-    background: linear-gradient(45deg, #0A84FF24, #0A84FF2B);
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  background: linear-gradient(45deg, #0A84FF24, #0A84FF2B);
 }
 
 .previewBody {
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0px;
-    padding: 10px;
-    height: 100%;
-    width: 100%;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  padding: 10px;
+  height: 100%;
+  width: 100%;
 }
 
 .previewBodyLbl {
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-    width: 230px;
-    word-wrap: break-word;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  width: 230px;
+  word-wrap: break-word;
 }
 
 .previewBtns {
-    justify-content: center;
-    z-index: 1;
+  justify-content: center;
+  z-index: 1;
 }
 
 .previewBtn {
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    margin: 0 15px;
-    border-radius: 19px;
-    border: 2px solid var(--tint);
-    background: linear-gradient(45deg, #0A84FF24, #0A84FF2B);
-    cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin: 0 15px;
+  border-radius: 19px;
+  border: 2px solid var(--tint);
+  background: linear-gradient(45deg, #0A84FF24, #0A84FF2B);
+  cursor: pointer;
 }
 
 .sharePreviewBtns {
-    align-items: center;
+  align-items: center;
 }
 
 .sharePreviewBtn {
-    align-items: center;
-    justify-content: center;
-    padding: 5px 15px;
-    margin-top: 20px;
-    border-radius: 10px;
-    background-color: var(--tint);
+  align-items: center;
+  justify-content: center;
+  padding: 5px 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+  background-color: var(--tint);
 }
 
 .sharePreviewBtnLbl {
-    font-size: 15px;
-    font-weight: 600;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .shareUrls {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .urlBtn {
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
-    border-radius: 15px;
-    background-color: var(--fill-3);
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+  background-color: var(--fill-3);
 }

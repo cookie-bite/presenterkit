@@ -5,11 +5,11 @@ import { Event } from './event'
 
 
 export const App = () => {
-    return (
-        <Router>
-            <Auth path='/auth' />
-            <Dashboard path='/dashboard' />
-            <Event path='/event' />
-        </Router>
-    )
+  return (
+    <Router>
+      <Auth path='/auth' />
+      <Dashboard path='/dashboard' />
+      <Event path='/event' />
+    </Router>
+  )
 }
