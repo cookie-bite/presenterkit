@@ -85,6 +85,7 @@ wss.on('connection', async (ws) => {
 
 
       if (req.userID) {
+        // TODO: When last person try to reconnect after disconnecting, the event will be deleted from NeDB
         const newUser = await db[`event-${req.eventID}`].findOneAsync({ userID: req.userID })
         if (newUser) {
           user = newUser
