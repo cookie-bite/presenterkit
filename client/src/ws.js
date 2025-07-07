@@ -146,13 +146,13 @@ export const initWS = () => {
         STEntry.show = true
       }
 
-      if (res.command === 'UPDT_DISP') {
+      if (res.command === 'UPDT_DISP') { // When presenter changes slide
         STDisplays.list.filter((display) => { if (display.id === res.displayID) display.slide = res.slide })
         if (STSlideDisplay.id === res.displayID) STSlideDisplay.slide = res.slide
         if (STActiveDisplay.id === res.displayID) STActiveDisplay.slide = res.slide
-      } else if (res.command === 'UPDT_DISPS') {
+      } else if (res.command === 'UPDT_DISPS') { // When presenter starts sharing on a new display
         STDisplays.list = res.displays
-      } else if (res.command === 'SHARE_DISP') {
+      } else if (res.command === 'SHARE_DISP') { // When presenter starts/stops live sharing
         STActiveDisplay.id = res.state ? res.displayID : ''
         STActiveDisplay.slide = res.state ? res.slide : {}
 
