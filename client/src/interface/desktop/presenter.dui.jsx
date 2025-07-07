@@ -30,7 +30,7 @@ export const Presenter = () => {
   const inputRef = useRef()
   const displayListRef = useRef()
   const pageCountActive = STSlides.list[STSlide.active.index]?.pageCount
-  const pagesRef = []
+  const pagesRef = useRef([])
 
 
   const togglePanel = (label) => {
@@ -111,7 +111,7 @@ export const Presenter = () => {
   }
 
   const changePage = (to) => {
-    var toPage = 1
+    let toPage = 1
     if (to === '<') {
       toPage = STSlide.active.page === 1 ? STTheatre.show ? 1 : pageCountActive : STSlide.active.page - 1
     } else if (to === '>') {
@@ -119,7 +119,7 @@ export const Presenter = () => {
       else toPage = STSlide.active.page === pageCountActive ? 1 : STSlide.active.page + 1
     }
     STSlide.active.page = toPage
-    pagesRef[toPage - 1]?.scrollIntoView()
+    pagesRef.current[toPage - 1]?.scrollIntoView()
   }
 
   const deleteSlide = () => {
@@ -217,7 +217,7 @@ export const Presenter = () => {
 
     window.addEventListener('keyup', onKeyUp)
     return () => window.removeEventListener('keyup', onKeyUp)
-  }, [STSlide.active, STTheatre.show])
+  }, [STActiveDisplay.id, STActiveDisplay.slide, STSlide.active.page, STSlide.active.index, STTheatre.show])
 
 
   return (
@@ -329,6 +329,7 @@ export const Presenter = () => {
                 </div>
               </div>
               <div className={sty.slidePages}>
+                {(() => { pagesRef.current = []; return null })()}
                 {Array(pageCountActive).fill().map((page, index) => {
                   return (
                     <div
@@ -338,7 +339,7 @@ export const Presenter = () => {
                         backgroundColor: (index + 1) === SSSlide.active.page ? 'var(--gray-2)' : 'var(--fill-3)',
                         margin: index === 0 ? '10px 5px 10px 10px' : index === pageCountActive - 1 ? '10px 10px 10px 5px' : '10px 5px'
                       }}
-                      ref={(ref) => pagesRef[index] = ref}
+                      ref={el => { if (el) pagesRef.current[index] = el }}
                       onClick={() => { STSlide.active.page = (index + 1) }}>
                       <h5 className={sty.slidePageNumber}>{index + 1}</h5><img className={sty.slidePageImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSSlides.list[SSSlide.active.index].name}/${index + 1}.webp`} />
                     </div>
