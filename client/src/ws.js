@@ -8,11 +8,12 @@ import { Alert } from './components/core.cmp'
 
 export const initWS = () => {
   var pingTimeout = null
+  var reconnectTimeout = null
 
 
   const heartbeat = () => {
     clearTimeout(pingTimeout)
-    pingTimeout = setTimeout(() => window.ws.close(), 25000)
+    pingTimeout = setTimeout(() => window.ws.close(), 12000) // if ([0, 1].includes(window.ws.readyState)) {window.ws.close() }
   }
 
 
@@ -20,7 +21,11 @@ export const initWS = () => {
     window.ws = new WebSocket(process.env.REACT_APP_WS_URL)
 
     window.ws.onopen = () => heartbeat()
-    window.ws.onclose = () => { clearTimeout(pingTimeout); reconnect() }
+    window.ws.onclose = () => {
+      clearTimeout(pingTimeout)
+      clearTimeout(reconnectTimeout)
+      reconnectTimeout = setTimeout(reconnect, 1000)
+    }
 
     window.ws.onmessage = (msg) => {
       const res = JSON.parse(msg.data)

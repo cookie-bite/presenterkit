@@ -54,7 +54,7 @@ const interval = setInterval(() => {
     client.isAlive = false
     if (client.readyState) client.send(JSON.stringify({ command: 'PING' }))
   })
-}, 20000)
+}, 10000)
 
 
 
@@ -86,6 +86,15 @@ wss.on('connection', async (ws) => {
 
       if (req.userID) {
         // TODO: When last person try to reconnect after disconnecting, the event will be deleted from NeDB
+        console.log('[JOIN_ROOM] eventID:', req.userID, db.hasOwnProperty(`event-${req.eventID}`), event ? 'Event exists' : 'Event does not exist')
+
+        // IMPROVE: Restore event
+        if (!db.hasOwnProperty(`event-${req.eventID}`)) {
+          const dbEvent = await collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
+          await db.events.insertAsync(dbEvent)
+          db[`event-${req.eventID}`] = new Datastore()
+        }
+
         const newUser = await db[`event-${req.eventID}`].findOneAsync({ userID: req.userID })
         if (newUser) {
           user = newUser
@@ -109,38 +118,48 @@ wss.on('connection', async (ws) => {
         }
       } catch (err) {
         // console.log(err)
-      } finally {
-        ws.userID = user.userID
-        ws.username = user.username
-        ws.isAdmin = user.isAdmin
-
-        await db[`event-${req.eventID}`].updateAsync({ userID: user.userID }, user, { upsert: true })
-
-
-        const userShares = event.shares.filter(s => s.isShared)
-        const userList = await db[`event-${req.eventID}`].findAsync({})
-        const roomActivity = { user: { id: user.userID, name: user.username }, activity: (user.isPresenter || !user.isInLobby) ? 'joined' : 'in lobby' }
-        await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
-
-        ws.send(JSON.stringify({
-          command: 'INIT_USER',
-          user: { id: ws.userID, name: user.username, color: user.color, isPresenter: user.isPresenter, isInLobby: user.isInLobby },
-          eventID: req.eventID,
-          queue: user.isPresenter ? event.queue : [],
-          quests: event.quests,
-          displays: event.displays,
-          slides: event.slides,
-          activeDisplay: event.activeDisplay,
-          shares: user.isPresenter ? event.shares : userShares,
-          roomActivity,
-          display: event.display,
-          config: event.config
-        }))
-
-
-        sendRoom(req.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
-        sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
       }
+
+      ws.userID = user.userID
+      ws.username = user.username
+      ws.isAdmin = user.isAdmin
+
+      console.log('[JOIN_ROOM] finally() eventID:', req.userID, db.hasOwnProperty(`event-${req.eventID}`), event ? 'Event exists' : 'Event does not exist')
+      // IMPROVE: Restore event
+      if (!db[`event-${req.eventID}`] || !event) {
+        const dbEvent = await collection('events').findOne({ eventID: req.eventID }, { projection: { _id: 0 } })
+        await db.events.insertAsync(dbEvent)
+        event = dbEvent
+        db[`event-${req.eventID}`] = new Datastore()
+      }
+
+      await db[`event-${req.eventID}`].updateAsync({ userID: user.userID }, user, { upsert: true })
+
+
+      const userShares = event.shares.filter(s => s.isShared)
+      const userList = await db[`event-${req.eventID}`].findAsync({})
+      const roomActivity = { user: { id: user.userID, name: user.username }, activity: (user.isPresenter || !user.isInLobby) ? 'joined' : 'in lobby' }
+      await db.events.updateAsync({ eventID: req.eventID }, { $set: { roomActivity } })
+
+      ws.send(JSON.stringify({
+        command: 'INIT_USER',
+        user: { id: ws.userID, name: user.username, color: user.color, isPresenter: user.isPresenter, isInLobby: user.isInLobby },
+        eventID: req.eventID,
+        queue: user.isPresenter ? event.queue : [],
+        quests: event.quests,
+        displays: event.displays,
+        slides: event.slides,
+        activeDisplay: event.activeDisplay,
+        shares: user.isPresenter ? event.shares : userShares,
+        roomActivity,
+        display: event.display,
+        config: event.config
+      }))
+
+
+      sendRoom(req.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
+      sendRoom(req.eventID, 'admin', { command: 'UPDT_STTS', userList })
+
     } else if (req.command === 'SET_USER') {
       let event = await db.events.findOneAsync({ eventID: req.eventID })
 
@@ -290,7 +309,8 @@ wss.on('connection', async (ws) => {
 
   ws.on('close', async () => {
     console.log('[WS Close] ws.eventID:', ws.eventID)
-    console.log('NeDB', db[`event-${ws.eventID}`] ? 'DB' : undefined)
+    console.log('[WS Close] event is in NeDB:', db[`event-${ws.eventID}`] ? 'yes' : 'no')
+
 
     if (ws.displayID) {
       const event = await db.events.findOneAsync({ eventID: ws.eventID })
