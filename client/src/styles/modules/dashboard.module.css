@@ -452,7 +452,7 @@
 
 .events {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 500px));
   gap: 20px;
   width: 100%;
   padding: 0 50px;
@@ -508,6 +508,20 @@
   height: 24px;
   border-radius: 6px;
   background-color: var(--blue-bg);
+}
+
+.uploadBtn {
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 34px;
+  margin-top: 20px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background-color: var(--blue-bg);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--blue);
 }
 
 .eventBtns {
@@ -570,6 +584,13 @@
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   opacity: 0;
   transition: opacity .3s ease-in-out;
+}
+
+.eventPage {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
 }
 
 

@@ -1,4 +1,4 @@
-/* 
+/*
     MARK: Entry
 */
 
@@ -107,7 +107,7 @@
 
 
 
-/* 
+/*
     MARK: Controls
 */
 
@@ -181,7 +181,7 @@
 
 
 
-/* 
+/*
     MARK: QR
 */
 
@@ -329,7 +329,7 @@
 
 
 
-/* 
+/*
     MARK: Quest Panel
 */
 
@@ -367,7 +367,7 @@
 
 
 
-/* 
+/*
     MARK: Input
 */
 
@@ -446,7 +446,7 @@
 
 
 
-/* 
+/*
     MARK: User Panel
 */
 
@@ -569,7 +569,7 @@
 
 
 
-/* 
+/*
     MARK: Presenter
 */
 
@@ -1053,7 +1053,7 @@
 
 
 
-/* 
+/*
     MARK: Slides
 */
 
@@ -1113,7 +1113,7 @@
 
 
 
-/* 
+/*
     MARK: Display
 */
 
@@ -1140,4 +1140,28 @@
 .displayImg {
   max-height: 100%;
   max-width: 100%;
+}
+
+
+
+/* Upload */
+
+.uploadContext {
+  flex-direction: column;
+  align-items: center;
+}
+
+.uploadTtl {
+  text-align: center;
+  font-size: 35px;
+  font-weight: 700;
+}
+
+.uploadSbtl {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 400;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  color: var(--label-2);
 }

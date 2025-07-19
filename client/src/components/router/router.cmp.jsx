@@ -24,7 +24,8 @@ export const Router = (props) => {
 
 
   useEffect(() => {
-    if (STRoute.path !== '/event') {
+    const publicRoutes = ['/event', '/upload']
+    if (!publicRoutes.includes(STRoute.path)) {
       const path = localStorage.getItem('SIGNED_IN') ? '/dashboard' : '/auth'
       goTo(path)
     }

@@ -37,6 +37,10 @@ export const Events = () => {
     setTimeout(() => setCopyLbl('Copy'), 750)
   }
 
+  const uploadEvent = (eventID) => {
+    window.open(`${process.env.REACT_APP_APP_URL}/upload?id=${eventID}`, '_blank')
+  }
+
   const joinEvent = (eventID) => {
     window.open(`${process.env.REACT_APP_APP_URL}/event?id=${eventID}`, '_blank')
   }
@@ -88,12 +92,13 @@ export const Events = () => {
                   <div className={sty.eventDetails}>
                     <h1 className={sty.eventName}>{event.name}</h1>
                     <div className={sty.eventUrl}>
-                      <h4>{process.env.REACT_APP_HOST_URL.split('//')[1]}/event?id={event.eventID}</h4>
+                      <h4 onClick={() => joinEvent(event.eventID)}>{process.env.REACT_APP_HOST_URL.split('//')[1]}/event?id={event.eventID}</h4>
                       <button className={sty.copyBtn} onClick={() => copyUrl(`${process.env.REACT_APP_HOST_URL}/event?id=${event.eventID}`)}>
                         <Icon name='copy-o' size={16} color='--blue' />
                         <div className='tooltip tooltipTop'>{copyLbl}</div>
                       </button>
                     </div>
+                    <button className={sty.uploadBtn} onClick={() => uploadEvent(event.eventID)}>Public Upload URL</button>
                   </div>
                   <div className={sty.eventBtns}>
                     <div className={sty.presenterInfo}>
