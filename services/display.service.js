@@ -9,6 +9,8 @@ exports.handleUpdateDisplay = async (req, sendRoom) => {
 
   event.displays.filter((display) => {
     if (display.id === displayID) {
+      if (slide && !display.slide) display.slide = {}
+
       if (slide.name) display.slide.name = slide.name
       if (slide.pageCount) display.slide.pageCount = slide.pageCount
       if (slide.page) display.slide.page = slide.page

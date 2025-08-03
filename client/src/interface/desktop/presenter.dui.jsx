@@ -144,18 +144,22 @@ export const Presenter = () => {
     STTheatre.show = state
   }
 
-  const openDisplayForm = () => {
+  const openDisplayForm = ({ newEmptyDisplay = false } = {}) => {
     STSlidePanels.display = true
     STSlidePanels.displayForm = true
+    STSlidePanels.newEmptyDisplay = newEmptyDisplay
   }
 
   const closeDisplayForm = () => {
     STSlidePanels.displayForm = false
+    STSlidePanels.newEmptyDisplay = false
     setDisplayName('')
   }
 
   const createDisplay = (label = 'New Display', slide) => {
-    RTDisplay.create(STEvent.id, label, slide).then((data) => {
+    const newSlide = STSlidePanels.newEmptyDisplay ? null : slide
+
+    RTDisplay.create(STEvent.id, label, newSlide).then((data) => {
       if (data.success) {
         STSlidePanels.display = true
         STSlidePanels.displayForm = false
@@ -287,7 +291,7 @@ export const Presenter = () => {
                           return (
                             <div className={sty.displayListItem} onClick={() => updateDisplay({ displayID: display.id, slideName: SSSlides.list[SSSlide.active.index].name, pageCount: SSSlides.list[SSSlide.active.index].pageCount })} key={display.id}>
                               <div className={sty.displayListItemIcon}>
-                                <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
+                                {display.slide && <img src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />}
                               </div>
                               <h4>{display.label}</h4>
                             </div>
@@ -352,7 +356,7 @@ export const Presenter = () => {
               <div className={sty.slidesPanelHead}>
                 <h1>Displays</h1>
                 <div className={sty.slidesPanelBtns}>
-                  <button onClick={() => openDisplayForm()}>
+                  <button onClick={() => openDisplayForm({ newEmptyDisplay: true })}>
                     <Icon name='add' size={20} color='--tint' />
                   </button>
                 </div>
@@ -371,7 +375,7 @@ export const Presenter = () => {
                         <Icon name='close' size={16} color='--tint' />
                       </button>
                       <div className={sty.displayFormBody}>
-                        <h3>Add Display</h3>
+                        <h3>Add {SSSlidePanels.newEmptyDisplay && 'Empty'} Display</h3>
                         <input className={sty.displayInput} type='text' autoComplete='off' autoFocus autoCapitalize='words' placeholder='Display name' value={displayName}
                           onChange={(e) => setDisplayName(e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter' || e.code === 'Enter') createDisplay(displayName, SSSlides.list[SSSlide.active.index]) }}
@@ -387,7 +391,12 @@ export const Presenter = () => {
                     <div className={SSSlidePanels.activeDisplayID === display.id ? sty.displayBgActive : sty.displayBg} key={display.id}>
                       <h3 className={SSSlidePanels.activeDisplayID === display.id ? sty.displayLblActive : sty.displayLbl}>{display.label}</h3>
                       <div className={sty.displayPreview} onClick={() => STSlidePanels.activeDisplayID = SSSlidePanels.activeDisplayID === display.id ? '' : display.id}>
-                        <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
+                        {display.slide
+                        ? <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
+                        : <div className={sty.displayEmpty}>
+                          <Icon name='tv' size={60} color='--fill-1' />
+                        </div>
+                      }
                       </div>
                       <AnimatePresence>
                         {SSSlidePanels.activeDisplayID === display.id && <motion.div
@@ -397,7 +406,7 @@ export const Presenter = () => {
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ ease: 'easeInOut', duration: 0.3 }}
                         >
-                          <div className={sty.displayControls}>
+                          {display.slide && <div className={sty.displayControls}>
                             <button className={sty.displayControlsBtn} onClick={() => changeDisplayPage('<', display)}>
                               <Icon name='chevron-back' size={20} color='--tint' />
                             </button>
@@ -405,11 +414,11 @@ export const Presenter = () => {
                             <button className={sty.displayControlsBtn} onClick={() => changeDisplayPage('>', display)}>
                               <Icon name='chevron-forward' size={20} color='--tint' />
                             </button>
-                          </div>
+                          </div>}
                           <div className={sty.displayOptions}>
-                            <button className={sty.displayOption} onClick={() => toggleShareLive(display)}>
+                            {display.slide && <button className={sty.displayOption} onClick={() => toggleShareLive(display)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: display.id === SSActiveDisplay.id ? 'var(--green)' : 'inherit' }}>Share Live</h4>
-                            </button>
+                            </button>}
                             <button className={sty.displayOption} onClick={() => closeDisplay(display.id)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: 'var(--red)' }}>Close</h4>
                             </button>

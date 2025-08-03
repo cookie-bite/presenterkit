@@ -18,7 +18,7 @@ export const Display = () => {
 
       if (data.success) {
         STDisplay.label = data.display.label
-        STDisplay.slide = data.display.slide
+        if (data.display.slide) STDisplay.slide = data.display.slide
 
 
         const interval = setInterval(async () => {
@@ -48,7 +48,7 @@ export const Display = () => {
 
   return (
     <div className={sty.display}>
-      {SSDisplay.slide.name && <>
+      {SSDisplay.slide && SSDisplay.slide.name && <>
         <img className={sty.displayBgImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSDisplay.slide.name}/${SSDisplay.slide.page}.webp`} alt={`Page ${SSDisplay.slide.page}`} />
         <img className={sty.displayImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${SSDisplay.slide.name}/${SSDisplay.slide.page}.webp`} alt={`Page ${SSDisplay.slide.page}`} />
       </>}

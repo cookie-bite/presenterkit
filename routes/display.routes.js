@@ -19,7 +19,9 @@ router.post('/create', async (req, res) => {
   if (error) return res.status(400).json({ success: false, error: error.details[0].message })
 
   try {
-    const newDisplay = { id: genRandom(4, 10), label, slide: { name: slide.name, pageCount: slide.pageCount, page: 1 } }
+    const newDisplay = { id: genRandom(4, 10), label }
+    if (slide) newDisplay.slide = { name: slide.name, pageCount: slide.pageCount, page: 1 }
+
     await collection('events').updateOne({ eventID }, { $push: { displays: newDisplay } })
 
     const event = await collection('events').findOne({ eventID })
