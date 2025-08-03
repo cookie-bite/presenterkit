@@ -2,7 +2,6 @@ const { createServer } = require('http')
 const { MongoClient } = require('mongodb')
 
 const express = require('express')
-const Datastore = require('@seald-io/nedb')
 const path = require('path')
 const cors = require('cors')
 
@@ -14,13 +13,6 @@ require('dotenv/config')
 
 const app = express()
 const server = createServer(app)
-
-
-
-// MARK: NeDB
-
-const db = {}
-db.events = new Datastore()
 
 
 
@@ -51,7 +43,7 @@ const connectDB = async () => {
 
 // MARK: Exports
 
-module.exports = { db, server }
+module.exports = { server }
 module.exports.collection = (c) => DB.collection(c)
 
 

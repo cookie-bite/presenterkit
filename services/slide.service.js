@@ -1,8 +1,10 @@
-const { db } = require('../api')
+const { collection } = require('../api')
 
 
 exports.handleUpdateSlides = async (req, sendRoom) => {
-  await db.events.updateAsync({ eventID: req.eventID }, { $set: { slides: req.slides } })
+  const { eventID, slides } = req
 
-  sendRoom(req.eventID, 'user', { command: 'UPDT_SLDS', slides: req.slides })
+  await collection('events').updateOne({ eventID }, { $set: { slides } })
+
+  sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slides })
 }

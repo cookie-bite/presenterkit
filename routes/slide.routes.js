@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const { BlobServiceClient } = require('@azure/storage-blob')
 
-const { db } = require('../api')
+const { collection } = require('../api')
 const { sendRoom } = require('../wss')
 const { genRandom } = require('../utils/core.utils')
 
@@ -15,8 +15,8 @@ router.post('/create', async (req, res) => {
   const { eventID, slide } = req.body
 
   const newSlide = { id: genRandom(6, 10), name: slide.name, pageCount: slide.pageCount }
-  await db.events.updateAsync({ eventID }, { $push: { slides: newSlide } })
-  const event = await db.events.findOneAsync({ eventID })
+  await collection('events').updateOne({ eventID }, { $push: { slides: newSlide } })
+  const event = await collection('events').findOne({ eventID })
 
   sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slides: event.slides })
   res.json({ success: true, message: 'Slide uploaded', slide: newSlide })
@@ -39,9 +39,9 @@ router.delete('/delete', async (req, res) => {
     imgBlob.delete()
   }
 
-  const event = await db.events.findOneAsync({ eventID })
+  const event = await collection('events').findOne({ eventID })
   event.slides = event.slides.filter((s) => s.name !== slide.name)
-  await db.events.updateAsync({ eventID }, { $set: { slides: event.slides } })
+  await collection('events').updateOne({ eventID }, { $set: { slides: event.slides } })
 
   sendRoom(eventID, 'user', { command: 'UPDT_SLDS', slides: event.slides })
   res.json({ success: true, message: 'Slide deleted' })

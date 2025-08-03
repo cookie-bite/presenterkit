@@ -1,8 +1,6 @@
 const router = require('express').Router()
-const Datastore = require('@seald-io/nedb')
-const jwt = require('jsonwebtoken')
 
-const { collection, db } = require('../api')
+const { collection } = require('../api')
 const { authUser } = require('../middlewares/user.middlewares')
 const { genRandom } = require('../utils/core.utils')
 const joiSchema = require('../utils/joi.utils')
@@ -24,25 +22,7 @@ router.post('/verify', async (req, res) => {
     const dbEvent = await collection('events').findOne({ eventID }, { projection: { _id: 0 } })
     if (!dbEvent) return res.status(404).json({ success: false, status: { code: 'NONEXIST', title: 'Event is not exist', subtitle: 'Either link is incorrect or event deleted' }, err: 'Event does not exist.' })
 
-    let event = await db.events.findOneAsync({ eventID })
-
-    if (!event) {
-      try {
-        const payload = jwt.verify(req.headers.authorization.split(' ')[1], process.env.ACS_TKN_SCT)
-
-        if (dbEvent.presenter.id === payload.sub) {
-          await db.events.insertAsync(dbEvent)
-          db[`event-${eventID}`] = new Datastore()
-        } else {
-          return res.status(403).json({ success: false, status: { code: 'UNOPENED', title: 'Event is not started', subtitle: 'You can join after event start' }, err: 'Event is not open.' })
-        }
-      } catch (err) {
-        return res.status(403).json({ success: false, status: { code: 'UNOPENED', title: 'Event is not started', subtitle: 'You can join after event start' }, err: 'Event is not open.' })
-      }
-    }
-
-
-    res.status(200).json({ success: true, status: { code: 'OPEN' }, event })
+    res.status(200).json({ success: true, status: { code: 'OPEN' }, event: dbEvent })
   } catch (err) { res.status(500).json({ success: false, err: err }) }
 })
 
@@ -72,11 +52,8 @@ router.post('/create', authUser, async (req, res) => {
       config: { forwarding: { is: false } }
     }
 
-    await db.events.insertAsync(event)
     await collection('events').insertOne(event)
     await collection('users').updateOne({ _id: req.user._id }, { $push: { events: { eventID, name } } })
-
-    db[`event-${eventID}`] = new Datastore()
 
     res.status(200).json({ success: true, event: { id: eventID, name } })
   } catch (err) { res.status(500).json({ success: false, err: err }) }

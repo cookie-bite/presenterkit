@@ -1,8 +1,7 @@
 const { WebSocket, WebSocketServer } = require('ws')
+const { server } = require('./api')
 
-const { collection, db, server } = require('./api')
-
-const { handleJoinRoom, handleSetUser, handleSetAdmin } = require('./services/user.service')
+const { handleJoinRoom, handleSetUser, handleSetAdmin, handleUserDisconnect } = require('./services/user.service')
 const { handleSendMessage, handleSendUsers, handleCoolDownUser, handleShareAction, handleSendTyping } = require('./services/message.service')
 const { handleDisplayLabel, handleSetConfig } = require('./services/event.service')
 const { handleUpdateSlides } = require('./services/slide.service')
@@ -44,12 +43,16 @@ const interval = setInterval(() => {
   })
 }, 10000)
 
+const handlePong = (ws) => {
+  console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)
+  ws.isAlive = true
+}
+
 wss.on('connection', async (ws) => {
   ws.isAlive = true
 
   ws.on('message', async (msg) => {
     const req = JSON.parse(msg)
-    console.log({ req })
 
     if (req.command === 'JOIN_ROOM') { await handleJoinRoom(req, ws, sendRoom) }
     else if (req.command === 'SET_USER') { await handleSetUser(req, ws, sendRoom) }
@@ -66,54 +69,10 @@ wss.on('connection', async (ws) => {
     else if (req.command === 'UPDT_DISP') { await handleUpdateDisplay(req, sendRoom) }
     else if (req.command === 'SHARE_DISP') { await handleShareDisplay(req, sendRoom) }
 
-    if (req.command === 'PONG') {
-      console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)
-      ws.isAlive = true
-    }
+    if (req.command === 'PONG') { handlePong(ws) }
   })
 
-  ws.on('close', async () => {
-    console.log('[WS Close] ws.eventID:', ws.eventID)
-    console.log('[WS Close] event is in NeDB:', db[`event-${ws.eventID}`] ? 'yes' : 'no')
-
-
-    if (ws.displayID) {
-      const event = await db.events.findOneAsync({ eventID: ws.eventID })
-
-      if (ws.displayID === event.activeDisplay.id) {
-        await db.events.updateAsync({ eventID: ws.eventID }, { $set: { activeDisplay: { id: '', slide: {} } } })
-        sendRoom(ws.eventID, 'user', { command: 'SHARE_DISP', displayID: ws.displayID, state: false, slide: {} })
-      }
-
-      event.displays = event.displays.filter((d) => d.id !== ws.displayID)
-      await db.events.updateAsync({ eventID: ws.eventID }, { $set: { displays: event.displays } })
-
-      return sendRoom(ws.eventID, 'user', { command: 'UPDT_DISPS', displays: event.displays })
-    }
-
-    if (db[`event-${ws.eventID}`]) {
-      await db[`event-${ws.eventID}`].updateAsync({ userID: ws.userID }, { $set: { isActive: false } })
-      const activeUsers = await db[`event-${ws.eventID}`].findAsync({ isActive: true })
-      const userList = await db[`event-${ws.eventID}`].findAsync({})
-
-      const roomActivity = { user: { id: ws.userID, name: ws.username }, activity: 'left' }
-      await db.events.updateAsync({ eventID: ws.eventID }, { $set: { roomActivity } })
-
-
-      if (activeUsers.length === 0) {
-        const event = await db.events.findOneAsync({ eventID: ws.eventID }, { _id: 0 })
-        event.activeDisplay = { id: '', slide: {} }
-        event.displays = []
-        await collection('events').replaceOne({ eventID: ws.eventID }, event)
-        await db.events.removeAsync({ eventID: ws.eventID })
-        delete db[`event-${ws.eventID}`]
-      }
-
-
-      sendRoom(ws.eventID, 'user', { command: 'ROOM_ACTY', roomActivity, userList })
-      sendRoom(ws.eventID, 'admin', { command: 'UPDT_STTS', userList })
-    }
-  })
+  ws.on('close', async () => handleUserDisconnect(ws, sendRoom))
 
   ws.on('error', console.error)
 })
