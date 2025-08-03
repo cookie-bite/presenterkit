@@ -51,35 +51,20 @@ wss.on('connection', async (ws) => {
     const req = JSON.parse(msg)
     console.log({ req })
 
-    if (req.command === 'JOIN_ROOM') {
-      await handleJoinRoom(req, ws, sendRoom)
-    } else if (req.command === 'SET_USER') {
-      await handleSetUser(req, ws, sendRoom)
-    } else if (req.command === 'SET_STTS') {
-      await handleSetAdmin(req, wss, sendUser, sendRoom)
-    } else if (req.command === 'SEND_MSG') {
-      await handleSendMessage(req, ws, sendRoom)
-    } else if (req.command === 'SEND_USERS') {
-      await handleSendUsers(req, ws, sendRoom)
-    } else if (req.command === 'CLDW_USER') {
-      await handleCoolDownUser(req, sendUser, sendRoom)
-    } else if (req.command === 'DISP_LBL') {
-      await handleDisplayLabel(req, sendRoom)
-    } else if (req.command === 'SHR_ACT') {
-      await handleShareAction(req, ws, sendRoom)
-    } else if (req.command === 'SEND_TYP') {
-      await handleSendTyping(req, ws, sendRoom)
-    } else if (req.command === 'SET_CNFG') {
-      await handleSetConfig(req, sendRoom)
-    } else if (req.command === 'UPDT_SLDS') {
-      await handleUpdateSlides(req, sendRoom)
-    }
+    if (req.command === 'JOIN_ROOM') { await handleJoinRoom(req, ws, sendRoom) }
+    else if (req.command === 'SET_USER') { await handleSetUser(req, ws, sendRoom) }
+    else if (req.command === 'SET_STTS') { await handleSetAdmin(req, wss, sendUser, sendRoom) }
+    else if (req.command === 'SEND_MSG') { await handleSendMessage(req, ws, sendRoom) }
+    else if (req.command === 'SEND_USERS') { await handleSendUsers(req, ws, sendRoom) }
+    else if (req.command === 'CLDW_USER') { await handleCoolDownUser(req, sendUser, sendRoom) }
+    else if (req.command === 'DISP_LBL') { await handleDisplayLabel(req, sendRoom) }
+    else if (req.command === 'SHR_ACT') { await handleShareAction(req, ws, sendRoom) }
+    else if (req.command === 'SEND_TYP') { await handleSendTyping(req, ws, sendRoom) }
+    else if (req.command === 'SET_CNFG') { await handleSetConfig(req, sendRoom) }
+    else if (req.command === 'UPDT_SLDS') { await handleUpdateSlides(req, sendRoom) }
 
-    if (req.command === 'UPDT_DISP') {
-      await handleUpdateDisplay(req, sendRoom)
-    } else if (req.command === 'SHARE_DISP') {
-      await handleShareDisplay(req, sendRoom)
-    }
+    else if (req.command === 'UPDT_DISP') { await handleUpdateDisplay(req, sendRoom) }
+    else if (req.command === 'SHARE_DISP') { await handleShareDisplay(req, sendRoom) }
 
     if (req.command === 'PONG') {
       console.log(`[${ws.username}-${ws.userID}] [${(new Date(Date.now())).toLocaleString('en-GB').split(' ')[1]}] \x1b[33mPONG is received\x1b[0m`)
