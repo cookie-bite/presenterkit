@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb')
 const jwt = require('jsonwebtoken')
 const { genColor, genRandom } = require('../utils/core.utils')
-const { collection, db } = require('../api')
+const { collection } = require('../api')
 
 
 exports.handleJoinRoom = async (req, ws, sendRoom) => {
