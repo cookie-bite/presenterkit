@@ -1010,6 +1010,47 @@
   text-align: center;
 }
 
+.displayTimer {
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 8px;
+  padding: 5px 10px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--fill-2);
+}
+
+.displayTimerInput {
+  width: 5ch;
+  border-radius: 4px;
+  background-color: var(--fill-2);
+  font-size: 20px;
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.displayTimerBtns {
+  gap: 5px
+}
+
+.displayTimerBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fill-1);
+}
+
+.displayTimerCounter > h3 {
+  padding: 1px;
+  font-size: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+
 .displayOptions {
   flex-direction: column;
   width: 100%;

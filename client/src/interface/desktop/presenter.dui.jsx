@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Countdown from 'react-countdown'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
@@ -27,10 +28,17 @@ export const Presenter = () => {
 
   const [displayName, setDisplayName] = useState('')
 
+  const [showTimer, setShowTimer] = useState(false)
+  const [timeInput, setTimeInput] = useState('3:00')
+  const [timeInMinutes, setTimeInMinutes] = useState(3)
+  const [showTimeInput, setShowTimeInput] = useState(true)
+  const [inputError, setInputError] = useState('')
+
   const inputRef = useRef()
   const displayListRef = useRef()
   const pageCountActive = STSlides.list[STSlide.active.index]?.pageCount
   const pagesRef = useRef([])
+  const countdownRef = useRef(null)
 
 
   const togglePanel = (label) => {
@@ -191,8 +199,97 @@ export const Presenter = () => {
     window.ws.send(JSON.stringify({ command: 'SHARE_DISP', eventID: STEvent.id, displayID: display.id, state: display.id !== STActiveDisplay.id, slide: display.slide }))
   }
 
+  const addTimer = () => {
+    setShowTimer(true)
+  }
+
+  const handleTimerInputChange = (e) => {
+    setTimeInput(e.target.value)
+    setInputError('')
+  }
+
+  const handleTimerInputBlur = () => {
+    let input = timeInput.trim()
+    let minutes = 0, seconds = 0
+
+    // Acceptable formats: mm:ss, m:ss, mm, m, :ss, m:
+    if (/^\d+$/.test(input)) {
+      // Only minutes, e.g., '5' or '12'
+      minutes = parseInt(input, 10)
+    } else if (/^\d{1,2}:\d{1,2}$/.test(input)) {
+      // mm:ss or m:ss
+      const [minStr, secStr] = input.split(':')
+      minutes = parseInt(minStr, 10)
+      seconds = parseInt(secStr, 10)
+    } else if (/^:\d{1,2}$/.test(input)) {
+      // :ss (e.g., ':30' means 0:30)
+      minutes = 0
+      seconds = parseInt(input.slice(1), 10)
+    } else if (/^\d{1,2}:$/.test(input)) {
+      // m: or mm: (e.g., '5:' means 5:00)
+      minutes = parseInt(input.slice(0, -1), 10)
+      seconds = 0
+    } else {
+      setInputError('Invalid format. Use mm:ss, m:ss, mm, or :ss')
+      return
+    }
+
+    // Validate ranges
+    if (
+      isNaN(minutes) || isNaN(seconds) ||
+      minutes < 0 || seconds < 0 || seconds > 59 ||
+      (minutes === 0 && seconds === 0)
+    ) {
+      setInputError('Please enter a valid time (e.g., 5, 3:00, 0:30)')
+      return
+    }
+
+    // Convert to minutes (float) for your timer logic
+    const totalMinutes = minutes + seconds / 60
+    setTimeInMinutes(totalMinutes)
+    setTimeInput(`${minutes}:${seconds.toString().padStart(2, '0')}`) // normalize display
+    setInputError('')
+  }
+
+  const handleTimerStart = () => {
+    setShowTimeInput(false)
+  }
+
+  const handleTimerStop = () => {
+    setShowTimeInput(true)
+  }
+
+  const handleTimerComplete = () => {
+    setShowTimeInput(true)
+  }
+
   const closeDisplay = async (displayID) => {
     await RTDisplay.close(STEvent.id, displayID)
+  }
+
+
+  const CountdownRenderer = ({ minutes, seconds, completed, api }) => {
+    return (
+      <>
+        <div className={sty.displayTimerBtns}>
+          {api.isStarted() && !api.isPaused() ? (
+            <button className={sty.displayTimerBtn} style={{ backgroundColor: 'var(--orange-bg)' }} onClick={() => api.pause()}>
+              <Icon name='pause' size={20} color='--orange' />
+            </button>
+          ) : (
+            <button className={sty.displayTimerBtn} style={{ backgroundColor: 'var(--green-bg)' }} onClick={() => api.start()}>
+              <Icon name='play' size={20} color='--green' />
+            </button>
+          )}
+          <button className={sty.displayTimerBtn} onClick={() => api.stop()}>
+            <Icon name='close' size={20} color='--white' />
+          </button>
+        </div>
+        {!api.isStopped() && <div className={sty.displayTimerCounter}>
+          <h3 style={{ color: completed ? 'var(--red)' : 'var(--orange)' }}>{`${String(minutes).padStart(1, '0')}:${String(seconds).padStart(2, '0')}`}</h3>
+        </div>}
+      </>
+    )
   }
 
 
@@ -392,11 +489,11 @@ export const Presenter = () => {
                       <h3 className={SSSlidePanels.activeDisplayID === display.id ? sty.displayLblActive : sty.displayLbl}>{display.label}</h3>
                       <div className={sty.displayPreview} onClick={() => STSlidePanels.activeDisplayID = SSSlidePanels.activeDisplayID === display.id ? '' : display.id}>
                         {display.slide
-                        ? <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
-                        : <div className={sty.displayEmpty}>
-                          <Icon name='tv' size={60} color='--fill-1' />
-                        </div>
-                      }
+                          ? <img className={sty.displayPreviewImg} src={`${process.env.REACT_APP_BLOB_URL}/event/${SSEvent.id}/imgs/${display.slide.name}/${display.slide.page}.webp`} />
+                          : <div className={sty.displayEmpty}>
+                            <Icon name='tv' size={60} color='--fill-1' />
+                          </div>
+                        }
                       </div>
                       <AnimatePresence>
                         {SSSlidePanels.activeDisplayID === display.id && <motion.div
@@ -415,10 +512,35 @@ export const Presenter = () => {
                               <Icon name='chevron-forward' size={20} color='--tint' />
                             </button>
                           </div>}
+                          {showTimer && <div className={sty.displayTimer}>
+                            <Countdown
+                              ref={countdownRef}
+                              date={Date.now() + timeInMinutes * 60 * 1000}
+                              renderer={CountdownRenderer}
+                              autoStart={false}
+                              intervalDelay={10}
+                              onStart={handleTimerStart}
+                              onStop={handleTimerStop}
+                              onComplete={handleTimerComplete}
+                            />
+                            {showTimeInput && <input
+                              type='text'
+                              name='duration'
+                              placeholder='mm:ss'
+                              value={timeInput}
+                              onBlur={handleTimerInputBlur}
+                              onChange={handleTimerInputChange}
+                              className={sty.displayTimerInput}
+                              style={{ color: inputError ? 'var(--red)' : 'var(--label-1)' }}
+                            />}
+                          </div>}
                           <div className={sty.displayOptions}>
                             {display.slide && <button className={sty.displayOption} onClick={() => toggleShareLive(display)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: display.id === SSActiveDisplay.id ? 'var(--green)' : 'inherit' }}>Share Live</h4>
                             </button>}
+                            <button className={sty.displayOption} onClick={() => addTimer()}>
+                              <h4 className={sty.displayOptionLbl}>{showTimer ? 'Remove timer' : 'Add timer'}</h4>
+                            </button>
                             <button className={sty.displayOption} onClick={() => closeDisplay(display.id)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: 'var(--red)' }}>Close</h4>
                             </button>
