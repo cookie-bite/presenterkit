@@ -5,7 +5,7 @@ exports.handleUpdateDisplay = async (req, sendRoom) => {
   const { eventID, displayID, slide } = req
   const event = await collection('events').findOne({ eventID })
 
-  let newSlide = {}
+  let newSlide = null
 
   event.displays.filter((display) => {
     if (display.id === displayID) {
@@ -32,6 +32,33 @@ exports.handleUpdateDisplay = async (req, sendRoom) => {
   }
 
   sendRoom(eventID, 'user', { command: 'UPDT_DISP', displayID, slide: newSlide })
+}
+
+exports.handleUpdateTimer = async (req, sendRoom) => {
+  const { eventID, displayID, timer } = req
+  const event = await collection('events').findOne({ eventID })
+
+  console.log('UPDT_TIMER', req)
+
+  let newTimer = null
+
+  event.displays.filter((display) => {
+    if (display.id === displayID) {
+      if (timer && !display.timer) display.timer = {}
+
+      if (timer.action) display.timer.action = timer.action
+      if (timer.duration) display.timer.duration = timer.duration
+
+      newTimer = display.timer
+    }
+  })
+
+  await collection('events').updateOne(
+    { eventID },
+    { $set: { displays: event.displays } }
+  )
+
+  sendRoom(eventID, 'user', { command: 'UPDT_TIMER', displayID, timer })
 }
 
 exports.handleShareDisplay = async (req, sendRoom) => {

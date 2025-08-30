@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Countdown from 'react-countdown'
 import { useSnapshot } from 'valtio'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplayList, STActiveDisplay } from '../../stores/app.store'
+import { STUI, STSlide, STSlides, STTheatre, STSpinner, STEvent, STSlidePanels, STDisplays, STDisplayList, STActiveDisplay, STDisplay } from '../../stores/app.store'
 
 import { Alert, Icon, Spinner } from '../../components/core.cmp'
 import { RTDisplay } from '../../routes/routes'
@@ -28,10 +28,9 @@ export const Presenter = () => {
 
   const [displayName, setDisplayName] = useState('')
 
-  const [showTimer, setShowTimer] = useState(false)
   const [timeInput, setTimeInput] = useState('3:00')
   const [timeInMinutes, setTimeInMinutes] = useState(3)
-  const [showTimeInput, setShowTimeInput] = useState(true)
+  // const [showTimeInput, setShowTimeInput] = useState(true)
   const [inputError, setInputError] = useState('')
 
   const inputRef = useRef()
@@ -199,8 +198,24 @@ export const Presenter = () => {
     window.ws.send(JSON.stringify({ command: 'SHARE_DISP', eventID: STEvent.id, displayID: display.id, state: display.id !== STActiveDisplay.id, slide: display.slide }))
   }
 
-  const addTimer = () => {
-    setShowTimer(true)
+  const addTimer = (displayID) => {
+    const newTimer = { action: 'ADD', duration: timeInMinutes }
+    STDisplays.list.filter((display) => {
+      if (display.id === displayID) {
+        display.timer = newTimer
+        display.timer.showInput = true
+      }
+    })
+    window.ws.send(JSON.stringify({ command: 'UPDT_TIMER', eventID: STEvent.id, displayID, timer: newTimer }))
+  }
+
+  const removeTimer = (displayID) => {
+    STDisplays.list.filter((display) => {
+      if (display.id === displayID) {
+        display.timer = null
+      }
+    })
+    window.ws.send(JSON.stringify({ command: 'UPDT_TIMER', eventID: STEvent.id, displayID, timer: { action: 'REMOVE' } }))
   }
 
   const handleTimerInputChange = (e) => {
@@ -251,16 +266,31 @@ export const Presenter = () => {
     setInputError('')
   }
 
-  const handleTimerStart = () => {
-    setShowTimeInput(false)
+  const setShowTimeInput = (displayID, state) => {
+    STDisplays.list.filter((display) => {
+      if (display.id === displayID) {
+        display.timer.showInput = state
+      }
+    })
   }
 
-  const handleTimerStop = () => {
-    setShowTimeInput(true)
+  const makeHandleTimerStart = (displayID) => () => {
+    setShowTimeInput(displayID, false)
+    window.ws.send(JSON.stringify({ command: 'UPDT_TIMER', eventID: STEvent.id, displayID, timer: { action: 'START' } }))
   }
 
-  const handleTimerComplete = () => {
-    setShowTimeInput(true)
+  const makeHandleTimerPause = (displayID) => () => {
+    setShowTimeInput(displayID, false)
+    window.ws.send(JSON.stringify({ command: 'UPDT_TIMER', eventID: STEvent.id, displayID, timer: { action: 'PAUSE' } }))
+  }
+
+  const makeHandleTimerStop = (displayID) => () => {
+    setShowTimeInput(displayID, true)
+    window.ws.send(JSON.stringify({ command: 'UPDT_TIMER', eventID: STEvent.id, displayID, timer: { action: 'STOP' } }))
+  }
+
+  const makeHandleTimerComplete = (displayID) => () => {
+    setShowTimeInput(displayID, true)
   }
 
   const closeDisplay = async (displayID) => {
@@ -292,8 +322,6 @@ export const Presenter = () => {
     )
   }
 
-
-
   useEffect(() => {
     const handler = (e) => {
       if (!STDisplayList.show) return
@@ -319,7 +347,6 @@ export const Presenter = () => {
     window.addEventListener('keyup', onKeyUp)
     return () => window.removeEventListener('keyup', onKeyUp)
   }, [STActiveDisplay.id, STActiveDisplay.slide, STSlide.active.page, STSlide.active.index, STTheatre.show])
-
 
   return (
     <>
@@ -483,7 +510,7 @@ export const Presenter = () => {
                     <hr className={sty.displayFormLine} />
                   </motion.div>}
                 </AnimatePresence>
-                {SSDisplays.list.map((display, index) => {
+                {SSDisplays.list.map((display) => {
                   return (
                     <div className={SSSlidePanels.activeDisplayID === display.id ? sty.displayBgActive : sty.displayBg} key={display.id}>
                       <h3 className={SSSlidePanels.activeDisplayID === display.id ? sty.displayLblActive : sty.displayLbl}>{display.label}</h3>
@@ -512,18 +539,19 @@ export const Presenter = () => {
                               <Icon name='chevron-forward' size={20} color='--tint' />
                             </button>
                           </div>}
-                          {showTimer && <div className={sty.displayTimer}>
+                          {display.timer && <div className={sty.displayTimer}>
                             <Countdown
                               ref={countdownRef}
                               date={Date.now() + timeInMinutes * 60 * 1000}
                               renderer={CountdownRenderer}
                               autoStart={false}
-                              intervalDelay={10}
-                              onStart={handleTimerStart}
-                              onStop={handleTimerStop}
-                              onComplete={handleTimerComplete}
+                              onStart={makeHandleTimerStart(display.id)}
+                              onPause={makeHandleTimerPause(display.id)}
+                              onStop={makeHandleTimerStop(display.id)}
+                              onComplete={makeHandleTimerComplete(display.id)}
                             />
-                            {showTimeInput && <input
+                            {display.timer.showInput}
+                            {display.timer.showInput && <input
                               type='text'
                               name='duration'
                               placeholder='mm:ss'
@@ -538,9 +566,15 @@ export const Presenter = () => {
                             {display.slide && <button className={sty.displayOption} onClick={() => toggleShareLive(display)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: display.id === SSActiveDisplay.id ? 'var(--green)' : 'inherit' }}>Share Live</h4>
                             </button>}
-                            <button className={sty.displayOption} onClick={() => addTimer()}>
-                              <h4 className={sty.displayOptionLbl}>{showTimer ? 'Remove timer' : 'Add timer'}</h4>
-                            </button>
+                            {display.timer ? (
+                              <button className={sty.displayOption} onClick={() => removeTimer(display.id)}>
+                                <h4 className={sty.displayOptionLbl}>Remove timer</h4>
+                              </button>
+                            ) : (
+                              <button className={sty.displayOption} onClick={() => addTimer(display.id)}>
+                                <h4 className={sty.displayOptionLbl}>Add timer</h4>
+                              </button>
+                            )}
                             <button className={sty.displayOption} onClick={() => closeDisplay(display.id)}>
                               <h4 className={sty.displayOptionLbl} style={{ color: 'var(--red)' }}>Close</h4>
                             </button>

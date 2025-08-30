@@ -1,4 +1,4 @@
-import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlide, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays, STDisplay as STSlideDisplay, STActiveDisplay } from './stores/app.store'
+import { STUI, STUsers, STUser, STUserPanel, STShare, STShares, STSlides, STEntry, STTheatre, STCooldown, STQuests, STEvent, STDisplays, STDisplay as STSlideDisplay, STActiveDisplay } from './stores/app.store'
 import { STAdmin, STConfig, STMessages, STQueue } from './stores/admin.store'
 import { STChat, STDisplay, STTyping } from './stores/scene.store'
 
@@ -152,9 +152,14 @@ export const initWS = () => {
       }
 
       if (res.command === 'UPDT_DISP') { // When presenter changes slide
-        STDisplays.list.filter((display) => { if (display.id === res.displayID) display.slide = res.slide })
         if (STSlideDisplay.id === res.displayID) STSlideDisplay.slide = res.slide
         if (STActiveDisplay.id === res.displayID) STActiveDisplay.slide = res.slide
+      } else if (res.command === 'UPDT_TIMER') { // When presenter changes timer
+        if (STSlideDisplay.id === res.displayID) {
+          if (res.timer && !STSlideDisplay.timer) STSlideDisplay.timer = {}
+          if (res.timer.action) STSlideDisplay.timer.action = res.timer.action
+          if (res.timer.duration) STSlideDisplay.timer.duration = res.timer.duration
+        }
       } else if (res.command === 'UPDT_DISPS') { // When presenter starts sharing on a new display
         STDisplays.list = res.displays
       } else if (res.command === 'SHARE_DISP') { // When presenter starts/stops live sharing

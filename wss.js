@@ -5,7 +5,7 @@ const { handleJoinRoom, handleSetUser, handleSetAdmin, handleUserDisconnect } = 
 const { handleSendMessage, handleSendUsers, handleCoolDownUser, handleShareAction, handleSendTyping } = require('./services/message.service')
 const { handleDisplayLabel, handleSetConfig } = require('./services/event.service')
 const { handleUpdateSlides } = require('./services/slide.service')
-const { handleUpdateDisplay, handleShareDisplay } = require('./services/display.service')
+const { handleUpdateDisplay, handleShareDisplay, handleUpdateTimer } = require('./services/display.service')
 
 require('dotenv/config')
 
@@ -67,6 +67,7 @@ wss.on('connection', async (ws) => {
     else if (req.command === 'UPDT_SLDS') { await handleUpdateSlides(req, sendRoom) }
 
     else if (req.command === 'UPDT_DISP') { await handleUpdateDisplay(req, sendRoom) }
+    else if (req.command === 'UPDT_TIMER') { await handleUpdateTimer(req, sendRoom) }
     else if (req.command === 'SHARE_DISP') { await handleShareDisplay(req, sendRoom) }
 
     if (req.command === 'PONG') { handlePong(ws) }

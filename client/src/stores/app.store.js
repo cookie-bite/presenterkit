@@ -29,7 +29,7 @@ export const STSlides = proxy({ list: [] })
 
 export const STSlidePanels = proxy({ files: true, display: false, displayForm: false, activeDisplayID: '', newEmptyDisplay: false })
 
-export const STDisplay = proxy({ id: '', label: '', slide: { name: '', page: 1, pageCount: 0 } })
+export const STDisplay = proxy({ id: '', label: '', slide: null, timer: null })
 
 export const STActiveDisplay = proxy({ id: '', slide: { name: '', page: 1, pageCount: 0 } })
 

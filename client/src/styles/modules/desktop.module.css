@@ -1194,6 +1194,14 @@
   max-width: 100%;
 }
 
+.displayMainTimerCounter > h3 {
+  padding: 1px;
+  font-size: 70vh;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+
 
 
 /* Upload */
