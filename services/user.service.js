@@ -9,6 +9,19 @@ exports.handleJoinRoom = async (req, ws, sendRoom) => {
   ws.eventID = eventID
   ws.displayID = displayID
 
+  // Wait for any ongoing cleanup to finish
+  let maxWait = 5000
+  let waited = 0
+  const pollInterval = 100
+
+  while (waited < maxWait) {
+    console.log('[JOIN_ROOM] checking for room status...')
+    const roomStatus = await collection('roomStatus').findOne({ eventID })
+    if (!roomStatus || roomStatus.isActive) break;
+    await new Promise(r => setTimeout(r, pollInterval));
+    waited += pollInterval
+  }
+
   let event = await collection('events').findOne({ eventID })
 
   let user = {
@@ -192,7 +205,21 @@ exports.handleUserDisconnect = async (ws, sendRoom) => {
       event.activeDisplay = { id: '', slide: {} }
       event.displays = []
       await collection('events').replaceOne({ eventID }, event)
+
+      // Check if there are any remaining users
+      await collection('roomStatus').updateOne(
+        { eventID },
+        { $set: { isActive: false } },
+        { upsert: true }
+      )
+
       await collection('eventUsers').deleteMany({ eventID })
+
+      // Re-enable the room after cleanup
+      await collection('roomStatus').updateOne(
+        { eventID },
+        { $set: { isActive: true } }
+      )
     }
 
 
