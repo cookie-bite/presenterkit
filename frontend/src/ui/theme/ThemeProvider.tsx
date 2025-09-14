@@ -1,0 +1,35 @@
+"use client"
+
+import { createContext, useContext, useState, ReactNode } from "react";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { colors, Mode } from "./colors";
+
+type ThemeContextType = {
+  mode: Mode;
+  setMode: (mode: Mode) => void;
+};
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+};
+
+type Props = { children: ReactNode };
+
+export const ThemeProvider = ({ children }: Props) => {
+  const [mode, setMode] = useState<Mode>("dark");
+
+  const theme = {
+    colors: colors[mode],
+    mode,
+  };
+
+  return (
+    <ThemeContext.Provider value={{ mode, setMode }}>
+      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+    </ThemeContext.Provider>
+  );
+};
