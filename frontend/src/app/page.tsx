@@ -1,30 +1,38 @@
 "use client";
 
-import styled from "styled-components";
-
-const Container = styled.div`
-  background: ${({theme}) => theme.colors.material.thin}
-`
-
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.fill.primary};
-  color: ${({ theme }) => theme.colors.text.primary};
-  border: 1px solid ${({ theme }) => theme.colors.accent.blue};
-`;
-
-const Head = styled.h1`
-  color: ${({ theme }) => theme.colors.accent.red};
-`;
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import {
+  Container,
+  Displays,
+  Files,
+  PanelResizer,
+  Preview,
+  Toolbar,
+} from "./styles";
 
 export default function Home() {
   return (
     <Container>
-      <Card>
-        <Head>New Arch</Head>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        </p>
-      </Card>
+      <Toolbar />
+      <PanelGroup direction="horizontal">
+        <Panel defaultSize={20}>
+          <Files>
+            <h1>Files</h1>
+          </Files>
+        </Panel>
+        <PanelResizer />
+        <Panel>
+          <Preview>
+            <h1>Preview</h1>
+          </Preview>
+        </Panel>
+        <PanelResizer />
+        <Panel defaultSize={20}>
+          <Displays>
+            <h1>Displays</h1>
+          </Displays>
+        </Panel>
+      </PanelGroup>
     </Container>
   );
 }

@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { colors, Mode } from "./colors";
+import { radius } from "./radius";
 
 type ThemeContextType = {
   mode: Mode;
@@ -25,6 +26,7 @@ export const ThemeProvider = ({ children }: Props) => {
   const theme = {
     colors: colors[mode],
     mode,
+    radius,
   };
 
   return (
