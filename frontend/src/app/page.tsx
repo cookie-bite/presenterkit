@@ -5,6 +5,7 @@ import {
   Container,
   Displays,
   Files,
+  Menu,
   PanelResizer,
   Preview,
   Toolbar,
@@ -13,7 +14,7 @@ import {
 export default function Home() {
   return (
     <Container>
-      <Toolbar />
+      <Menu />
       <PanelGroup direction="horizontal">
         <Panel defaultSize={20}>
           <Files>
@@ -23,6 +24,7 @@ export default function Home() {
         <PanelResizer />
         <Panel>
           <Preview>
+            <Toolbar />
             <h1>Preview</h1>
           </Preview>
         </Panel>
