@@ -2,8 +2,10 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { GlobalStyles } from "./global";
 import { colors, Mode } from "./colors";
 import { radius } from "./radius";
+import { text } from "./text";
 
 type ThemeContextType = {
   mode: Mode;
@@ -27,11 +29,15 @@ export const ThemeProvider = ({ children }: Props) => {
     colors: colors[mode],
     mode,
     radius,
+    text,
   };
 
   return (
     <ThemeContext.Provider value={{ mode, setMode }}>
-      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+      <StyledThemeProvider theme={theme}>
+        <GlobalStyles />
+        {children}
+      </StyledThemeProvider>
     </ThemeContext.Provider>
   );
 };
