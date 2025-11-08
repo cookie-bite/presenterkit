@@ -1,6 +1,6 @@
-import { Configuration, Value } from "@itgorillaz/configify";
-import { IsBoolean, IsString } from "class-validator";
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { Configuration, Value } from '@itgorillaz/configify';
+import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { IsBoolean, IsString } from 'class-validator';
 
 @Configuration()
 export class DatabaseConfig {
@@ -9,7 +9,9 @@ export class DatabaseConfig {
   databaseUrl: string;
 
   @IsBoolean()
-  @Value('DB_SSL', { parse: (v) => (v === undefined ? true : ["1", "true", "yes"].includes(String(v).toLowerCase())) })
+  @Value('DB_SSL', {
+    parse: (v) => (v === undefined ? true : ['1', 'true', 'yes'].includes(String(v).toLowerCase())),
+  })
   ssl: boolean;
 
   getTypeOrmConfig(): TypeOrmModuleOptions {
@@ -22,5 +24,3 @@ export class DatabaseConfig {
     };
   }
 }
-
-

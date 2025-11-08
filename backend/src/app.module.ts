@@ -1,6 +1,6 @@
+import { ConfigifyModule } from '@itgorillaz/configify';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigifyModule } from '@itgorillaz/configify';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseConfig } from './config/database.config';
@@ -16,4 +16,4 @@ import { DatabaseConfig } from './config/database.config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
