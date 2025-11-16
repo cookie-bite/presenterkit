@@ -50,6 +50,10 @@ export const colors = {
       pink: 'hsla(349, 100%, 59%, 0.17)',
       gray: 'hsla(240, 2%, 57%, 0.17)',
       brown: 'hsla(34, 27%, 50%, 0.17)',
+    },
+    landing: {
+      text: '#000000',
+      background: '#0f111a',
     }
   },
   dark: {
@@ -103,6 +107,10 @@ export const colors = {
       pink: 'hsla(349, 100%, 59%, 0.17)',
       gray: 'hsla(240, 2%, 57%, 0.17)',
       brown: 'hsla(34, 27%, 50%, 0.17)',
+    },
+    landing: {
+      text: '#ffffff',
+      background: '#0f111a',
     }
   }
 }
