@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { media } from "../ui/theme/breakpoints";
+import { media } from "@/ui/theme/breakpoints";
 
 export const Nav = styled.nav`
   display: flex;
