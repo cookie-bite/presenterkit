@@ -367,7 +367,7 @@ export class AuthService {
 
       // Generate new access token
       const accessTokenOptions: SignOptions = {
-        expiresIn: this.authConfig.accessTokenExpiration as any,
+        expiresIn: this.authConfig.accessTokenExpiration as SignOptions['expiresIn'],
       };
       const accessToken = jwt.sign(
         { sub: payload.sub },
