@@ -1,29 +1,23 @@
-import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	Index,
-	PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("pending_users")
-@Index(["email"], { unique: true })
+@Entity('pending_users')
+@Index(['email'], { unique: true })
 export class PendingUser {
-	@PrimaryGeneratedColumn("uuid")
-	id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-	@Column()
-	username: string;
+  @Column()
+  username: string;
 
-	@Column({ unique: true })
-	email: string;
+  @Column({ unique: true })
+  email: string;
 
-	@Column()
-	password: string;
+  @Column()
+  password: string;
 
-	@Column()
-	otp: string;
+  @Column()
+  otp: string;
 
-	@CreateDateColumn()
-	createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 }

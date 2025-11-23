@@ -23,10 +23,7 @@ import type { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import type { RefreshDto } from './dto/refresh.dto';
 import type { RegisterDto } from './dto/register.dto';
 import type { VerifyDto } from './dto/verify.dto';
-import {
-	Confirmation,
-	ConfirmationType,
-} from './entities/confirmation.entity';
+import { Confirmation, ConfirmationType } from './entities/confirmation.entity';
 import { PendingUser } from './entities/pending-user.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { User } from './entities/user.entity';
@@ -80,11 +77,7 @@ export class AuthService {
       );
 
       // Send email
-      await this.sendEmail(
-        email,
-        'Your Confirmation Code',
-        `Your confirmation code is ${otp}`,
-      );
+      await this.sendEmail(email, 'Your Confirmation Code', `Your confirmation code is ${otp}`);
 
       return {
         success: true,
@@ -103,9 +96,7 @@ export class AuthService {
       where: { email, otp },
     });
     if (!pending) {
-      throw new BadRequestException(
-        'Invalid confirmation code or email',
-      );
+      throw new BadRequestException('Invalid confirmation code or email');
     }
 
     // Check if user already exists
@@ -129,9 +120,7 @@ export class AuthService {
       await this._pendingUserRepository.delete({ email });
 
       // Generate tokens
-      const { accessToken, refreshToken } = await this.generateTokens(
-        savedUser.id,
-      );
+      const { accessToken, refreshToken } = await this.generateTokens(savedUser.id);
 
       // Save refresh token
       const refreshTokenEntity = this._refreshTokenRepository.create({
@@ -188,9 +177,7 @@ export class AuthService {
     }
   }
 
-  async requestPasswordReset(
-    passwordResetRequestDto: PasswordResetRequestDto,
-  ) {
+  async requestPasswordReset(passwordResetRequestDto: PasswordResetRequestDto) {
     const { email } = passwordResetRequestDto;
 
     // Find user
@@ -203,9 +190,7 @@ export class AuthService {
 
     try {
       // Generate confirmation code
-      const confirmationCode = Math.floor(
-        100000 + Math.random() * 900000,
-      ).toString();
+      const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
       // Delete any existing password reset confirmations for this user
       await this._confirmationRepository.delete({
@@ -237,9 +222,7 @@ export class AuthService {
     }
   }
 
-  async confirmPasswordReset(
-    passwordResetConfirmDto: PasswordResetConfirmDto,
-  ) {
+  async confirmPasswordReset(passwordResetConfirmDto: PasswordResetConfirmDto) {
     const { email, password, confirmationToken } = passwordResetConfirmDto;
 
     // Find user (FIX: Fixed undefined variable - use email from DTO)
@@ -253,9 +236,7 @@ export class AuthService {
     // Check if new password is different from old one
     const isSamePassword = await this.verifyPassword(user.password, password);
     if (isSamePassword) {
-      throw new BadRequestException(
-        'New password should be different from old one',
-      );
+      throw new BadRequestException('New password should be different from old one');
     }
 
     // Find and verify confirmation token
@@ -432,20 +413,12 @@ export class AuthService {
     const accessTokenOptions: SignOptions = {
       expiresIn: this.authConfig.accessTokenExpiration as SignOptions['expiresIn'],
     };
-    const accessToken = jwt.sign(
-      payload,
-      this.authConfig.accessTokenSecret,
-      accessTokenOptions,
-    );
+    const accessToken = jwt.sign(payload, this.authConfig.accessTokenSecret, accessTokenOptions);
 
     const refreshTokenOptions: SignOptions = {
       expiresIn: this.authConfig.refreshTokenExpiration as SignOptions['expiresIn'],
     };
-    const refreshToken = jwt.sign(
-      payload,
-      this.authConfig.refreshTokenSecret,
-      refreshTokenOptions,
-    );
+    const refreshToken = jwt.sign(payload, this.authConfig.refreshTokenSecret, refreshTokenOptions);
 
     return { accessToken, refreshToken };
   }
@@ -458,26 +431,18 @@ export class AuthService {
     });
   }
 
-  private async verifyPassword(
-    hashedPassword: string,
-    plainPassword: string,
-  ): Promise<boolean> {
-    return argon2.verify(
-      hashedPassword,
-      plainPassword + this.authConfig.pepper,
-    );
+  private async verifyPassword(hashedPassword: string, plainPassword: string): Promise<boolean> {
+    return argon2.verify(hashedPassword, plainPassword + this.authConfig.pepper);
   }
 
-  private async sendEmail(
-    to: string,
-    subject: string,
-    text: string,
-  ): Promise<void> {
+  private async sendEmail(to: string, subject: string, text: string): Promise<void> {
     const { error } = await this.resend.emails.send({
       from: 'PresenterKit <no-reply@email.presenterkit.app>',
       to,
       subject: subject || 'Password Reset',
-      html: text || `Hello ${to},<br><br>You are receiving this email because you (or someone else) have requested the reset of the password for your account.`,
+      html:
+        text ||
+        `Hello ${to},<br><br>You are receiving this email because you (or someone else) have requested the reset of the password for your account.`,
     });
 
     if (error) {
@@ -486,4 +451,3 @@ export class AuthService {
     }
   }
 }
-

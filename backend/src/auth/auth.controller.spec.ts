@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AuthController } from './auth.controller';
@@ -82,9 +78,7 @@ describe('AuthController', () => {
         new BadRequestException('This email is already registered'),
       );
 
-      await expect(controller.register(registerDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(controller.register(registerDto)).rejects.toThrow(BadRequestException);
       expect(authService.register).toHaveBeenCalledWith(registerDto);
     });
 
@@ -138,9 +132,7 @@ describe('AuthController', () => {
         new BadRequestException('Invalid confirmation code or email'),
       );
 
-      await expect(controller.verify(verifyDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(controller.verify(verifyDto)).rejects.toThrow(BadRequestException);
       expect(authService.verify).toHaveBeenCalledWith(verifyDto);
     });
 
@@ -190,13 +182,9 @@ describe('AuthController', () => {
         password: 'WrongPassword123!',
       };
 
-      mockAuthService.login.mockRejectedValue(
-        new BadRequestException('Invalid email or password'),
-      );
+      mockAuthService.login.mockRejectedValue(new BadRequestException('Invalid email or password'));
 
-      await expect(controller.login(loginDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(controller.login(loginDto)).rejects.toThrow(BadRequestException);
       expect(authService.login).toHaveBeenCalledWith(loginDto);
     });
 
@@ -230,17 +218,11 @@ describe('AuthController', () => {
         info: 'Confirmation code has been sent to your email.',
       };
 
-      mockAuthService.requestPasswordReset.mockResolvedValue(
-        expectedResponse,
-      );
+      mockAuthService.requestPasswordReset.mockResolvedValue(expectedResponse);
 
-      const result = await controller.requestPasswordReset(
-        passwordResetRequestDto,
-      );
+      const result = await controller.requestPasswordReset(passwordResetRequestDto);
 
-      expect(authService.requestPasswordReset).toHaveBeenCalledWith(
-        passwordResetRequestDto,
-      );
+      expect(authService.requestPasswordReset).toHaveBeenCalledWith(passwordResetRequestDto);
       expect(result).toEqual(expectedResponse);
     });
 
@@ -253,12 +235,10 @@ describe('AuthController', () => {
         new BadRequestException('User not found'),
       );
 
-      await expect(
-        controller.requestPasswordReset(passwordResetRequestDto),
-      ).rejects.toThrow(BadRequestException);
-      expect(authService.requestPasswordReset).toHaveBeenCalledWith(
-        passwordResetRequestDto,
+      await expect(controller.requestPasswordReset(passwordResetRequestDto)).rejects.toThrow(
+        BadRequestException,
       );
+      expect(authService.requestPasswordReset).toHaveBeenCalledWith(passwordResetRequestDto);
     });
 
     it('should pass DTO to service', async () => {
@@ -273,9 +253,7 @@ describe('AuthController', () => {
 
       await controller.requestPasswordReset(passwordResetRequestDto);
 
-      expect(authService.requestPasswordReset).toHaveBeenCalledWith(
-        passwordResetRequestDto,
-      );
+      expect(authService.requestPasswordReset).toHaveBeenCalledWith(passwordResetRequestDto);
       expect(authService.requestPasswordReset).toHaveBeenCalledTimes(1);
     });
   });
@@ -293,17 +271,11 @@ describe('AuthController', () => {
         info: 'Password has been changed successfully.',
       };
 
-      mockAuthService.confirmPasswordReset.mockResolvedValue(
-        expectedResponse,
-      );
+      mockAuthService.confirmPasswordReset.mockResolvedValue(expectedResponse);
 
-      const result = await controller.confirmPasswordReset(
-        passwordResetConfirmDto,
-      );
+      const result = await controller.confirmPasswordReset(passwordResetConfirmDto);
 
-      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(
-        passwordResetConfirmDto,
-      );
+      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(passwordResetConfirmDto);
       expect(result).toEqual(expectedResponse);
     });
 
@@ -318,12 +290,10 @@ describe('AuthController', () => {
         new BadRequestException('Confirmation token is incorrect'),
       );
 
-      await expect(
-        controller.confirmPasswordReset(passwordResetConfirmDto),
-      ).rejects.toThrow(BadRequestException);
-      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(
-        passwordResetConfirmDto,
+      await expect(controller.confirmPasswordReset(passwordResetConfirmDto)).rejects.toThrow(
+        BadRequestException,
       );
+      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(passwordResetConfirmDto);
     });
 
     it('should pass DTO to service', async () => {
@@ -340,9 +310,7 @@ describe('AuthController', () => {
 
       await controller.confirmPasswordReset(passwordResetConfirmDto);
 
-      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(
-        passwordResetConfirmDto,
-      );
+      expect(authService.confirmPasswordReset).toHaveBeenCalledWith(passwordResetConfirmDto);
       expect(authService.confirmPasswordReset).toHaveBeenCalledTimes(1);
     });
   });
@@ -374,13 +342,9 @@ describe('AuthController', () => {
         code: '000000',
       };
 
-      mockAuthService.verifyEmail.mockRejectedValue(
-        new ConflictException('Code is incorrect'),
-      );
+      mockAuthService.verifyEmail.mockRejectedValue(new ConflictException('Code is incorrect'));
 
-      await expect(controller.verifyEmail(emailVerifyDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(controller.verifyEmail(emailVerifyDto)).rejects.toThrow(ConflictException);
       expect(authService.verifyEmail).toHaveBeenCalledWith(emailVerifyDto);
     });
 
@@ -431,9 +395,7 @@ describe('AuthController', () => {
         new UnauthorizedException('Invalid refresh token'),
       );
 
-      await expect(controller.refreshToken(refreshDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(controller.refreshToken(refreshDto)).rejects.toThrow(UnauthorizedException);
       expect(authService.refreshToken).toHaveBeenCalledWith(refreshDto);
     });
 
@@ -477,13 +439,9 @@ describe('AuthController', () => {
         token: 'invalid-refresh-token',
       };
 
-      mockAuthService.logout.mockRejectedValue(
-        new UnauthorizedException('Invalid refresh token'),
-      );
+      mockAuthService.logout.mockRejectedValue(new UnauthorizedException('Invalid refresh token'));
 
-      await expect(controller.logout(logoutDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(controller.logout(logoutDto)).rejects.toThrow(UnauthorizedException);
       expect(authService.logout).toHaveBeenCalledWith(logoutDto);
     });
 
@@ -503,4 +461,3 @@ describe('AuthController', () => {
     });
   });
 });
-

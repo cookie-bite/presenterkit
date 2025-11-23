@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
@@ -39,17 +33,13 @@ export class AuthController {
 
   @Post('password-reset/request')
   @HttpCode(HttpStatus.OK)
-  async requestPasswordReset(
-    @Body() passwordResetRequestDto: PasswordResetRequestDto,
-  ) {
+  async requestPasswordReset(@Body() passwordResetRequestDto: PasswordResetRequestDto) {
     return this.authService.requestPasswordReset(passwordResetRequestDto);
   }
 
   @Post('password-reset/confirm')
   @HttpCode(HttpStatus.OK)
-  async confirmPasswordReset(
-    @Body() passwordResetConfirmDto: PasswordResetConfirmDto,
-  ) {
+  async confirmPasswordReset(@Body() passwordResetConfirmDto: PasswordResetConfirmDto) {
     return this.authService.confirmPasswordReset(passwordResetConfirmDto);
   }
 
@@ -71,4 +61,3 @@ export class AuthController {
     return this.authService.logout(logoutDto);
   }
 }
-

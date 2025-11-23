@@ -1,38 +1,38 @@
 import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	OneToMany,
-	PrimaryGeneratedColumn,
-	UpdateDateColumn,
-} from "typeorm";
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-import { Event } from "./event.entity";
-import { RefreshToken } from "./refresh-token.entity";
+import { Event } from './event.entity';
+import { RefreshToken } from './refresh-token.entity';
 
-@Entity("users")
+@Entity('users')
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column({ type: "varchar", length: 30 })
-	username: string;
+  @Column({ type: 'varchar', length: 30 })
+  username: string;
 
-	@Column({ unique: true })
-	email: string;
+  @Column({ unique: true })
+  email: string;
 
-	@Column()
-	password: string;
+  @Column()
+  password: string;
 
-	@OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
-	refreshTokens: RefreshToken[];
+  @OneToMany(() => RefreshToken, refreshToken => refreshToken.user)
+  refreshTokens: RefreshToken[];
 
-	@OneToMany(() => Event, (event) => event.user)
-	events: Event[];
+  @OneToMany(() => Event, event => event.user)
+  events: Event[];
 
-	@CreateDateColumn()
-	createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-	@UpdateDateColumn()
-	updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -10,7 +10,7 @@ export class DatabaseConfig {
 
   @IsBoolean()
   @Value('DB_SSL', {
-    parse: (v) => (v === undefined ? true : ['1', 'true', 'yes'].includes(String(v).toLowerCase())),
+    parse: v => (v === undefined ? true : ['1', 'true', 'yes'].includes(String(v).toLowerCase())),
   })
   ssl: boolean;
 
