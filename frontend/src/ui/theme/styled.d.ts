@@ -1,7 +1,7 @@
 import 'styled-components';
 import { colors, Mode } from './colors';
 import { radius } from './radius';
-import { text } from "./text";
+import { text } from './text';
 
 declare module 'styled-components' {
   export interface DefaultTheme {

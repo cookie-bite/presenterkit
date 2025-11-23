@@ -1,4 +1,4 @@
-import { Container, Toolbar } from "./styled";
+import { Container, Toolbar } from './styled';
 
 export const Stage = () => {
   return (

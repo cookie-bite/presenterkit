@@ -1,5 +1,5 @@
-import { PanelResizeHandle } from "react-resizable-panels";
-import styled from "styled-components";
+import { PanelResizeHandle } from 'react-resizable-panels';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -10,8 +10,8 @@ export const Container = styled.div`
   padding: 8px;
   margin: 0;
   background: ${({ theme }) => theme.colors.material.medium};
-`
+`;
 
 export const PanelResizer = styled(PanelResizeHandle)`
   width: 8px;
-`
+`;

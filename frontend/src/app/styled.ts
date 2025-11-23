@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import { media } from "@/ui/theme/breakpoints";
+import { media } from '@/ui/theme/breakpoints';
 
 export const Nav = styled.nav`
   display: flex;
@@ -26,7 +26,9 @@ export const NavContent = styled.div`
   background-color: ${({ theme }) => theme.colors.fill.quaternary};
   -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
   backdrop-filter: saturate(180%) blur(20px);
-  box-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.1), 0 3px 5px 1px #0004;
+  box-shadow:
+    inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.1),
+    0 3px 5px 1px #0004;
 `;
 
 export const NavItem = styled.a`
@@ -193,4 +195,3 @@ export const Video = styled.video`
     box-shadow: 0 0 110px 20px #fff3;
   `}
 `;
-

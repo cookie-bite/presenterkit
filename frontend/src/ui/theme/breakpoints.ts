@@ -1,7 +1,7 @@
-import { css } from "styled-components";
+import { css } from 'styled-components';
 
 export const breakpoints = {
-  mobile: "1020px",
+  mobile: '1020px',
 } as const;
 
 export const media = {
@@ -11,4 +11,3 @@ export const media = {
     }
   `,
 };
-

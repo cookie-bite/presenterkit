@@ -1,8 +1,8 @@
 :root {
   --bg-t1: #0f111a;
-  --lbl-2: #EBEBF599;
-  --fill-4: #7474802E;
-  --tint: #0A84FF;
+  --lbl-2: #ebebf599;
+  --fill-4: #7474802e;
+  --tint: #0a84ff;
   --content-width: 1020px;
 }
 
@@ -90,7 +90,9 @@ nav {
   background-color: var(--fill-4);
   -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
   backdrop-filter: saturate(180%) blur(20px);
-  box-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.1), 0 3px 5px 1px #0004;
+  box-shadow:
+    inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.1),
+    0 3px 5px 1px #0004;
 
   .nav-item {
     display: flex;

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { createContext, ReactNode,useContext, useState } from "react";
-import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { createContext, ReactNode, useContext, useState } from 'react';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-import { colors, Mode } from "./colors";
-import { GlobalStyles } from "./global";
-import { radius } from "./radius";
-import { text } from "./text";
+import { colors, Mode } from './colors';
+import { GlobalStyles } from './global';
+import { radius } from './radius';
+import { text } from './text';
 
 type ThemeContextType = {
   mode: Mode;
@@ -17,14 +17,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  if (!context) throw new Error('useTheme must be used within ThemeProvider');
   return context;
 };
 
 type Props = { children: ReactNode };
 
 export const ThemeProvider = ({ children }: Props) => {
-  const [mode, setMode] = useState<Mode>("dark");
+  const [mode, setMode] = useState<Mode>('dark');
 
   const theme = {
     colors: colors[mode],

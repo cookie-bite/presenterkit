@@ -54,7 +54,7 @@ export const colors = {
     landing: {
       text: '#000000',
       background: '#0f111a',
-    }
+    },
   },
   dark: {
     accent: {
@@ -111,8 +111,8 @@ export const colors = {
     landing: {
       text: '#ffffff',
       background: '#0f111a',
-    }
-  }
-}
+    },
+  },
+};
 
-export type Mode = "light" | "dark";
+export type Mode = 'light' | 'dark';

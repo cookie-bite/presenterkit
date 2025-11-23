@@ -1,12 +1,7 @@
-import { StyledScrollView } from "./ScrollView.styled";
-import { ScrollViewProps } from "./ScrollView.types";
+import { StyledScrollView } from './ScrollView.styled';
+import { ScrollViewProps } from './ScrollView.types';
 
-export const ScrollView = ({
-  direction,
-  children,
-  $gap,
-  $padding,
-}: ScrollViewProps) => {
+export const ScrollView = ({ direction, children, $gap, $padding }: ScrollViewProps) => {
   return (
     <StyledScrollView direction={direction} $gap={$gap} $padding={$padding}>
       <>{children}</>

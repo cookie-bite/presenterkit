@@ -1,1 +1,1 @@
-export { ResponsiveImage } from "./ResponsiveImage"
+export { ResponsiveImage } from './ResponsiveImage';

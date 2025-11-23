@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const StyledIconWrapper = styled.div<{ $size: number; $color: string }>`
   display: flex;
@@ -19,7 +19,20 @@ export const StyledIconWrapper = styled.div<{ $size: number; $color: string }>`
 `;
 
 type ColorCategory = 'accent' | 'fill' | 'text' | 'material' | 'background';
-type AccentColor = 'red' | 'orange' | 'yellow' | 'green' | 'mint' | 'teal' | 'cyan' | 'blue' | 'indigo' | 'purple' | 'pink' | 'gray' | 'brown';
+type AccentColor =
+  | 'red'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'mint'
+  | 'teal'
+  | 'cyan'
+  | 'blue'
+  | 'indigo'
+  | 'purple'
+  | 'pink'
+  | 'gray'
+  | 'brown';
 type FillColor = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
 type TextColor = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
 type MaterialColor = 'ultrathick' | 'thick' | 'medium' | 'thin' | 'ultrathin';
