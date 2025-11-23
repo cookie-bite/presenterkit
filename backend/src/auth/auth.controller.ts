@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
+
 import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
 import { LoginDto } from './dto/login.dto';

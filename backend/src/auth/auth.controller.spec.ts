@@ -1,19 +1,20 @@
-import { Test, type TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { EmailVerifyDto } from './dto/email-verify.dto';
+import { LoginDto } from './dto/login.dto';
+import { LogoutDto } from './dto/logout.dto';
+import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
-import { LoginDto } from './dto/login.dto';
-import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
-import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
-import { EmailVerifyDto } from './dto/email-verify.dto';
-import { RefreshDto } from './dto/refresh.dto';
-import { LogoutDto } from './dto/logout.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;

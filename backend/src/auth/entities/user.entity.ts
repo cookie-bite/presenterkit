@@ -6,8 +6,9 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
-import { RefreshToken } from "./refresh-token.entity";
+
 import { Event } from "./event.entity";
+import { RefreshToken } from "./refresh-token.entity";
 
 @Entity("users")
 export class User {

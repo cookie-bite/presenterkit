@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+
 import {
   BadRequestException,
   ConflictException,
@@ -12,6 +13,7 @@ import type { SignOptions } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
 import { Resend } from 'resend';
 import type { Repository } from 'typeorm';
+
 import { AuthConfig } from '../config/auth.config';
 import type { EmailVerifyDto } from './dto/email-verify.dto';
 import type { LoginDto } from './dto/login.dto';

@@ -6,6 +6,7 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
+
 import { User } from "./user.entity";
 
 export enum ConfirmationType {
