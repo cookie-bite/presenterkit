@@ -1,7 +1,8 @@
-import { Panel } from "@/ui/components/Panel";
-import { File, Preview, Title } from "./styled";
-import { ScrollView } from "@/ui/components/ScrollView";
 import { Icon } from "@/ui/components/Icon";
+import { Panel } from "@/ui/components/Panel";
+import { ScrollView } from "@/ui/components/ScrollView";
+
+import { File, Preview, Title } from "./styled";
 
 const files = Array.from({ length: 7 }, (_, i) => ({
   title: `Keynote ${i}`,

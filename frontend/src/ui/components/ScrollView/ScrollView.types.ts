@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
 import type { Property } from "csstype"
+import { ReactNode } from "react";
 
 export type ScrollViewProps = {
   direction?: "vertical" | "horizontal";

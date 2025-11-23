@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { ScrollViewProps } from "./ScrollView.types";
 
 export const StyledScrollView = styled.div<ScrollViewProps>`

@@ -1,5 +1,6 @@
-import { ResponsiveImage } from "@/ui/components/ResponsiveImage";
 import styled from "styled-components";
+
+import { ResponsiveImage } from "@/ui/components/ResponsiveImage";
 
 export const File = styled.div`
   flex-direction: column;

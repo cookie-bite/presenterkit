@@ -1,22 +1,23 @@
 "use client";
 
 import Image from "next/image";
+
 import {
-  Nav,
-  NavContent,
-  NavItem,
-  NavHome,
-  NavButton,
+  ButtonInfo,
+  ButtonInfoText,
+  CTAButton,
+  Hero,
+  HeroSection,
   Logo,
   LogoImageWrapper,
   LogoText,
-  HeroSection,
-  Hero,
-  Title,
+  Nav,
+  NavButton,
+  NavContent,
+  NavHome,
+  NavItem,
   Subtitle,
-  CTAButton,
-  ButtonInfo,
-  ButtonInfoText,
+  Title,
   Video,
 } from "./styled";
 

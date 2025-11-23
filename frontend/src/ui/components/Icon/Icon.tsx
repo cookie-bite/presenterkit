@@ -1,5 +1,5 @@
-import React from "react";
 import type { SVGProps } from "react";
+import React from "react";
 
 import * as allIcons from "./Icon.icons";
 import { StyledIconWrapper, ThemeColorPath } from "./Icon.styled";
