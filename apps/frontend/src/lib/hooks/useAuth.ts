@@ -3,9 +3,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { login, logout, register, verify } from '@/lib/api/auth.api';
+import { googleLogin, login, logout, register, verify } from '@/lib/api/auth.api';
 import { clearAllTokens } from '@/lib/api/token-storage';
-import type { AuthResponse, ErrorResponse, InfoResponse, LoginRequest, RegisterRequest, SuccessResponse, VerifyRequest } from '@/lib/api/types';
+import type { AuthResponse, ErrorResponse, GoogleLoginRequest, InfoResponse, LoginRequest, RegisterRequest, SuccessResponse, VerifyRequest } from '@/lib/api/types';
 
 /**
  * Hook for user registration
@@ -41,6 +41,23 @@ export function useLogin() {
 
   return useMutation<AuthResponse | ErrorResponse, Error, LoginRequest>({
     mutationFn: login,
+    onSuccess: (data) => {
+      if (data.success && 'accessToken' in data) {
+        // Redirect to dashboard on successful login
+        router.push('/dashboard');
+      }
+    },
+  });
+}
+
+/**
+ * Hook for Google sign-in
+ */
+export function useGoogleLogin() {
+  const router = useRouter();
+
+  return useMutation<AuthResponse | ErrorResponse, Error, GoogleLoginRequest>({
+    mutationFn: googleLogin,
     onSuccess: (data) => {
       if (data.success && 'accessToken' in data) {
         // Redirect to dashboard on successful login

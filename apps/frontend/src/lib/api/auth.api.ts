@@ -3,6 +3,7 @@ import { getRefreshToken, setAccessToken } from './token-storage';
 import type {
   AuthResponse,
   ErrorResponse,
+  GoogleLoginRequest,
   InfoResponse,
   LoginRequest,
   LogoutRequest,
@@ -66,6 +67,22 @@ export async function refreshToken(): Promise<RefreshResponse | ErrorResponse> {
     .json<RefreshResponse | ErrorResponse>();
 
   // If successful, store the new access token
+  if (response.success && 'accessToken' in response) {
+    setAccessToken(response.accessToken);
+  }
+
+  return response;
+}
+
+/**
+ * Login with Google ID token
+ */
+export async function googleLogin(data: GoogleLoginRequest): Promise<AuthResponse | ErrorResponse> {
+  const response = await apiClient
+    .post('auth/google', { json: data })
+    .json<AuthResponse | ErrorResponse>();
+
+  // If successful, store the access token (refresh token is set by backend via cookie)
   if (response.success && 'accessToken' in response) {
     setAccessToken(response.accessToken);
   }

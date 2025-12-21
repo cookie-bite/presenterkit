@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon2 from 'argon2';
+import { OAuth2Client } from 'google-auth-library';
 import type { SignOptions } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
 import { Resend } from 'resend';
@@ -16,6 +17,7 @@ import type { Repository } from 'typeorm';
 
 import { AuthConfig } from '../config/auth.config';
 import type { EmailVerifyDto } from './dto/email-verify.dto';
+import type { GoogleLoginDto } from './dto/google-login.dto';
 import type { LoginDto } from './dto/login.dto';
 import type { LogoutDto } from './dto/logout.dto';
 import type { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
@@ -174,6 +176,65 @@ export class AuthService {
       };
     } catch (_error) {
       throw new InternalServerErrorException();
+    }
+  }
+
+  async googleLogin(googleLoginDto: GoogleLoginDto) {
+    const { idToken } = googleLoginDto;
+
+    try {
+      // Verify Google ID token
+      const client = new OAuth2Client(this.authConfig.googleClientId);
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: this.authConfig.googleClientId,
+      });
+      const payload = ticket.getPayload();
+
+      if (!payload || !payload.email) {
+        throw new BadRequestException('Invalid Google token');
+      }
+
+      const email = payload.email;
+      const name = payload.name || email.split('@')[0];
+      const username = name.length > 30 ? name.substring(0, 30) : name;
+
+      // Find or create user
+      let user = await this._userRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        // Create new user with placeholder password (won't be used for Google auth)
+        const placeholderPassword = await this.hashPassword(randomBytes(32).toString('hex'));
+        user = this._userRepository.create({
+          username,
+          email,
+          password: placeholderPassword,
+        });
+        user = await this._userRepository.save(user);
+      }
+
+      // Generate tokens
+      const { accessToken, refreshToken } = await this.generateTokens(user.id);
+
+      // Save refresh token
+      const refreshTokenEntity = this._refreshTokenRepository.create({
+        token: refreshToken,
+        userId: user.id,
+      });
+      await this._refreshTokenRepository.save(refreshTokenEntity);
+
+      return {
+        success: true,
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid Google token');
     }
   }
 

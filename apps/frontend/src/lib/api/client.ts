@@ -1,6 +1,12 @@
 import ky, { type KyInstance } from 'ky';
 
-import { getAccessToken, getRefreshToken, isAccessTokenExpiringSoon, setAccessToken, clearAllTokens } from './token-storage';
+import {
+  getAccessToken,
+  getRefreshToken,
+  isAccessTokenExpiringSoon,
+  setAccessToken,
+  clearAllTokens,
+} from './token-storage';
 import type { RefreshRequest, RefreshResponse, ErrorResponse } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -85,12 +91,15 @@ export const apiClient: KyInstance = ky.create({
   },
   hooks: {
     beforeRequest: [
-      async (request) => {
+      async request => {
         // Skip token attachment for auth endpoints
         const url = new URL(request.url);
-        if (url.pathname.includes('/auth/register') ||
-            url.pathname.includes('/auth/login') ||
-            url.pathname.includes('/auth/verify')) {
+        if (
+          url.pathname.includes('/auth/register') ||
+          url.pathname.includes('/auth/login') ||
+          url.pathname.includes('/auth/verify') ||
+          url.pathname.includes('/auth/google')
+        ) {
           return;
         }
 
@@ -125,7 +134,7 @@ export const apiClient: KyInstance = ky.create({
       },
     ],
     beforeError: [
-      async (error) => {
+      async error => {
         // Handle network errors and timeouts
         if (error.name === 'TimeoutError') {
           error.message = 'Request timeout. Please try again.';
@@ -135,7 +144,7 @@ export const apiClient: KyInstance = ky.create({
         if (error.name === 'HTTPError') {
           // Try to parse error response
           try {
-            const errorBody = await error.response.json() as ErrorResponse;
+            const errorBody = (await error.response.json()) as ErrorResponse;
             if (errorBody.error) {
               error.message = errorBody.error;
             }
@@ -149,4 +158,3 @@ export const apiClient: KyInstance = ky.create({
     ],
   },
 });
-

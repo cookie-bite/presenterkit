@@ -4,10 +4,13 @@ export interface RegisterRequest {
   email: string;
   password: string;
 }
-
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface GoogleLoginRequest {
+  idToken: string;
 }
 
 export interface VerifyRequest {
@@ -50,7 +53,9 @@ export interface SuccessResponse {
 }
 
 // Union type for all possible responses
-export type ApiResponse<T = AuthResponse | ErrorResponse | InfoResponse | RefreshResponse | SuccessResponse> = T;
+export type ApiResponse<
+  T = AuthResponse | ErrorResponse | InfoResponse | RefreshResponse | SuccessResponse,
+> = T;
 
 // JWT Payload type
 export interface JwtPayload {
@@ -58,4 +63,3 @@ export interface JwtPayload {
   exp: number; // expiration timestamp
   iat?: number; // issued at timestamp
 }
-

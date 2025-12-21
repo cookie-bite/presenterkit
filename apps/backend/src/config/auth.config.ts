@@ -26,4 +26,8 @@ export class AuthConfig {
   @IsString()
   @Value('RESEND_API_KEY')
   resendApiKey: string;
+
+  @IsString()
+  @Value('GOOGLE_CLIENT_ID')
+  googleClientId: string;
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { GoogleSignIn } from './partials/GoogleSignIn';
 import { Login } from './partials/Login';
 import { Register } from './partials/Register';
 import { OTPVerification } from './partials/OTPVerification';
@@ -172,6 +173,8 @@ export default function AuthPage() {
               >
                 {actionLabel}
               </Button>
+
+              <GoogleSignIn onError={setApiError} label='Continue with Google' />
             </>
           )}
         </Form>
