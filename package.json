@@ -2,9 +2,17 @@
   "name": "presenterkit",
   "version": "2.0.0",
   "description": "PresenterKit",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend",
+    "apps/backup"
+  ],
   "scripts": {
-    "next": "cd frontend && npm run dev"
+    "backend:dev": "yarn workspace @presenterkit/backend start:dev",
+    "backend:build": "yarn workspace @presenterkit/backend build",
+    "frontend:dev": "yarn workspace @presenterkit/frontend dev",
+    "frontend:build": "yarn workspace @presenterkit/frontend build"
   },
   "repository": {
     "type": "git",
@@ -15,5 +23,6 @@
   "bugs": {
     "url": "https://github.com/cookie-bite/presenterkit/issues"
   },
-  "homepage": "https://github.com/cookie-bite/presenterkit#readme"
+  "homepage": "https://github.com/cookie-bite/presenterkit#readme",
+  "packageManager": "yarn@4.12.0"
 }

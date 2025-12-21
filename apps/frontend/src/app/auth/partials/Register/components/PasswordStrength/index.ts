@@ -1,0 +1,2 @@
+export { PasswordStrength } from './PasswordStrength';
+
