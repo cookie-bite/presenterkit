@@ -17,9 +17,8 @@ export const StyledButton = styled.button`
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 100px;
-  height: 40px;
-  margin-top: 20px;
+  width: 100%;
+  min-height: 40px;
   border-radius: ${({ theme }) => theme.radius.lg};
   background-color: ${({ theme }) => theme.colors.accent.indigo};
   font-size: 15px;

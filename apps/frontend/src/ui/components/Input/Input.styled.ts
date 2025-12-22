@@ -1,11 +1,9 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
-export const InputContainer = styled(motion.div)`
+export const InputContainer = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  margin: 0 10px 10px;
 `;
 
 export const InputField = styled.input<{ $hasError?: boolean }>`

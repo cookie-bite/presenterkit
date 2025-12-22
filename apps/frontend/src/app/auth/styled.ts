@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { Button } from '@/ui';
 import { media } from '@/ui/theme/breakpoints';
 
 export const Container = styled.div`
@@ -61,12 +62,6 @@ export const LogoTitle = styled.h3`
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
-export const Inputs = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
 export const Banner = styled.div`
   display: flex;
   flex-direction: column;
@@ -111,5 +106,36 @@ export const ErrorMessageWrapper = styled.div`
   min-height: 40px;
   max-width: 350px;
   padding: 12px 0;
+  margin-top: 10px;
+`;
+
+export const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 350px;
+  margin: 20px 0;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 14px;
+  font-weight: 500;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.separator.nonOpaque};
+  }
+
+  &:not(:empty)::before {
+    margin-right: 12px;
+  }
+
+  &:not(:empty)::after {
+    margin-left: 12px;
+  }
+`;
+
+export const SubmitButton = styled(Button)`
   margin-top: 10px;
 `;

@@ -22,14 +22,16 @@ import {
   BannerTitle,
   Card,
   Container,
+  Divider,
   ErrorMessageWrapper,
   Form,
   Logo,
   LogoImage,
   LogoTitle,
+  SubmitButton,
 } from './styled';
 import { useLogin, useRegister, useVerify } from '@/lib/hooks/useAuth';
-import { Button, ErrorMessage, Segment } from '@/ui';
+import { ErrorMessage, Segment } from '@/ui';
 
 export default function AuthPage() {
   const [activeSegment, setActiveSegment] = useState<'SignIn' | 'SignUp'>('SignIn');
@@ -166,13 +168,15 @@ export default function AuthPage() {
                 <Register form={registerForm} onSubmit={handleRegister} password={password} />
               )}
 
-              <Button
+              <SubmitButton
                 onClick={handleSubmitAction}
                 disabled={isAuthPending}
                 isPending={isAuthPending}
               >
                 {actionLabel}
-              </Button>
+              </SubmitButton>
+
+              <Divider>or</Divider>
 
               <GoogleSignIn onError={setApiError} label='Continue with Google' />
             </>

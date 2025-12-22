@@ -10,7 +10,7 @@ export const GoogleButton = styled.button`
   color: #3c4043;
   border-radius: ${({ theme }) => theme.radius.lg};
   width: 100%;
-  height: 40px;
+  min-height: 40px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
