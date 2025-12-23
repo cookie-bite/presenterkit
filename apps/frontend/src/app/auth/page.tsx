@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { GoogleSignIn } from './partials/GoogleSignIn';
+import { Banner } from './partials/Banner';
 import { Login } from './partials/Login';
 import { Register } from './partials/Register';
 import { OTPVerification } from './partials/OTPVerification';
@@ -16,20 +17,7 @@ import {
   verifyFormSchema,
   type VerifyFormData,
 } from './schemas';
-import {
-  Banner,
-  BannerImage,
-  BannerTitle,
-  Card,
-  Container,
-  Divider,
-  ErrorMessageWrapper,
-  Form,
-  Logo,
-  LogoImage,
-  LogoTitle,
-  SubmitButton,
-} from './styled';
+import { Card, Container, Divider, ErrorMessageWrapper, Form, Logo, LogoImage, LogoTitle, SubmitButton } from './styled';
 import { useLogin, useRegister, useVerify } from '@/lib/hooks/useAuth';
 import { ErrorMessage, Segment } from '@/ui';
 
@@ -182,14 +170,7 @@ export default function AuthPage() {
             </>
           )}
         </Form>
-        <Banner>
-          <BannerImage src='/images/auth-banner.webp' alt='Presentation' />
-          <BannerTitle>
-            Presentation and audience
-            <br />
-            engagement in one SaaS.
-          </BannerTitle>
-        </Banner>
+        <Banner />
       </Card>
     </Container>
   );
