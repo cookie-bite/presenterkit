@@ -23,8 +23,9 @@ export const StyledButton = styled.button`
   background-color: ${({ theme }) => theme.colors.accent.indigo};
   font-size: 15px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.colors.grays.white};
   border: none;
+  box-shadow: inset 0 0 1px 1px ${({ theme }) => theme.colors.separator.nonOpaque};
   cursor: pointer;
   transition: opacity 0.2s ease;
 
@@ -48,4 +49,3 @@ export const Spinner = styled.div`
   animation: ${rotateSpinner} 0.7s linear infinite;
   border-radius: 100%;
 `;
-
