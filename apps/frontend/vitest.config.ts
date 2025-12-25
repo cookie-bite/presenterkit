@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from 'vitest/config.js';
+import { defineConfig } from 'vitest/config';
 
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 
@@ -10,8 +10,34 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(dirname, './src'),
+    },
+  },
   test: {
+    globals: true,
     projects: [
+      {
+        resolve: {
+          alias: {
+            '@': path.resolve(dirname, './src'),
+          },
+        },
+        test: {
+          name: 'unit',
+          environment: 'jsdom',
+          setupFiles: ['./vitest.setup.ts'],
+          include: ['**/*.test.{ts,tsx}'],
+          exclude: [
+            '**/node_modules/**',
+            '**/.next/**',
+            '**/.storybook/**',
+            '**/*.stories.{ts,tsx}',
+          ],
+          globals: true,
+        },
+      },
       {
         extends: true,
         plugins: [
@@ -22,11 +48,11 @@ export default defineConfig({
         test: {
           name: 'storybook',
           browser: {
-        enabled: true,
-        headless: true,
-        provider: 'playwright',
-        instances: [{ browser: 'chromium' }]
-      },
+            enabled: true,
+            headless: true,
+            provider: 'playwright',
+            instances: [{ browser: 'chromium' }],
+          },
           setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },
