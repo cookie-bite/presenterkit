@@ -9,14 +9,23 @@
     "apps/backup"
   ],
   "scripts": {
+    "prepare": "husky",
     "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"yarn backend:dev\" \"yarn frontend:dev\"",
     "backend:dev": "yarn workspace @presenterkit/backend start:dev",
     "backend:build": "yarn workspace @presenterkit/backend build",
     "frontend:dev": "yarn workspace @presenterkit/frontend dev",
-    "frontend:build": "yarn workspace @presenterkit/frontend build"
+    "frontend:build": "yarn workspace @presenterkit/frontend build",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "standard-version": "^9.5.0"
   },
   "repository": {
     "type": "git",

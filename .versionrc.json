@@ -1,0 +1,32 @@
+{
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "style", "section": "Styles", "hidden": false },
+    { "type": "refactor", "section": "Code Refactoring" },
+    { "type": "perf", "section": "Performance Improvements" },
+    { "type": "test", "section": "Tests" },
+    { "type": "build", "section": "Build System" },
+    { "type": "ci", "section": "Continuous Integration" },
+    { "type": "chore", "hidden": true },
+    { "type": "revert", "section": "Reverts" }
+  ],
+  "bumpFiles": [
+    "package.json",
+    "apps/frontend/package.json",
+    "apps/backend/package.json"
+  ],
+  "packageFiles": [
+    "package.json",
+    "apps/frontend/package.json",
+    "apps/backend/package.json"
+  ],
+  "skip": {
+    "tag": false,
+    "commit": false,
+    "changelog": false
+  },
+  "releaseCommitMessageFormat": "chore(release): {{currentTag}}"
+}
+

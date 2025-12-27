@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Linting frontend..."
+yarn workspace @presenterkit/frontend lint:check
+
+echo "🔍 Linting backend..."
+yarn workspace @presenterkit/backend lint:check
+
+echo "✨ Checking frontend formatting..."
+yarn workspace @presenterkit/frontend format:check
+
+echo "✨ Checking backend formatting..."
+yarn workspace @presenterkit/backend format:check
