@@ -1,3 +1,4 @@
+import type { DefaultTheme } from 'styled-components';
 import styled, { keyframes } from 'styled-components';
 
 const rotateSpinner = keyframes`
@@ -27,24 +28,36 @@ export const StyledButton = styled.button`
   border: none;
   box-shadow: inset 0 0 1px 1px ${({ theme }) => theme.colors.separator.nonOpaque};
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition-property: transform;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover:not(:disabled) {
-    opacity: 0.8;
+    filter: brightness(0.8);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    transition-property: transform;
   }
 
   &:disabled {
-    opacity: 0.5;
+    filter: brightness(0.5) saturate(0.7);
     cursor: not-allowed;
   }
 `;
 
-export const Spinner = styled.div`
+export const Spinner = styled.div<{ $spinnerColor?: string | ((theme: DefaultTheme) => string) }>`
   display: inline-flex;
   width: 16px;
   height: 16px;
   border: 2px solid transparent;
-  border-top-color: ${({ theme }) => theme.colors.grays.white};
+  border-top-color: ${({ theme, $spinnerColor }) =>
+    $spinnerColor
+      ? typeof $spinnerColor === 'function'
+        ? $spinnerColor(theme)
+        : $spinnerColor
+      : theme.colors.grays.white};
   margin: 2px;
   animation: ${rotateSpinner} 0.7s linear infinite;
   border-radius: 100%;

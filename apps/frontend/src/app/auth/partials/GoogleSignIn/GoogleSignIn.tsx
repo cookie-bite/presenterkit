@@ -102,7 +102,8 @@ export function GoogleSignIn({ onError, label }: GoogleSignInProps) {
       <GoogleButton
         type='button'
         onClick={handleClick}
-        disabled={!isGoogleLoaded || googleLoginMutation.isPending}
+        disabled={!isGoogleLoaded}
+        isPending={googleLoginMutation.isPending}
       >
         <Image src='/images/logo-google.svg' alt='Google' width={16} height={16} />
         {label}
