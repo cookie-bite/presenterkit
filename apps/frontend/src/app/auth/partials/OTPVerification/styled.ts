@@ -43,4 +43,3 @@ export const ErrorMessageWrapper = styled.div`
   padding: 12px 0;
   margin-top: 10px;
 `;
-

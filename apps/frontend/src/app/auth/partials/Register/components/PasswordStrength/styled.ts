@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
 
 export const PasswordStrengthContainer = styled(motion.div)`
   display: flex;
@@ -61,4 +61,3 @@ export const Tooltip = styled.div`
     border-top-color: ${({ theme }) => theme.colors.fill.secondary};
   }
 `;
-

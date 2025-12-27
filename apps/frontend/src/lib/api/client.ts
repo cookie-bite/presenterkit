@@ -1,13 +1,13 @@
 import ky, { type KyInstance } from 'ky';
 
 import {
+  clearAllTokens,
   getAccessToken,
   getRefreshToken,
   isAccessTokenExpiringSoon,
   setAccessToken,
-  clearAllTokens,
 } from './token-storage';
-import type { RefreshRequest, RefreshResponse, ErrorResponse } from './types';
+import type { ErrorResponse, RefreshRequest, RefreshResponse } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 

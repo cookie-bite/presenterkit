@@ -40,7 +40,7 @@ export function Segment({ segments, labels, value, onChange }: SegmentProps) {
             aria-controls={`segment-${segmentValue}`}
             id={`segment-${segmentValue}`}
             onClick={() => handleSegmentClick(segmentValue)}
-            onKeyDown={(e) => handleKeyDown(e, segmentValue)}
+            onKeyDown={e => handleKeyDown(e, segmentValue)}
             type='button'
           >
             {isSelected && <SegmentBackground layoutId={layoutId} />}
@@ -51,4 +51,3 @@ export function Segment({ segments, labels, value, onChange }: SegmentProps) {
     </SegmentsContainer>
   );
 }
-

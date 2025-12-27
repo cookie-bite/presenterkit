@@ -5,7 +5,16 @@ import { useRouter } from 'next/navigation';
 
 import { googleLogin, login, logout, register, verify } from '@/lib/api/auth.api';
 import { clearAllTokens } from '@/lib/api/token-storage';
-import type { AuthResponse, ErrorResponse, GoogleLoginRequest, InfoResponse, LoginRequest, RegisterRequest, SuccessResponse, VerifyRequest } from '@/lib/api/types';
+import type {
+  AuthResponse,
+  ErrorResponse,
+  GoogleLoginRequest,
+  InfoResponse,
+  LoginRequest,
+  RegisterRequest,
+  SuccessResponse,
+  VerifyRequest,
+} from '@/lib/api/types';
 
 /**
  * Hook for user registration
@@ -24,7 +33,7 @@ export function useVerify() {
 
   return useMutation<AuthResponse | ErrorResponse, Error, VerifyRequest>({
     mutationFn: verify,
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success && 'accessToken' in data) {
         // Redirect to dashboard on successful verification
         router.push('/dashboard');
@@ -41,7 +50,7 @@ export function useLogin() {
 
   return useMutation<AuthResponse | ErrorResponse, Error, LoginRequest>({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success && 'accessToken' in data) {
         // Redirect to dashboard on successful login
         router.push('/dashboard');
@@ -58,7 +67,7 @@ export function useGoogleLogin() {
 
   return useMutation<AuthResponse | ErrorResponse, Error, GoogleLoginRequest>({
     mutationFn: googleLogin,
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success && 'accessToken' in data) {
         // Redirect to dashboard on successful login
         router.push('/dashboard');
@@ -85,4 +94,3 @@ export function useLogout() {
     },
   });
 }
-

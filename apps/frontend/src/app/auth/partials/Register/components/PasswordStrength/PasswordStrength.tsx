@@ -1,6 +1,7 @@
 'use client';
 
 import { passwordValidators } from '@/app/auth/schemas';
+
 import { PasswordStrengthContainer, PasswordStrengthItem, Tooltip } from './styled';
 
 interface PasswordStrengthProps {
@@ -10,7 +11,7 @@ interface PasswordStrengthProps {
 interface Requirement {
   label: string;
   validator: (password: string) => boolean;
-  tooltip: ((password: string) => string);
+  tooltip: (password: string) => string;
 }
 
 const requirements: Requirement[] = [
@@ -63,15 +64,10 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
         return (
           <PasswordStrengthItem key={index} $isValid={isValid}>
             <h4>{req.label}</h4>
-            {!isValid && (
-              <Tooltip>
-                {tooltip}
-              </Tooltip>
-            )}
+            {!isValid && <Tooltip>{tooltip}</Tooltip>}
           </PasswordStrengthItem>
         );
       })}
     </PasswordStrengthContainer>
   );
 }
-

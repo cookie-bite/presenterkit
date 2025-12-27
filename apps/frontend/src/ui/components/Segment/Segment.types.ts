@@ -4,4 +4,3 @@ export interface SegmentProps {
   value: string;
   onChange: (value: string) => void;
 }
-

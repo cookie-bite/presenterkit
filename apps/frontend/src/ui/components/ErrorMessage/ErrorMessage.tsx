@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useAnimation } from 'framer-motion';
+import { useEffect } from 'react';
+
 import { StyledErrorMessage } from './ErrorMessage.styled';
 import type { ErrorMessageProps } from './ErrorMessage.types';
 
@@ -20,4 +21,3 @@ export function ErrorMessage({ children, animated = true }: ErrorMessageProps) {
 
   return <StyledErrorMessage animate={controls}>{children}</StyledErrorMessage>;
 }
-

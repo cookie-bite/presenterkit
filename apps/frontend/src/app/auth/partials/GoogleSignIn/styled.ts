@@ -14,7 +14,9 @@ export const GoogleButton = styled.button`
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
 
   &:hover {
     background-color: #f8f9fa;

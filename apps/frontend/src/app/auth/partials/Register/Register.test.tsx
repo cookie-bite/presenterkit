@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
+import { describe, expect, it, vi } from 'vitest';
 
-import { Register } from './Register';
+import { render, screen } from '@/test-utils';
+
 import type { RegisterFormData } from '../../schemas';
+import { Register } from './Register';
 
 describe('Register', () => {
   const mockOnSubmit = vi.fn();
@@ -18,7 +19,7 @@ describe('Register', () => {
       },
     });
 
-    const password = form.watch('password');
+    const password = useWatch({ control: form.control, name: 'password' });
 
     return <Register form={form} onSubmit={mockOnSubmit} password={password} />;
   };
@@ -75,7 +76,7 @@ describe('Register', () => {
         },
       });
 
-      const password = form.watch('password');
+      const password = useWatch({ control: form.control, name: 'password' });
 
       return <Register form={form} onSubmit={mockOnSubmit} password={password} />;
     };

@@ -1,25 +1,36 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 
-import { GoogleSignIn } from './partials/GoogleSignIn';
-import { Banner } from './partials/Banner';
-import { Login } from './partials/Login';
-import { Register } from './partials/Register';
-import { OTPVerification } from './partials/OTPVerification';
-import {
-  loginSchema,
-  registerSchema,
-  type LoginFormData,
-  type RegisterFormData,
-  verifyFormSchema,
-  type VerifyFormData,
-} from './schemas';
-import { Card, Container, Divider, ErrorMessageWrapper, Form, Logo, LogoImage, LogoTitle, SubmitButton } from './styled';
 import { useLogin, useRegister, useVerify } from '@/lib/hooks/useAuth';
 import { ErrorMessage, Segment } from '@/ui';
+
+import { Banner } from './partials/Banner';
+import { GoogleSignIn } from './partials/GoogleSignIn';
+import { Login } from './partials/Login';
+import { OTPVerification } from './partials/OTPVerification';
+import { Register } from './partials/Register';
+import {
+  type LoginFormData,
+  loginSchema,
+  type RegisterFormData,
+  registerSchema,
+  type VerifyFormData,
+  verifyFormSchema,
+} from './schemas';
+import {
+  Card,
+  Container,
+  Divider,
+  ErrorMessageWrapper,
+  Form,
+  Logo,
+  LogoImage,
+  LogoTitle,
+  SubmitButton,
+} from './styled';
 
 export default function AuthPage() {
   const [activeSegment, setActiveSegment] = useState<'SignIn' | 'SignUp'>('SignIn');
@@ -112,7 +123,7 @@ export default function AuthPage() {
     }
   };
 
-  const password = registerForm.watch('password');
+  const password = useWatch({ control: registerForm.control, name: 'password' });
   const isSignIn = activeSegment === 'SignIn';
   const actionLabel = isSignIn ? 'Sign in' : 'Sign up';
   const handleSubmitAction = isSignIn

@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
+  type LoginFormData,
   loginSchema,
+  passwordValidators,
+  type RegisterFormData,
   registerSchema,
+  type VerifyFormData,
   verifyFormSchema,
   verifySchema,
-  passwordValidators,
-  type LoginFormData,
-  type RegisterFormData,
-  type VerifyFormData,
 } from './schemas';
 
 describe('loginSchema', () => {

@@ -3,9 +3,10 @@
 import { AnimatePresence } from 'framer-motion';
 import { Controller, type UseFormReturn } from 'react-hook-form';
 
-import { PasswordStrength } from './components/PasswordStrength';
-import type { RegisterFormData } from '../../schemas';
 import { Input } from '@/ui';
+
+import type { RegisterFormData } from '../../schemas';
+import { PasswordStrength } from './components/PasswordStrength';
 import { Inputs } from './styled';
 
 interface RegisterProps {

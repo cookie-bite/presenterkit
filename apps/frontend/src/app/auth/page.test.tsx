@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { render, screen, waitFor } from '@/test-utils';
 
 import AuthPage from './page';
 
@@ -344,7 +345,7 @@ describe('AuthPage', () => {
     // When loading, the button shows a spinner instead of text, so we find it by role and disabled state
     const buttons = screen.getAllByRole('button');
     const submitButton = buttons.find(
-      button => (button as HTMLButtonElement).disabled && button.getAttribute('role') !== 'tab'
+      button => (button as HTMLButtonElement).disabled && button.getAttribute('role') !== 'tab',
     );
     expect(submitButton).toBeDefined();
     expect(submitButton).toBeDisabled();
@@ -363,7 +364,7 @@ describe('AuthPage', () => {
       // When loading, the button shows a spinner instead of text, so we find it by role and disabled state
       const buttons = screen.getAllByRole('button');
       const submitButton = buttons.find(
-        button => (button as HTMLButtonElement).disabled && button.getAttribute('role') !== 'tab'
+        button => (button as HTMLButtonElement).disabled && button.getAttribute('role') !== 'tab',
       );
       expect(submitButton).toBeDefined();
       expect(submitButton).toBeDisabled();

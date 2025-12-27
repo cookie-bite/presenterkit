@@ -1,9 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import Image from 'next/image';
 import Script from 'next/script';
+import { useRef, useState } from 'react';
 
 import { useGoogleLogin } from '@/lib/hooks/useAuth';
+
 import { GoogleButton } from './styled';
 
 declare global {
@@ -102,7 +104,7 @@ export function GoogleSignIn({ onError, label }: GoogleSignInProps) {
         onClick={handleClick}
         disabled={!isGoogleLoaded || googleLoginMutation.isPending}
       >
-        <img src='/images/logo-google.svg' alt='Google' width={16} height={16} />
+        <Image src='/images/logo-google.svg' alt='Google' width={16} height={16} />
         {label}
       </GoogleButton>
     </>

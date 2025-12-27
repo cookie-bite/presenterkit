@@ -6,4 +6,3 @@ export const Inputs = styled.div`
   align-items: center;
   gap: 10px;
 `;
-

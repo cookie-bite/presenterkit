@@ -15,10 +15,12 @@ export const OTPInput = styled.input<{ $hasError?: boolean }>`
   text-align: center;
   width: 40px;
   height: 40px;
-  border: 1px solid ${({ theme, $hasError }) => ($hasError ? theme.colors.accent.red : theme.colors.material.thin)};
+  border: 1px solid
+    ${({ theme, $hasError }) => ($hasError ? theme.colors.accent.red : theme.colors.material.thin)};
   border-radius: ${({ theme }) => theme.radius.lg};
   background-color: ${({ theme }) => theme.colors.fill.quaternary};
-  color: ${({ theme, $hasError }) => ($hasError ? theme.colors.accent.red : theme.colors.text.primary)};
+  color: ${({ theme, $hasError }) =>
+    $hasError ? theme.colors.accent.red : theme.colors.text.primary};
 
   &:focus {
     outline: none;
@@ -29,4 +31,3 @@ export const OTPInput = styled.input<{ $hasError?: boolean }>`
     margin-right: 3px;
   }
 `;
-

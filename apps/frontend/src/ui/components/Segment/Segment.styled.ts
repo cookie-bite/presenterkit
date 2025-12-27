@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
 
 export const SegmentsContainer = styled.div`
   display: flex;
@@ -48,4 +48,3 @@ export const SegmentBackground = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.fill.primary};
   z-index: -1;
 `;
-

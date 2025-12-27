@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { render, screen } from '@/test-utils';
 
 import { Banner } from './Banner';

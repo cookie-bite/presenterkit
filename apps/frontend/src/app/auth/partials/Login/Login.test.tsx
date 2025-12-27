@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
+import { describe, expect, it, vi } from 'vitest';
 
-import { Login } from './Login';
+import { render, screen } from '@/test-utils';
+
 import type { LoginFormData } from '../../schemas';
+import { Login } from './Login';
 
 describe('Login', () => {
   const mockOnSubmit = vi.fn();

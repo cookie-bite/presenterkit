@@ -31,12 +31,15 @@ const getSystemTheme = (): Mode => {
 };
 
 export const ThemeProvider = ({ children }: Props) => {
-  const [mode, setMode] = useState<Mode>('dark'); // Start with 'dark' to avoid hydration mismatch
+  // Use lazy initialization to get system theme on client side, avoiding setState in effect
+  const [mode, setMode] = useState<Mode>(() => {
+    if (typeof window !== 'undefined') {
+      return getSystemTheme();
+    }
+    return 'dark'; // Default for SSR
+  });
 
   useEffect(() => {
-    const systemTheme = getSystemTheme();
-    setMode(systemTheme);
-
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       setMode(e.matches ? 'dark' : 'light');
@@ -53,7 +56,7 @@ export const ThemeProvider = ({ children }: Props) => {
       radius,
       text,
     }),
-    [mode]
+    [mode],
   );
 
   return (

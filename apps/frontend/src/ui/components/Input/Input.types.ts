@@ -4,4 +4,3 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   hasError?: boolean;
   showErrorIcon?: boolean;
 }
-

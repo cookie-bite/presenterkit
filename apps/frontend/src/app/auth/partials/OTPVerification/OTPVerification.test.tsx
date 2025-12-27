@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
+import { describe, expect, it, vi } from 'vitest';
 
-import { OTPVerification } from './OTPVerification';
+import { render, screen } from '@/test-utils';
+
 import type { VerifyFormData } from '../../schemas';
+import { OTPVerification } from './OTPVerification';
 
 describe('OTPVerification', () => {
   const mockOnSubmit = vi.fn();

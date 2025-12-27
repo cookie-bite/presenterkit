@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, type RenderOptions } from '@testing-library/react';
 import React, { ReactElement } from 'react';
+
 import { ThemeProvider } from './ui/theme/ThemeProvider';
 
 // Create a test QueryClient with default options

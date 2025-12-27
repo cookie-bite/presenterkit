@@ -5,4 +5,3 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isPending?: boolean;
   variant?: 'primary' | 'secondary';
 }
-

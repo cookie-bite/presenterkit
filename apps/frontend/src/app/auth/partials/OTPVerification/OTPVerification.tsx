@@ -2,16 +2,17 @@
 
 import { Controller, type UseFormReturn } from 'react-hook-form';
 
-import { OTPInput } from './components/OTPInput';
-import type { VerifyFormData } from '../../schemas';
 import { Button, ErrorMessage } from '@/ui';
+
+import type { VerifyFormData } from '../../schemas';
+import { OTPInput } from './components/OTPInput';
 import {
   ErrorMessageWrapper,
   OTP,
   OTPHeader,
-  OTPHeaderTitle,
-  OTPHeaderSubtitle,
   OTPHeaderEmail,
+  OTPHeaderSubtitle,
+  OTPHeaderTitle,
 } from './styled';
 
 interface OTPVerificationProps {
@@ -57,7 +58,7 @@ export function OTPVerification({
             <OTPInput
               value={field.value}
               onChange={field.onChange}
-              onComplete={(value) => {
+              onComplete={value => {
                 field.onChange(value);
                 // Auto-submit when complete
                 setTimeout(() => {
@@ -76,4 +77,3 @@ export function OTPVerification({
     </OTP>
   );
 }
-

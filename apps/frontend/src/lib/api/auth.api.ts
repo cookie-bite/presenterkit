@@ -25,7 +25,9 @@ export async function register(data: RegisterRequest): Promise<InfoResponse | Er
  * Verify OTP after registration
  */
 export async function verify(data: VerifyRequest): Promise<AuthResponse | ErrorResponse> {
-  const response = await apiClient.post('auth/verify', { json: data }).json<AuthResponse | ErrorResponse>();
+  const response = await apiClient
+    .post('auth/verify', { json: data })
+    .json<AuthResponse | ErrorResponse>();
 
   // If successful, store the access token (refresh token is set by backend via cookie)
   if (response.success && 'accessToken' in response) {
@@ -39,7 +41,9 @@ export async function verify(data: VerifyRequest): Promise<AuthResponse | ErrorR
  * Login with email and password
  */
 export async function login(data: LoginRequest): Promise<AuthResponse | ErrorResponse> {
-  const response = await apiClient.post('auth/login', { json: data }).json<AuthResponse | ErrorResponse>();
+  const response = await apiClient
+    .post('auth/login', { json: data })
+    .json<AuthResponse | ErrorResponse>();
 
   // If successful, store the access token (refresh token is set by backend via cookie)
   if (response.success && 'accessToken' in response) {
@@ -107,4 +111,3 @@ export async function logout(): Promise<SuccessResponse | ErrorResponse> {
     .post('auth/logout', { json: { token: refreshTokenValue } as LogoutRequest })
     .json<SuccessResponse | ErrorResponse>();
 }
-

@@ -17,7 +17,8 @@ export const InputField = styled.input<{ $hasError?: boolean }>`
   border: 1px solid ${({ theme }) => theme.colors.fill.secondary};
   border-radius: ${({ theme }) => theme.radius.xl};
   background-color: ${({ theme }) => theme.colors.fill.quaternary};
-  color: ${({ theme, $hasError }) => ($hasError ? theme.colors.accent.red : theme.colors.text.primary)};
+  color: ${({ theme, $hasError }) =>
+    $hasError ? theme.colors.accent.red : theme.colors.text.primary};
 
   &:focus {
     outline: none;
@@ -38,4 +39,3 @@ export const InputIcon = styled.div`
   height: 20px;
   cursor: pointer;
 `;
-

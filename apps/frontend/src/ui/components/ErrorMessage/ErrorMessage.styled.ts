@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
 
 export const StyledErrorMessage = styled(motion.h4)`
   font-size: 13px;
@@ -10,4 +10,3 @@ export const StyledErrorMessage = styled(motion.h4)`
   word-wrap: break-word;
   overflow-wrap: break-word;
 `;
-

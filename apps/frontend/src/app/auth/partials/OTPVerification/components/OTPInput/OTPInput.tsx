@@ -23,7 +23,7 @@ export function OTPInput({ value, onChange, onComplete, hasError }: OTPInputProp
 
   const handleFocus = (index: number) => {
     // Find the first empty index before the clicked index
-    const firstEmptyIndex = otpValue.findIndex((val) => !val);
+    const firstEmptyIndex = otpValue.findIndex(val => !val);
 
     if (firstEmptyIndex !== -1 && firstEmptyIndex < index) {
       // Focus the first empty input
@@ -56,15 +56,15 @@ export function OTPInput({ value, onChange, onComplete, hasError }: OTPInputProp
       onChange(newValue);
 
       // If all 6 digits are filled, trigger completion and blur all inputs
-      if (digits.length === 6 && newValue.every((val) => val !== '')) {
+      if (digits.length === 6 && newValue.every(val => val !== '')) {
         setTimeout(() => {
           // Blur all inputs
-          inputRefs.current.forEach((ref) => ref?.blur());
+          inputRefs.current.forEach(ref => ref?.blur());
           onComplete?.(newValue);
         }, 0);
       } else {
         // Focus the next empty input or the last one
-        const nextEmptyIndex = newValue.findIndex((val) => !val);
+        const nextEmptyIndex = newValue.findIndex(val => !val);
         const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : 5;
         setTimeout(() => {
           inputRefs.current[focusIndex]?.focus();
@@ -81,12 +81,12 @@ export function OTPInput({ value, onChange, onComplete, hasError }: OTPInputProp
       onChange(newValue);
 
       // Check if all 6 digits are filled
-      const isComplete = newValue.every((val) => val !== '') && newValue.length === 6;
+      const isComplete = newValue.every(val => val !== '') && newValue.length === 6;
 
       if (isComplete) {
         // All digits filled - blur all inputs and trigger completion
         setTimeout(() => {
-          inputRefs.current.forEach((ref) => ref?.blur());
+          inputRefs.current.forEach(ref => ref?.blur());
           onComplete?.(newValue);
         }, 0);
       } else if (index < 5) {
@@ -119,7 +119,7 @@ export function OTPInput({ value, onChange, onComplete, hasError }: OTPInputProp
       {Array.from({ length: 6 }).map((_, i) => (
         <StyledOTPInput
           key={i}
-          ref={(el) => {
+          ref={el => {
             inputRefs.current[i] = el;
           }}
           type='text'
@@ -128,13 +128,12 @@ export function OTPInput({ value, onChange, onComplete, hasError }: OTPInputProp
           value={otpValue[i] || ''}
           $hasError={hasError}
           onFocus={() => handleFocus(i)}
-          onChange={(e) => handleChange(i, e.target.value)}
+          onChange={e => handleChange(i, e.target.value)}
           onPaste={handlePaste}
-          onKeyDown={(e) => handleKeyDown(e, i)}
+          onKeyDown={e => handleKeyDown(e, i)}
           aria-label={`OTP digit ${i + 1}`}
         />
       ))}
     </OTPContainer>
   );
 }
-

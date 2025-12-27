@@ -4,4 +4,3 @@ export interface ErrorMessageProps {
   children: ReactNode;
   animated?: boolean;
 }
-

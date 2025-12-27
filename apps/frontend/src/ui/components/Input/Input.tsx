@@ -25,4 +25,3 @@ export function Input({ hasError, showErrorIcon = true, style, ...props }: Input
     </InputContainer>
   );
 }
-

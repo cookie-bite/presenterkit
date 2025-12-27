@@ -2,8 +2,9 @@
 
 import { Controller, type UseFormReturn } from 'react-hook-form';
 
-import type { LoginFormData } from '../../schemas';
 import { Input } from '@/ui';
+
+import type { LoginFormData } from '../../schemas';
 import { Inputs } from './styled';
 
 interface LoginProps {
@@ -50,4 +51,3 @@ export function Login({ form, onSubmit }: LoginProps) {
     </Inputs>
   );
 }
-

@@ -1,5 +1,5 @@
-import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 import type { JwtPayload } from './types';
 
@@ -74,4 +74,3 @@ export function clearAllTokens(): void {
   clearAccessToken();
   clearRefreshToken();
 }
-
