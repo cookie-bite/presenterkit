@@ -1,4 +1,4 @@
-import { Panel } from '@/ui/components/Panel';
+import { Panel } from '@/ui';
 
 export const Displays = () => {
   return (

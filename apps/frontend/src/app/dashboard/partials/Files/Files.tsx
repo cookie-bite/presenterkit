@@ -1,6 +1,4 @@
-import { Icon } from '@/ui/components/Icon';
-import { Panel } from '@/ui/components/Panel';
-import { ScrollView } from '@/ui/components/ScrollView';
+import { Icon, Panel, ScrollView } from '@/ui';
 
 import { File, Preview, Title } from './styled';
 
