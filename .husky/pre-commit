@@ -1,14 +1,35 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Linting frontend..."
+echo "🔧 Running lint-staged to fix linting and formatting issues..."
+yarn lint-staged
+LINT_STAGED_EXIT=$?
+
+# Continue to check for errors even if lint-staged had issues
+echo ""
+echo "🔍 Checking for remaining linting errors..."
+
 yarn workspace @presenterkit/frontend lint:check
+FRONTEND_LINT_EXIT=$?
 
-echo "🔍 Linting backend..."
 yarn workspace @presenterkit/backend lint:check
+BACKEND_LINT_EXIT=$?
 
-echo "✨ Checking frontend formatting..."
+echo ""
+echo "✨ Checking for remaining formatting errors..."
+
 yarn workspace @presenterkit/frontend format:check
+FRONTEND_FORMAT_EXIT=$?
 
-echo "✨ Checking backend formatting..."
 yarn workspace @presenterkit/backend format:check
+BACKEND_FORMAT_EXIT=$?
+
+# If any check failed, exit with error
+if [ $LINT_STAGED_EXIT -ne 0 ] || [ $FRONTEND_LINT_EXIT -ne 0 ] || [ $BACKEND_LINT_EXIT -ne 0 ] || [ $FRONTEND_FORMAT_EXIT -ne 0 ] || [ $BACKEND_FORMAT_EXIT -ne 0 ]; then
+  echo ""
+  echo "❌ Some linting or formatting errors remain. Please fix them before committing."
+  exit 1
+fi
+
+echo ""
+echo "✅ All checks passed!"
