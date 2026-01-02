@@ -11,10 +11,21 @@ export const Container = styled.div`
   padding: 8px;
 `;
 
-export const BlackWhiteImage = styled.img`
-  filter: grayscale(100%) brightness(0.4);
-  width: 150px;
-  height: 150px;
+export const UploadArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 48px 32px;
+  border: 1px dashed ${({ theme }) => theme.colors.accent.indigo};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background-color: ${({ theme }) => theme.colors.shade.indigo};
+  transition: all 0.2s ease;
+  cursor: pointer;
+  ${({ theme }) => theme.text.headline.regular}
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Commands = styled.div`
@@ -32,6 +43,7 @@ export const Command = styled.button`
   padding: 4px 4px 4px 8px;
   border-radius: ${({ theme }) => theme.radius.lg};
   ${({ theme }) => theme.text.headline.regular}
+  background: transparent;
 
   &:hover {
     background: ${({ theme }) => theme.colors.fill.quaternary};
