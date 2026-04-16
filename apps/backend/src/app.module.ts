@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseConfig } from './config/database.config';
+import { FileModule } from './files/file.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DatabaseConfig } from './config/database.config';
       useFactory: async (dbConfig: DatabaseConfig) => dbConfig.getTypeOrmConfig(),
     }),
     AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

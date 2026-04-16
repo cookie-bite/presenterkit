@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: ${BACKEND_PORT}
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      DB_SSL: ${DB_SSL:-true}
+      ACS_TKN_SCT: ${ACS_TKN_SCT}
+      ACS_TKN_EXP: ${ACS_TKN_EXP}
+      RFS_TKN_SCT: ${RFS_TKN_SCT}
+      RFS_TKN_EXP: ${RFS_TKN_EXP}
+      PEPPER: ${PEPPER}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      AZURE_STORAGE_CONTAINER_NAME: ${AZURE_STORAGE_CONTAINER_NAME}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      PDF2IMG_URL: http://pdf2img:8080
+      LIBREOFFICE_URL: http://gotenberg:3000
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    depends_on:
+      pdf2img:
+        condition: service_started
+      gotenberg:
+        condition: service_started
+
+  pdf2img:
+    build:
+      context: ./apps/pdf2img
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      AZURE_STORAGE_CONTAINER_NAME: ${AZURE_STORAGE_CONTAINER_NAME}
+      BLOB_PATH_PREFIX: ${BLOB_PATH_PREFIX}
+      NESTJS_WEBHOOK_URL: http://backend:${BACKEND_PORT}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+    expose:
+      - "8080"
+
+  gotenberg:
+    image: gotenberg/gotenberg:8-libreoffice
+    restart: unless-stopped
+    expose:
+      - "3000"

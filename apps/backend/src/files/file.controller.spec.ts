@@ -1,0 +1,230 @@
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { firstValueFrom, Subject } from 'rxjs';
+
+import { AzureConfig } from '../config/azure.config';
+import { WebhookFileProcessedDto } from './dto/webhook-file-processed.dto';
+import { FileStatus } from './entities/file.entity';
+import { FileController, WebhookController } from './file.controller';
+import type { FileEvent } from './file.service';
+import { FileService } from './file.service';
+
+describe('FileController', () => {
+  let controller: FileController;
+  let fileService: FileService;
+
+  const fileEvents$ = new Subject<FileEvent>();
+  const mockFileService = {
+    createFile: jest.fn(),
+    getFileById: jest.fn(),
+    getFileEventsStream: jest.fn(),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [FileController],
+      providers: [
+        {
+          provide: FileService,
+          useValue: mockFileService,
+        },
+      ],
+    }).compile();
+
+    controller = module.get<FileController>(FileController);
+    fileService = module.get<FileService>(FileService);
+    mockFileService.getFileEventsStream.mockReturnValue(fileEvents$);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('uploadFile', () => {
+    it('should return fileId and status for valid upload', async () => {
+      const req = { user: { userId: 7 } };
+      const file = {
+        originalname: 'deck.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+      } as Express.Multer.File;
+
+      mockFileService.createFile.mockResolvedValue({
+        fileId: 42,
+        status: FileStatus.PROCESSING,
+      });
+
+      const result = await controller.uploadFile(req, file);
+
+      expect(fileService.createFile).toHaveBeenCalledWith(7, file);
+      expect(result).toEqual({
+        fileId: 42,
+        status: FileStatus.PROCESSING,
+      });
+    });
+
+    it('should throw when file is missing', async () => {
+      const req = { user: { userId: 7 } };
+
+      await expect(
+        controller.uploadFile(req, undefined as unknown as Express.Multer.File),
+      ).rejects.toThrow('No file provided');
+    });
+
+    it('should throw for unsupported mime type', async () => {
+      const req = { user: { userId: 7 } };
+      const file = {
+        originalname: 'archive.zip',
+        mimetype: 'application/zip',
+        size: 1024,
+      } as Express.Multer.File;
+
+      await expect(controller.uploadFile(req, file)).rejects.toThrow(
+        'Invalid file type. Only images, videos, and PDFs are allowed.',
+      );
+    });
+
+    it('should throw when file exceeds max size', async () => {
+      const req = { user: { userId: 7 } };
+      const file = {
+        originalname: 'big.pdf',
+        mimetype: 'application/pdf',
+        size: 201 * 1024 * 1024,
+      } as Express.Multer.File;
+
+      await expect(controller.uploadFile(req, file)).rejects.toThrow(
+        'File size exceeds maximum limit of 200MB',
+      );
+    });
+  });
+
+  describe('getFile', () => {
+    it('should return mapped file response', async () => {
+      const req = { user: { userId: 9 } };
+      const fileEntity = {
+        id: 3,
+        status: FileStatus.READY,
+        filename: '123-deck.pdf',
+        originalName: 'deck.pdf',
+        mimeType: 'application/pdf',
+        size: 2048,
+        blobUrl: 'https://storage/files/blob.pdf',
+        blobPath: 'dev/key/pdfs/source.pdf',
+        storageKey: 'storage-key-1',
+        pageCount: 8,
+        thumbnailUrl: 'https://storage/files/001.webp',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+      };
+      mockFileService.getFileById.mockResolvedValue(fileEntity);
+
+      const result = await controller.getFile(req, 3);
+
+      expect(fileService.getFileById).toHaveBeenCalledWith(3, 9);
+      expect(result.fileId).toBe(3);
+      expect(result.status).toBe(FileStatus.READY);
+      expect(result.storageKey).toBe('storage-key-1');
+    });
+
+    it('should propagate not found errors', async () => {
+      const req = { user: { userId: 9 } };
+      mockFileService.getFileById.mockRejectedValue(new NotFoundException('File not found'));
+
+      await expect(controller.getFile(req, 77)).rejects.toThrow(NotFoundException);
+      expect(fileService.getFileById).toHaveBeenCalledWith(77, 9);
+    });
+  });
+
+  describe('sse', () => {
+    it('should map service events to SSE payload', async () => {
+      const req = { user: { userId: 12 } };
+      const result$ = controller.sse(req);
+
+      const eventPromise = firstValueFrom(result$);
+      fileEvents$.next({ status: FileStatus.PROCESSING });
+
+      const event = await eventPromise;
+      expect(fileService.getFileEventsStream).toHaveBeenCalledWith(12);
+      expect(event.type).toBe('FILE_UPLOADED');
+      expect(event.data).toBe(JSON.stringify({ status: FileStatus.PROCESSING }));
+    });
+  });
+});
+
+describe('WebhookController', () => {
+  let controller: WebhookController;
+  let fileService: FileService;
+
+  const mockFileService = {
+    updateFileStatus: jest.fn(),
+  };
+
+  const mockAzureConfig = {
+    webhookSecret: 'test-secret',
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [WebhookController],
+      providers: [
+        {
+          provide: FileService,
+          useValue: mockFileService,
+        },
+        {
+          provide: AzureConfig,
+          useValue: mockAzureConfig,
+        },
+      ],
+    }).compile();
+
+    controller = module.get<WebhookController>(WebhookController);
+    fileService = module.get<FileService>(FileService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('handleFileProcessed', () => {
+    it('should update file status when secret is valid', async () => {
+      const dto: WebhookFileProcessedDto = {
+        fileId: 12,
+        userId: 4,
+        status: FileStatus.READY,
+        pageCount: 5,
+        thumbnailUrl: 'https://storage/files/001.webp',
+        blobUrl: 'https://storage/files/source.pdf',
+        blobPath: 'dev/abc/pdfs/source.pdf',
+      };
+      mockFileService.updateFileStatus.mockResolvedValue(undefined);
+
+      const result = await controller.handleFileProcessed('test-secret', dto);
+
+      expect(fileService.updateFileStatus).toHaveBeenCalledWith(
+        12,
+        4,
+        FileStatus.READY,
+        5,
+        'https://storage/files/001.webp',
+        undefined,
+        'https://storage/files/source.pdf',
+        'dev/abc/pdfs/source.pdf',
+      );
+      expect(result).toEqual({ success: true });
+    });
+
+    it('should throw unauthorized for invalid secret', async () => {
+      const dto: WebhookFileProcessedDto = {
+        fileId: 12,
+        userId: 4,
+        status: FileStatus.FAILED,
+      };
+
+      await expect(controller.handleFileProcessed('wrong-secret', dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(fileService.updateFileStatus).not.toHaveBeenCalled();
+    });
+  });
+});

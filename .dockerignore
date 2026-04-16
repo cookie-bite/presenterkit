@@ -1,0 +1,12 @@
+.git
+.github
+.cursor
+.yarn/cache
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.turbo
+tmp
+temp
+agent-transcripts

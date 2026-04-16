@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🔧 Running lint-staged to fix linting and formatting issues..."
 yarn lint-staged
 LINT_STAGED_EXIT=$?
