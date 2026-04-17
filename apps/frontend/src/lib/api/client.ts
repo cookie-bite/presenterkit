@@ -3,11 +3,10 @@ import ky, { type KyInstance } from 'ky';
 import {
   clearAllTokens,
   getAccessToken,
-  getRefreshToken,
   isAccessTokenExpiringSoon,
   setAccessToken,
 } from './token-storage';
-import type { ErrorResponse, RefreshRequest, RefreshResponse } from './types';
+import type { ErrorResponse, RefreshResponse } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -18,16 +17,9 @@ let refreshPromise: Promise<string> | null = null;
  * Refresh the access token using the refresh token from cookies
  */
 async function refreshAccessToken(): Promise<string> {
-  const refreshToken = getRefreshToken();
-
-  if (!refreshToken) {
-    throw new Error('No refresh token available');
-  }
-
   try {
     const response = await ky
       .post(`${API_URL}/auth/refresh`, {
-        json: { token: refreshToken } as RefreshRequest,
         credentials: 'include',
         timeout: 20000,
       })
@@ -51,9 +43,8 @@ async function refreshAccessToken(): Promise<string> {
  * Get a valid access token, refreshing if necessary
  * Uses a promise queue to prevent concurrent refresh calls
  */
-async function getValidAccessToken(): Promise<string | null> {
+export async function getValidAccessToken(): Promise<string | null> {
   const currentToken = getAccessToken();
-
   // If no token or token is expiring soon, refresh it
   if (!currentToken || isAccessTokenExpiringSoon()) {
     // If refresh is already in progress, wait for it

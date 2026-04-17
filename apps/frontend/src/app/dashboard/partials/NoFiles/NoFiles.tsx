@@ -22,6 +22,7 @@ export const NoFiles = () => {
     if (files.length > 0) {
       try {
         const result = await uploadMutation.mutateAsync(files[0]);
+        console.log('result', result);
         if ('fileId' in result) {
           setUploadedFileId(result.fileId);
         } else {

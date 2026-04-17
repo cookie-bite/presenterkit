@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { getAccessToken } from '@/lib/api/token-storage';
+import { getValidAccessToken } from '@/lib/api/client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555';
 
 export interface FileEvent {
   status: string;
@@ -43,58 +43,70 @@ export function useFileSSE(
   }, [onFileUploaded, onFileReady, onFileFailed]);
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
-      console.warn('No access token available for SSE connection.');
-      return;
-    }
+    let cancelled = false;
 
-    const eventSource = new EventSource(`${API_URL}/files/events?token=${token}`);
-    eventSourceRef.current = eventSource;
+    const connect = (token: string) => {
+      console.info('Connecting to SSE with token:', token);
+      if (cancelled) return;
+      const eventSource = new EventSource(`${API_URL}/files/events?token=${token}`);
+      eventSourceRef.current = eventSource;
 
-    eventSource.onopen = () => {
-      setIsConnected(true);
-      setError(null);
+      eventSource.onopen = () => {
+        console.info('SSE connection opened');
+        setIsConnected(true);
+        setError(null);
+      };
+
+      eventSource.onerror = err => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          setIsConnected(false);
+          console.error('SSE connection lost:', err);
+          setError(new Error('SSE connection closed'));
+        }
+      };
+
+      eventSource.addEventListener('FILE_UPLOADED', event => {
+        try {
+          const data = JSON.parse(event.data) as FileEvent;
+          callbacksRef.current.onFileUploaded?.(data);
+        } catch (err) {
+          console.error('Error parsing FILE_UPLOADED event:', err);
+        }
+      });
+
+      eventSource.addEventListener('FILE_READY', event => {
+        try {
+          const data = JSON.parse(event.data) as FileEvent;
+          callbacksRef.current.onFileReady?.(data);
+        } catch (err) {
+          console.error('Error parsing FILE_READY event:', err);
+        }
+      });
+
+      eventSource.addEventListener('FILE_FAILED', event => {
+        try {
+          const data = JSON.parse(event.data) as FileEvent;
+          callbacksRef.current.onFileFailed?.(data);
+        } catch (err) {
+          console.error('Error parsing FILE_FAILED event:', err);
+        }
+      });
     };
 
-    eventSource.onerror = err => {
-      // Check readyState to determine what happened
-      if (eventSource.readyState === EventSource.CLOSED) {
-        setIsConnected(false);
-        console.error('SSE connection lost:', err);
-        setError(new Error('SSE connection closed'));
-      }
-    };
-
-    eventSource.addEventListener('FILE_UPLOADED', event => {
-      try {
-        const data = JSON.parse(event.data) as FileEvent;
-        callbacksRef.current.onFileUploaded?.(data);
-      } catch (err) {
-        console.error('Error parsing FILE_UPLOADED event:', err);
-      }
-    });
-
-    eventSource.addEventListener('FILE_READY', event => {
-      try {
-        const data = JSON.parse(event.data) as FileEvent;
-        callbacksRef.current.onFileReady?.(data);
-      } catch (err) {
-        console.error('Error parsing FILE_READY event:', err);
-      }
-    });
-
-    eventSource.addEventListener('FILE_FAILED', event => {
-      try {
-        const data = JSON.parse(event.data) as FileEvent;
-        callbacksRef.current.onFileFailed?.(data);
-      } catch (err) {
-        console.error('Error parsing FILE_FAILED event:', err);
-      }
-    });
+    getValidAccessToken()
+      .then(token => {
+        if (token) {
+          console.info('Access token obtained, connecting to SSE');
+          connect(token);
+        } else {
+          console.warn('No access token available for SSE connection.');
+        }
+      })
+      .catch(err => console.warn('Could not obtain access token for SSE connection.', err));
 
     return () => {
-      eventSource.close();
+      cancelled = true;
+      eventSourceRef.current?.close();
       eventSourceRef.current = null;
       setIsConnected(false);
     };

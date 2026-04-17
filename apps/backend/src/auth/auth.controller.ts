@@ -1,5 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
@@ -8,7 +17,6 @@ import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
-import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
 
@@ -84,8 +92,12 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshDto: RefreshDto) {
-    return this.authService.refreshToken(refreshDto);
+  async refreshToken(@Req() req: Request) {
+    const token = req.cookies?.['refreshToken'];
+    if (!token) {
+      throw new UnauthorizedException('Refresh token required');
+    }
+    return this.authService.refreshToken({ token });
   }
 
   @Post('logout')

@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: ${BACKEND_PORT}
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV}
       DATABASE_URL: ${DATABASE_URL}
       DB_SSL: ${DB_SSL:-true}
       ACS_TKN_SCT: ${ACS_TKN_SCT}
