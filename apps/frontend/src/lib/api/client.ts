@@ -28,6 +28,7 @@ async function refreshAccessToken(): Promise<string> {
     const response = await ky
       .post(`${API_URL}/auth/refresh`, {
         json: { token: refreshToken } as RefreshRequest,
+        credentials: 'include',
         timeout: 20000,
       })
       .json<RefreshResponse | ErrorResponse>();
@@ -85,6 +86,7 @@ async function getValidAccessToken(): Promise<string | null> {
  */
 export const apiClient: KyInstance = ky.create({
   prefixUrl: API_URL,
+  credentials: 'include',
   timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
