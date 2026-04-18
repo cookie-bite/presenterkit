@@ -28,17 +28,14 @@ export class File {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
 
-  @Column({ nullable: true, type: 'int' })
-  eventId: number | null;
+  @Column({ type: 'int' })
+  eventId: number;
 
-  @ManyToOne(() => Event, event => event.files, { onDelete: 'SET NULL', nullable: true })
-  event: Event | null;
+  @ManyToOne(() => Event, event => event.files, { onDelete: 'CASCADE' })
+  event: Event;
 
   @Column()
   filename: string;
-
-  @Column()
-  originalName: string;
 
   @Column()
   mimeType: string;

@@ -5,7 +5,6 @@ export class FileResponseDto {
   status: FileStatus;
   eventID?: string;
   filename?: string;
-  originalName?: string;
   mimeType?: string;
   size?: number;
   blobUrl?: string;

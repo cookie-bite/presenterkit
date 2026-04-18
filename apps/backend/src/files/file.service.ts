@@ -12,7 +12,7 @@ import { FileProcessingService } from './file-processing.service';
 
 export interface FileEvent {
   status: FileStatus;
-  eventId: number | null;
+  eventId: number;
   eventID?: string;
 }
 
@@ -38,18 +38,14 @@ export class FileService {
       userId,
       eventId: event.id,
       filename: sanitize(file.originalname) || 'Untitled',
-      originalName: file.originalname,
       mimeType: file.mimetype,
       size: file.size,
-      status: FileStatus.UPLOADING,
+      status: FileStatus.PROCESSING,
       blobPath: '',
       storageKey: randomUUID(),
     });
 
     const savedFile = await this.fileRepository.save(fileEntity);
-
-    savedFile.status = FileStatus.PROCESSING;
-    await this.fileRepository.save(savedFile);
 
     this.emitFileEvent(userId, {
       status: FileStatus.PROCESSING,

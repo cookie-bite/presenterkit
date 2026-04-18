@@ -107,8 +107,7 @@ describe('FileController', () => {
       const fileEntity = {
         id: 3,
         status: FileStatus.READY,
-        filename: '123-deck.pdf',
-        originalName: 'deck.pdf',
+        filename: 'deck.pdf',
         mimeType: 'application/pdf',
         size: 2048,
         blobUrl: 'https://storage/files/blob.pdf',
@@ -147,7 +146,7 @@ describe('FileController', () => {
       const result$ = controller.sse(req, DEFAULT_EVENT_ID);
 
       const eventPromise = firstValueFrom(result$);
-      fileEvents$.next({ status: FileStatus.PROCESSING, eventId: null, eventID: DEFAULT_EVENT_ID });
+      fileEvents$.next({ status: FileStatus.PROCESSING, eventId: 1, eventID: DEFAULT_EVENT_ID });
 
       const event = await eventPromise;
       expect(fileService.getFileEventsStream).toHaveBeenCalledWith(12);
@@ -155,7 +154,7 @@ describe('FileController', () => {
       expect(event.data).toBe(
         JSON.stringify({
           status: FileStatus.PROCESSING,
-          eventId: null,
+          eventId: 1,
           eventID: DEFAULT_EVENT_ID,
         }),
       );

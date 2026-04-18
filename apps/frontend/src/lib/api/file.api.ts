@@ -12,7 +12,6 @@ export interface FileResponse {
   status: string;
   eventID?: string;
   filename?: string;
-  originalName?: string;
   mimeType?: string;
   size?: number;
   blobUrl?: string;
