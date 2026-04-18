@@ -55,3 +55,22 @@ export async function getFile(fileId: number): Promise<FileResponse | ErrorRespo
     .get(`events/${DEFAULT_EVENT_ID}/files/${fileId}`)
     .json<FileResponse | ErrorResponse>();
 }
+
+/**
+ * Rename a file within the default event
+ */
+export async function renameFile(
+  fileId: number,
+  filename: string,
+): Promise<FileResponse | ErrorResponse> {
+  return apiClient
+    .patch(`events/${DEFAULT_EVENT_ID}/files/${fileId}`, { json: { filename } })
+    .json<FileResponse | ErrorResponse>();
+}
+
+/**
+ * Delete a file within the default event
+ */
+export async function deleteFile(fileId: number): Promise<void> {
+  await apiClient.delete(`events/${DEFAULT_EVENT_ID}/files/${fileId}`);
+}

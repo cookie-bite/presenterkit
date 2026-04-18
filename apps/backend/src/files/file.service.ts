@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BlobServiceClient } from '@azure/storage-blob';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
 import sanitize from 'sanitize-filename';
 import type { Repository } from 'typeorm';
 
+import { AzureConfig } from '../config/azure.config';
 import { EventsService } from '../events/events.service';
 import { File, FileStatus } from './entities/file.entity';
 import { FileProcessingService } from './file-processing.service';
@@ -18,6 +20,7 @@ export interface FileEvent {
 
 @Injectable()
 export class FileService {
+  private readonly logger = new Logger(FileService.name);
   private userEventStreams = new Map<number, Subject<FileEvent>>();
 
   constructor(
@@ -25,6 +28,7 @@ export class FileService {
     private fileRepository: Repository<File>,
     private fileProcessingService: FileProcessingService,
     private eventsService: EventsService,
+    private azureConfig: AzureConfig,
   ) {}
 
   async createFile(
@@ -122,6 +126,36 @@ export class FileService {
       status,
       eventId: file.eventId,
     });
+  }
+
+  async deleteFile(fileId: number, userId: number, eventID: string): Promise<void> {
+    const file = await this.getFileById(fileId, userId, eventID);
+
+    if (file.blobPath) {
+      try {
+        const blobClient = BlobServiceClient.fromConnectionString(
+          this.azureConfig.storageConnectionString,
+        )
+          .getContainerClient(this.azureConfig.containerName)
+          .getBlobClient(file.blobPath);
+        await blobClient.deleteIfExists();
+      } catch (error) {
+        this.logger.warn(`Failed to delete blob for fileId=${fileId}: ${String(error)}`);
+      }
+    }
+
+    await this.fileRepository.remove(file);
+  }
+
+  async renameFile(
+    fileId: number,
+    userId: number,
+    eventID: string,
+    filename: string,
+  ): Promise<File> {
+    const file = await this.getFileById(fileId, userId, eventID);
+    file.filename = sanitize(filename) || file.filename;
+    return this.fileRepository.save(file);
   }
 
   getFileEventsStream(userId: number): Subject<FileEvent> {

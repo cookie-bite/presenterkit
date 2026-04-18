@@ -1,11 +1,15 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
+  HttpCode,
+  HttpStatus,
   MessageEvent,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Request,
   Sse,
@@ -20,6 +24,7 @@ import { map, Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AzureConfig } from '../config/azure.config';
 import { FileResponseDto } from './dto/file-response.dto';
+import { RenameFileDto } from './dto/rename-file.dto';
 import { WebhookFileProcessedDto } from './dto/webhook-file-processed.dto';
 import { FileStatus } from './entities/file.entity';
 import { FileService } from './file.service';
@@ -120,6 +125,44 @@ export class FileController {
   ): Promise<FileResponseDto> {
     const userId = req.user.userId;
     const file = await this.fileService.getFileById(fileId, userId, eventID);
+
+    return {
+      fileId: file.id,
+      status: file.status,
+      eventID,
+      filename: file.filename,
+      mimeType: file.mimeType,
+      size: file.size,
+      blobUrl: file.blobUrl,
+      blobPath: file.blobPath,
+      storageKey: file.storageKey,
+      pageCount: file.pageCount,
+      thumbnailUrl: file.thumbnailUrl,
+      createdAt: file.createdAt,
+      updatedAt: file.updatedAt,
+    };
+  }
+
+  @Delete(':fileId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteFile(
+    @Request() req,
+    @Param('eventID') eventID: string,
+    @Param('fileId', ParseIntPipe) fileId: number,
+  ): Promise<void> {
+    await this.fileService.deleteFile(fileId, req.user.userId, eventID);
+  }
+
+  @Patch(':fileId')
+  @UseGuards(JwtAuthGuard)
+  async renameFile(
+    @Request() req,
+    @Param('eventID') eventID: string,
+    @Param('fileId', ParseIntPipe) fileId: number,
+    @Body() dto: RenameFileDto,
+  ): Promise<FileResponseDto> {
+    const file = await this.fileService.renameFile(fileId, req.user.userId, eventID, dto.filename);
 
     return {
       fileId: file.id,
