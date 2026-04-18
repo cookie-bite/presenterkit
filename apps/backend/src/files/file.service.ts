@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
+import sanitize from 'sanitize-filename';
 import type { Repository } from 'typeorm';
 
 import { EventsService } from '../events/events.service';
@@ -36,7 +37,7 @@ export class FileService {
     const fileEntity = this.fileRepository.create({
       userId,
       eventId: event.id,
-      filename: `${Date.now()}-${file.originalname}`,
+      filename: sanitize(file.originalname) || 'Untitled',
       originalName: file.originalname,
       mimeType: file.mimetype,
       size: file.size,
