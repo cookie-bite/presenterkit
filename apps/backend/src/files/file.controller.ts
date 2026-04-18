@@ -25,7 +25,7 @@ import { FileStatus } from './entities/file.entity';
 import { FileService } from './file.service';
 import { JwtQueryGuard } from './guards/jwt-query.guard';
 
-@Controller('files')
+@Controller('events/:eventID/files')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
@@ -34,13 +34,13 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Request() req,
+    @Param('eventID') eventID: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ fileId: number; status: string }> {
     if (!file) {
       throw new Error('No file provided');
     }
 
-    // Validate file type
     const allowedMimeTypes = [
       'image/',
       'video/',
@@ -53,14 +53,13 @@ export class FileController {
       throw new Error('Invalid file type. Only images, videos, and PDFs are allowed.');
     }
 
-    // Validate file size (200MB)
     const maxSize = 200 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new Error('File size exceeds maximum limit of 200MB');
     }
 
     const userId = req.user.userId;
-    const result = await this.fileService.createFile(userId, file);
+    const result = await this.fileService.createFile(userId, eventID, file);
 
     return {
       fileId: result.fileId,
@@ -68,17 +67,45 @@ export class FileController {
     };
   }
 
-  @Get('events')
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async listFiles(@Request() req, @Param('eventID') eventID: string): Promise<FileResponseDto[]> {
+    const userId = req.user.userId;
+    const files = await this.fileService.listFilesByEvent(userId, eventID);
+
+    return files.map(file => ({
+      fileId: file.id,
+      status: file.status,
+      eventID,
+      filename: file.filename,
+      originalName: file.originalName,
+      mimeType: file.mimeType,
+      size: file.size,
+      blobUrl: file.blobUrl,
+      blobPath: file.blobPath,
+      storageKey: file.storageKey,
+      pageCount: file.pageCount,
+      thumbnailUrl: file.thumbnailUrl,
+      createdAt: file.createdAt,
+      updatedAt: file.updatedAt,
+    }));
+  }
+
+  @Get('stream/events')
   @UseGuards(JwtQueryGuard)
-  @Sse('events')
-  sse(@Request() req): Observable<MessageEvent> {
+  @Sse('stream/events')
+  sse(@Request() req, @Param('eventID') eventID: string): Observable<MessageEvent> {
     const userId = req.user.userId;
     const stream = this.fileService.getFileEventsStream(userId);
 
     return stream.pipe(
       map(
         (data): MessageEvent => ({
-          data: JSON.stringify({ status: data.status }),
+          data: JSON.stringify({
+            status: data.status,
+            eventId: data.eventId,
+            eventID: data.eventID ?? eventID,
+          }),
           type: this.getEventType(data.status),
         }),
       ),
@@ -89,14 +116,16 @@ export class FileController {
   @UseGuards(JwtAuthGuard)
   async getFile(
     @Request() req,
+    @Param('eventID') eventID: string,
     @Param('fileId', ParseIntPipe) fileId: number,
   ): Promise<FileResponseDto> {
     const userId = req.user.userId;
-    const file = await this.fileService.getFileById(fileId, userId);
+    const file = await this.fileService.getFileById(fileId, userId, eventID);
 
     return {
       fileId: file.id,
       status: file.status,
+      eventID,
       filename: file.filename,
       originalName: file.originalName,
       mimeType: file.mimeType,
@@ -137,7 +166,6 @@ export class WebhookController {
     @Headers('x-webhook-secret') secret: string,
     @Body() dto: WebhookFileProcessedDto,
   ): Promise<{ success: boolean }> {
-    // Validate webhook secret
     if (secret !== this.azureConfig.webhookSecret) {
       throw new UnauthorizedException('Invalid webhook secret');
     }

@@ -1,0 +1,1 @@
+export const DEFAULT_EVENT_ID = process.env.NEXT_PUBLIC_DEFAULT_EVENT_ID;

@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Event } from './event.entity';
+import { Event } from '../../events/entities/event.entity';
 import { RefreshToken } from './refresh-token.entity';
 
 @Entity('users')

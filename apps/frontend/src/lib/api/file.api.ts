@@ -1,3 +1,4 @@
+import { DEFAULT_EVENT_ID } from '../constants';
 import { apiClient } from './client';
 import type { ErrorResponse } from './types';
 
@@ -9,6 +10,7 @@ export interface UploadFileResponse {
 export interface FileResponse {
   fileId: number;
   status: string;
+  eventID?: string;
   filename?: string;
   originalName?: string;
   mimeType?: string;
@@ -23,17 +25,16 @@ export interface FileResponse {
 }
 
 /**
- * Upload a file
+ * Upload a file to the default event
  */
 export async function uploadFile(file: File): Promise<UploadFileResponse | ErrorResponse> {
   const formData = new FormData();
   formData.append('file', file);
 
   return apiClient
-    .post('files', {
+    .post(`events/${DEFAULT_EVENT_ID}/files`, {
       body: formData,
       headers: {
-        // Override default Content-Type - ky will auto-detect FormData
         'Content-Type': undefined,
       },
     })
@@ -41,8 +42,17 @@ export async function uploadFile(file: File): Promise<UploadFileResponse | Error
 }
 
 /**
- * Get file details by ID
+ * List files for the default event
+ */
+export async function listFiles(): Promise<FileResponse[] | ErrorResponse> {
+  return apiClient.get(`events/${DEFAULT_EVENT_ID}/files`).json<FileResponse[] | ErrorResponse>();
+}
+
+/**
+ * Get file details by ID within the default event
  */
 export async function getFile(fileId: number): Promise<FileResponse | ErrorResponse> {
-  return apiClient.get(`files/${fileId}`).json<FileResponse | ErrorResponse>();
+  return apiClient
+    .get(`events/${DEFAULT_EVENT_ID}/files/${fileId}`)
+    .json<FileResponse | ErrorResponse>();
 }

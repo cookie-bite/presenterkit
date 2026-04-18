@@ -1,21 +1,21 @@
+import { FileResponse } from '@/lib/api/file.api';
 import { Icon, Panel, ScrollView } from '@/ui';
 
 import { File, Preview, Title } from './styled';
 
-const files = Array.from({ length: 7 }, (_, i) => ({
-  title: `Keynote ${i}`,
-  src: '/images/1.webp',
-  alt: `File ${i}`,
-}));
-
-export const Files = () => {
+export const Files = ({ files }: { files: FileResponse[] }) => {
   return (
     <Panel title='Files'>
       <ScrollView $gap='12px' $padding='8px 0'>
         {files.map(file => (
-          <File key={file.title}>
-            <Title>{file.title}</Title>
-            <Preview src={file.src} alt={file.alt} width={500} height={500} />
+          <File key={file.fileId}>
+            <Title>{file.filename}</Title>
+            <Preview
+              src={file.thumbnailUrl ?? ''}
+              alt={file.filename ?? ''}
+              width={500}
+              height={500}
+            />
           </File>
         ))}
       </ScrollView>

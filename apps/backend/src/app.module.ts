@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseConfig } from './config/database.config';
+import { EventsModule } from './events/events.module';
 import { FileModule } from './files/file.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { FileModule } from './files/file.module';
       useFactory: async (dbConfig: DatabaseConfig) => dbConfig.getTypeOrmConfig(),
     }),
     AuthModule,
+    EventsModule,
     FileModule,
   ],
   controllers: [AppController],

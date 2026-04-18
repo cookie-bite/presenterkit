@@ -4,10 +4,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { EventsModule } from '../events/events.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Confirmation } from './entities/confirmation.entity';
-import { Event } from './entities/event.entity';
 import { PendingUser } from './entities/pending-user.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { User } from './entities/user.entity';
@@ -15,10 +15,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, PendingUser, RefreshToken, Event, Confirmation]),
+    TypeOrmModule.forFeature([User, PendingUser, RefreshToken, Confirmation]),
     PassportModule,
     JwtModule.register({}),
     ConfigifyModule.forRootAsync(),
+    EventsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

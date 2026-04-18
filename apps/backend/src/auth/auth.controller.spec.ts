@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import type { Request, Response } from 'express';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -8,9 +9,15 @@ import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
-import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
+
+const mockRes = {
+  cookie: jest.fn(),
+  clearCookie: jest.fn(),
+} as unknown as Response;
+
+const makeReq = (refreshToken?: string) => ({ cookies: { refreshToken } }) as unknown as Request;
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -116,7 +123,7 @@ describe('AuthController', () => {
 
       mockAuthService.verify.mockResolvedValue(expectedResponse);
 
-      const result = await controller.verify(verifyDto);
+      const result = await controller.verify(verifyDto, mockRes);
 
       expect(authService.verify).toHaveBeenCalledWith(verifyDto);
       expect(result).toEqual(expectedResponse);
@@ -132,7 +139,7 @@ describe('AuthController', () => {
         new BadRequestException('Invalid confirmation code or email'),
       );
 
-      await expect(controller.verify(verifyDto)).rejects.toThrow(BadRequestException);
+      await expect(controller.verify(verifyDto, mockRes)).rejects.toThrow(BadRequestException);
       expect(authService.verify).toHaveBeenCalledWith(verifyDto);
     });
 
@@ -148,7 +155,7 @@ describe('AuthController', () => {
         refreshToken: 'refresh-token',
       });
 
-      await controller.verify(verifyDto);
+      await controller.verify(verifyDto, mockRes);
 
       expect(authService.verify).toHaveBeenCalledWith(verifyDto);
       expect(authService.verify).toHaveBeenCalledTimes(1);
@@ -170,7 +177,7 @@ describe('AuthController', () => {
 
       mockAuthService.login.mockResolvedValue(expectedResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockRes);
 
       expect(authService.login).toHaveBeenCalledWith(loginDto);
       expect(result).toEqual(expectedResponse);
@@ -184,7 +191,7 @@ describe('AuthController', () => {
 
       mockAuthService.login.mockRejectedValue(new BadRequestException('Invalid email or password'));
 
-      await expect(controller.login(loginDto)).rejects.toThrow(BadRequestException);
+      await expect(controller.login(loginDto, mockRes)).rejects.toThrow(BadRequestException);
       expect(authService.login).toHaveBeenCalledWith(loginDto);
     });
 
@@ -200,7 +207,7 @@ describe('AuthController', () => {
         refreshToken: 'refresh-token',
       });
 
-      await controller.login(loginDto);
+      await controller.login(loginDto, mockRes);
 
       expect(authService.login).toHaveBeenCalledWith(loginDto);
       expect(authService.login).toHaveBeenCalledTimes(1);
@@ -369,9 +376,8 @@ describe('AuthController', () => {
 
   describe('refreshToken', () => {
     it('should return new access token when refresh succeeds', async () => {
-      const refreshDto: RefreshDto = {
-        token: 'valid-refresh-token',
-      };
+      const token = 'valid-refresh-token';
+      const req = makeReq(token);
 
       const expectedResponse = {
         success: true,
@@ -380,38 +386,43 @@ describe('AuthController', () => {
 
       mockAuthService.refreshToken.mockResolvedValue(expectedResponse);
 
-      const result = await controller.refreshToken(refreshDto);
+      const result = await controller.refreshToken(req);
 
-      expect(authService.refreshToken).toHaveBeenCalledWith(refreshDto);
+      expect(authService.refreshToken).toHaveBeenCalledWith({ token });
       expect(result).toEqual(expectedResponse);
     });
 
+    it('should throw when no refresh token cookie present', async () => {
+      const req = makeReq(undefined);
+
+      await expect(controller.refreshToken(req)).rejects.toThrow(UnauthorizedException);
+      expect(authService.refreshToken).not.toHaveBeenCalled();
+    });
+
     it('should handle invalid/expired token errors', async () => {
-      const refreshDto: RefreshDto = {
-        token: 'invalid-refresh-token',
-      };
+      const token = 'invalid-refresh-token';
+      const req = makeReq(token);
 
       mockAuthService.refreshToken.mockRejectedValue(
         new UnauthorizedException('Invalid refresh token'),
       );
 
-      await expect(controller.refreshToken(refreshDto)).rejects.toThrow(UnauthorizedException);
-      expect(authService.refreshToken).toHaveBeenCalledWith(refreshDto);
+      await expect(controller.refreshToken(req)).rejects.toThrow(UnauthorizedException);
+      expect(authService.refreshToken).toHaveBeenCalledWith({ token });
     });
 
-    it('should pass DTO to service', async () => {
-      const refreshDto: RefreshDto = {
-        token: 'valid-refresh-token',
-      };
+    it('should pass token from cookie to service', async () => {
+      const token = 'valid-refresh-token';
+      const req = makeReq(token);
 
       mockAuthService.refreshToken.mockResolvedValue({
         success: true,
         accessToken: 'new-access-token',
       });
 
-      await controller.refreshToken(refreshDto);
+      await controller.refreshToken(req);
 
-      expect(authService.refreshToken).toHaveBeenCalledWith(refreshDto);
+      expect(authService.refreshToken).toHaveBeenCalledWith({ token });
       expect(authService.refreshToken).toHaveBeenCalledTimes(1);
     });
   });
@@ -428,7 +439,7 @@ describe('AuthController', () => {
 
       mockAuthService.logout.mockResolvedValue(expectedResponse);
 
-      const result = await controller.logout(logoutDto);
+      const result = await controller.logout(logoutDto, mockRes);
 
       expect(authService.logout).toHaveBeenCalledWith(logoutDto);
       expect(result).toEqual(expectedResponse);
@@ -441,7 +452,7 @@ describe('AuthController', () => {
 
       mockAuthService.logout.mockRejectedValue(new UnauthorizedException('Invalid refresh token'));
 
-      await expect(controller.logout(logoutDto)).rejects.toThrow(UnauthorizedException);
+      await expect(controller.logout(logoutDto, mockRes)).rejects.toThrow(UnauthorizedException);
       expect(authService.logout).toHaveBeenCalledWith(logoutDto);
     });
 
@@ -454,7 +465,7 @@ describe('AuthController', () => {
         success: true,
       });
 
-      await controller.logout(logoutDto);
+      await controller.logout(logoutDto, mockRes);
 
       expect(authService.logout).toHaveBeenCalledWith(logoutDto);
       expect(authService.logout).toHaveBeenCalledTimes(1);

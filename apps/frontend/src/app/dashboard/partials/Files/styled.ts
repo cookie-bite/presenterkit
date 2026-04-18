@@ -9,6 +9,9 @@ export const File = styled.div`
 
 export const Title = styled.h3`
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   ${({ theme }) => theme.text.title3.regular}
 `;
 

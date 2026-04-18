@@ -5,11 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
 import type { Repository } from 'typeorm';
 
+import { EventsService } from '../events/events.service';
 import { File, FileStatus } from './entities/file.entity';
 import { FileProcessingService } from './file-processing.service';
 
 export interface FileEvent {
   status: FileStatus;
+  eventId: number | null;
+  eventID?: string;
 }
 
 @Injectable()
@@ -20,14 +23,19 @@ export class FileService {
     @InjectRepository(File)
     private fileRepository: Repository<File>,
     private fileProcessingService: FileProcessingService,
+    private eventsService: EventsService,
   ) {}
 
   async createFile(
     userId: number,
+    eventID: string,
     file: Express.Multer.File,
   ): Promise<{ fileId: number; status: FileStatus }> {
+    const event = await this.eventsService.findByEventID(userId, eventID);
+
     const fileEntity = this.fileRepository.create({
       userId,
+      eventId: event.id,
       filename: `${Date.now()}-${file.originalname}`,
       originalName: file.originalname,
       mimeType: file.mimetype,
@@ -39,13 +47,13 @@ export class FileService {
 
     const savedFile = await this.fileRepository.save(fileEntity);
 
-    // Queue conversion and storage work; converter service owns blob uploads.
     savedFile.status = FileStatus.PROCESSING;
     await this.fileRepository.save(savedFile);
 
-    // Emit FILE_UPLOADED event
     this.emitFileEvent(userId, {
       status: FileStatus.PROCESSING,
+      eventId: event.id,
+      eventID: event.eventID,
     });
 
     void this.startProcessing(savedFile, file);
@@ -56,9 +64,20 @@ export class FileService {
     };
   }
 
-  async getFileById(fileId: number, userId: number): Promise<File> {
+  async listFilesByEvent(userId: number, eventID: string): Promise<File[]> {
+    const event = await this.eventsService.findByEventID(userId, eventID);
+
+    return this.fileRepository.find({
+      where: { userId, eventId: event.id },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getFileById(fileId: number, userId: number, eventID: string): Promise<File> {
+    const event = await this.eventsService.findByEventID(userId, eventID);
+
     const file = await this.fileRepository.findOne({
-      where: { id: fileId, userId },
+      where: { id: fileId, userId, eventId: event.id },
     });
 
     if (!file) {
@@ -78,7 +97,13 @@ export class FileService {
     blobUrl?: string,
     blobPath?: string,
   ): Promise<void> {
-    const file = await this.getFileById(fileId, userId);
+    const file = await this.fileRepository.findOne({
+      where: { id: fileId, userId },
+    });
+
+    if (!file) {
+      throw new NotFoundException('File not found');
+    }
 
     file.status = status;
     if (pageCount !== undefined) {
@@ -96,9 +121,9 @@ export class FileService {
 
     await this.fileRepository.save(file);
 
-    // Emit event
     this.emitFileEvent(userId, {
       status,
+      eventId: file.eventId,
     });
   }
 

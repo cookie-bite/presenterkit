@@ -16,6 +16,7 @@ import { Resend } from 'resend';
 import type { Repository } from 'typeorm';
 
 import { AuthConfig } from '../config/auth.config';
+import { EventsService } from '../events/events.service';
 import type { EmailVerifyDto } from './dto/email-verify.dto';
 import type { GoogleLoginDto } from './dto/google-login.dto';
 import type { LoginDto } from './dto/login.dto';
@@ -45,6 +46,7 @@ export class AuthService {
     @InjectRepository(Confirmation)
     private _confirmationRepository: Repository<Confirmation>,
     private readonly authConfig: AuthConfig,
+    private readonly eventsService: EventsService,
   ) {
     this.resend = new Resend(this.authConfig.resendApiKey);
   }
@@ -117,6 +119,8 @@ export class AuthService {
         password: pending.password,
       });
       const savedUser = await this._userRepository.save(newUser);
+
+      await this.eventsService.ensureDefaultEvent(savedUser.id);
 
       // Delete pending user
       await this._pendingUserRepository.delete({ email });
@@ -213,6 +217,7 @@ export class AuthService {
           password: placeholderPassword,
         });
         user = await this._userRepository.save(user);
+        await this.eventsService.ensureDefaultEvent(user.id);
       }
 
       // Generate tokens

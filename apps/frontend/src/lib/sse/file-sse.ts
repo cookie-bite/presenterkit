@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { getValidAccessToken } from '@/lib/api/client';
+import { DEFAULT_EVENT_ID } from '@/lib/constants';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface FileEvent {
   status: string;
@@ -46,13 +47,13 @@ export function useFileSSE(
     let cancelled = false;
 
     const connect = (token: string) => {
-      console.info('Connecting to SSE with token:', token);
       if (cancelled) return;
-      const eventSource = new EventSource(`${API_URL}/files/events?token=${token}`);
+      const eventSource = new EventSource(
+        `${API_URL}/events/${DEFAULT_EVENT_ID}/files/stream/events?token=${token}`,
+      );
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {
-        console.info('SSE connection opened');
         setIsConnected(true);
         setError(null);
       };
@@ -60,7 +61,6 @@ export function useFileSSE(
       eventSource.onerror = err => {
         if (eventSource.readyState === EventSource.CLOSED) {
           setIsConnected(false);
-          console.error('SSE connection lost:', err);
           setError(new Error('SSE connection closed'));
         }
       };
@@ -96,13 +96,10 @@ export function useFileSSE(
     getValidAccessToken()
       .then(token => {
         if (token) {
-          console.info('Access token obtained, connecting to SSE');
           connect(token);
-        } else {
-          console.warn('No access token available for SSE connection.');
         }
       })
-      .catch(err => console.warn('Could not obtain access token for SSE connection.', err));
+      .catch(err => console.error('Could not obtain access token for SSE connection.', err));
 
     return () => {
       cancelled = true;

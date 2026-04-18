@@ -9,6 +9,8 @@ import { FileController, WebhookController } from './file.controller';
 import type { FileEvent } from './file.service';
 import { FileService } from './file.service';
 
+const DEFAULT_EVENT_ID = 'sandbox';
+
 describe('FileController', () => {
   let controller: FileController;
   let fileService: FileService;
@@ -16,6 +18,7 @@ describe('FileController', () => {
   const fileEvents$ = new Subject<FileEvent>();
   const mockFileService = {
     createFile: jest.fn(),
+    listFilesByEvent: jest.fn(),
     getFileById: jest.fn(),
     getFileEventsStream: jest.fn(),
   };
@@ -54,9 +57,9 @@ describe('FileController', () => {
         status: FileStatus.PROCESSING,
       });
 
-      const result = await controller.uploadFile(req, file);
+      const result = await controller.uploadFile(req, DEFAULT_EVENT_ID, file);
 
-      expect(fileService.createFile).toHaveBeenCalledWith(7, file);
+      expect(fileService.createFile).toHaveBeenCalledWith(7, DEFAULT_EVENT_ID, file);
       expect(result).toEqual({
         fileId: 42,
         status: FileStatus.PROCESSING,
@@ -67,7 +70,7 @@ describe('FileController', () => {
       const req = { user: { userId: 7 } };
 
       await expect(
-        controller.uploadFile(req, undefined as unknown as Express.Multer.File),
+        controller.uploadFile(req, DEFAULT_EVENT_ID, undefined as unknown as Express.Multer.File),
       ).rejects.toThrow('No file provided');
     });
 
@@ -79,7 +82,7 @@ describe('FileController', () => {
         size: 1024,
       } as Express.Multer.File;
 
-      await expect(controller.uploadFile(req, file)).rejects.toThrow(
+      await expect(controller.uploadFile(req, DEFAULT_EVENT_ID, file)).rejects.toThrow(
         'Invalid file type. Only images, videos, and PDFs are allowed.',
       );
     });
@@ -92,7 +95,7 @@ describe('FileController', () => {
         size: 201 * 1024 * 1024,
       } as Express.Multer.File;
 
-      await expect(controller.uploadFile(req, file)).rejects.toThrow(
+      await expect(controller.uploadFile(req, DEFAULT_EVENT_ID, file)).rejects.toThrow(
         'File size exceeds maximum limit of 200MB',
       );
     });
@@ -118,35 +121,44 @@ describe('FileController', () => {
       };
       mockFileService.getFileById.mockResolvedValue(fileEntity);
 
-      const result = await controller.getFile(req, 3);
+      const result = await controller.getFile(req, DEFAULT_EVENT_ID, 3);
 
-      expect(fileService.getFileById).toHaveBeenCalledWith(3, 9);
+      expect(fileService.getFileById).toHaveBeenCalledWith(3, 9, DEFAULT_EVENT_ID);
       expect(result.fileId).toBe(3);
       expect(result.status).toBe(FileStatus.READY);
       expect(result.storageKey).toBe('storage-key-1');
+      expect(result.eventID).toBe(DEFAULT_EVENT_ID);
     });
 
     it('should propagate not found errors', async () => {
       const req = { user: { userId: 9 } };
       mockFileService.getFileById.mockRejectedValue(new NotFoundException('File not found'));
 
-      await expect(controller.getFile(req, 77)).rejects.toThrow(NotFoundException);
-      expect(fileService.getFileById).toHaveBeenCalledWith(77, 9);
+      await expect(controller.getFile(req, DEFAULT_EVENT_ID, 77)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(fileService.getFileById).toHaveBeenCalledWith(77, 9, DEFAULT_EVENT_ID);
     });
   });
 
   describe('sse', () => {
     it('should map service events to SSE payload', async () => {
       const req = { user: { userId: 12 } };
-      const result$ = controller.sse(req);
+      const result$ = controller.sse(req, DEFAULT_EVENT_ID);
 
       const eventPromise = firstValueFrom(result$);
-      fileEvents$.next({ status: FileStatus.PROCESSING });
+      fileEvents$.next({ status: FileStatus.PROCESSING, eventId: null, eventID: DEFAULT_EVENT_ID });
 
       const event = await eventPromise;
       expect(fileService.getFileEventsStream).toHaveBeenCalledWith(12);
       expect(event.type).toBe('FILE_UPLOADED');
-      expect(event.data).toBe(JSON.stringify({ status: FileStatus.PROCESSING }));
+      expect(event.data).toBe(
+        JSON.stringify({
+          status: FileStatus.PROCESSING,
+          eventId: null,
+          eventID: DEFAULT_EVENT_ID,
+        }),
+      );
     });
   });
 });

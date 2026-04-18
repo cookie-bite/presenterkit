@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { User } from '../../auth/entities/user.entity';
+import { Event } from '../../events/entities/event.entity';
 
 export enum FileStatus {
   UPLOADING = 'uploading',
@@ -26,6 +27,12 @@ export class File {
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
+
+  @Column({ nullable: true, type: 'int' })
+  eventId: number | null;
+
+  @ManyToOne(() => Event, event => event.files, { onDelete: 'SET NULL', nullable: true })
+  event: Event | null;
 
   @Column()
   filename: string;
