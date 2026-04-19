@@ -16,7 +16,8 @@ export const Title = styled.h3`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  ${({ theme }) => theme.text.title3.regular}
+  ${({ theme }) => theme.text.callout.bold}
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const Thumbnail = styled(ResponsiveImage)`
