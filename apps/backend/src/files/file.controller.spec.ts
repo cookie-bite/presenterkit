@@ -21,6 +21,8 @@ describe('FileController', () => {
     listFilesByEvent: jest.fn(),
     getFileById: jest.fn(),
     getFileEventsStream: jest.fn(),
+    deleteFile: jest.fn(),
+    renameFile: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -137,6 +139,71 @@ describe('FileController', () => {
         NotFoundException,
       );
       expect(fileService.getFileById).toHaveBeenCalledWith(77, 9, DEFAULT_EVENT_ID);
+    });
+  });
+
+  describe('deleteFile', () => {
+    it('should call service with correct args', async () => {
+      const req = { user: { userId: 5 } };
+      mockFileService.deleteFile.mockResolvedValue(undefined);
+
+      await controller.deleteFile(req, DEFAULT_EVENT_ID, 10);
+
+      expect(fileService.deleteFile).toHaveBeenCalledWith(10, 5, DEFAULT_EVENT_ID);
+    });
+
+    it('should propagate not found errors', async () => {
+      const req = { user: { userId: 5 } };
+      mockFileService.deleteFile.mockRejectedValue(new NotFoundException('File not found'));
+
+      await expect(controller.deleteFile(req, DEFAULT_EVENT_ID, 99)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('renameFile', () => {
+    it('should return mapped file response with updated filename', async () => {
+      const req = { user: { userId: 6 } };
+      const updatedEntity = {
+        id: 7,
+        status: FileStatus.READY,
+        filename: 'keynote-final.pdf',
+        mimeType: 'application/pdf',
+        size: 4096,
+        blobUrl: 'https://storage/files/blob.pdf',
+        blobPath: 'dev/key/pdfs/source.pdf',
+        storageKey: 'sk-abc',
+        pageCount: 12,
+        thumbnailUrl: 'https://storage/files/001.webp',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-04-18'),
+      };
+      mockFileService.renameFile.mockResolvedValue(updatedEntity);
+
+      const result = await controller.renameFile(req, DEFAULT_EVENT_ID, 7, {
+        filename: 'keynote-final.pdf',
+      });
+
+      expect(fileService.renameFile).toHaveBeenCalledWith(
+        7,
+        6,
+        DEFAULT_EVENT_ID,
+        'keynote-final.pdf',
+      );
+      expect(result.fileId).toBe(7);
+      expect(result.filename).toBe('keynote-final.pdf');
+      expect(result.eventID).toBe(DEFAULT_EVENT_ID);
+      expect(result.updatedAt).toEqual(updatedEntity.updatedAt);
+    });
+
+    it('should propagate not found errors', async () => {
+      const req = { user: { userId: 6 } };
+      mockFileService.renameFile.mockRejectedValue(new NotFoundException('File not found'));
+
+      await expect(
+        controller.renameFile(req, DEFAULT_EVENT_ID, 99, { filename: 'new.pdf' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
