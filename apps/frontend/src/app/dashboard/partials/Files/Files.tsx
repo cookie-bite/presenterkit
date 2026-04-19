@@ -2,10 +2,10 @@ import { FileResponse } from '@/lib/api/file.api';
 import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
-import { File, Preview, Title } from './styled';
+import { File, Thumbnail, Title, UploadCard } from './styled';
 
 export const Files = ({ files }: { files: FileResponse[] }) => {
-  const { FileInput, openFilePicker } = useFileUploadHandler();
+  const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
 
   return (
     <Panel
@@ -18,10 +18,15 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
     >
       {FileInput}
       <ScrollView $gap='12px' $padding='8px 0'>
+        {isUploadActive && (
+          <File>
+            <UploadCard>{statusMessage}</UploadCard>
+          </File>
+        )}
         {files.map(file => (
           <File key={file.fileId}>
             <Title>{file.filename}</Title>
-            <Preview
+            <Thumbnail
               src={file.thumbnailUrl ?? ''}
               alt={file.filename ?? ''}
               width={500}

@@ -30,6 +30,7 @@ export const colors = {
       secondary: 'hsla(240, 3%, 49%, .16)',
       tertiary: 'hsla(240, 4%, 48%, .12)',
       quaternary: 'hsla(240, 5%, 48%, .08)',
+      transparent: 'hsla(0, 0%, 0%, 0)',
     },
     text: {
       primary: 'hsla(0, 0%, 0%, 1)',
@@ -106,6 +107,7 @@ export const colors = {
       secondary: 'hsla(240, 3%, 49%, .32)',
       tertiary: 'hsla(240, 4%, 48%, .24)',
       quaternary: 'hsla(240, 5%, 48%, .18)',
+      transparent: 'hsla(0, 0%, 0%, 0)',
     },
     text: {
       primary: 'hsla(0, 0%, 100%, 1)',

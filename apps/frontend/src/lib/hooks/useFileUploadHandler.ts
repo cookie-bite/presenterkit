@@ -54,6 +54,10 @@ export function useFileUploadHandler() {
     return null;
   })();
 
+  const isUploadActive =
+    uploadMutation.isPending ||
+    (uploadedFileId !== null && (fileStatus.isLoading || fileStatus.status === 'processing'));
+
   return {
     getRootProps,
     FileInput,
@@ -62,5 +66,6 @@ export function useFileUploadHandler() {
     statusMessage,
     isPending: uploadMutation.isPending,
     isLoading: fileStatus.isLoading,
+    isUploadActive,
   };
 }
