@@ -3,6 +3,8 @@ import styled, { keyframes } from 'styled-components';
 import { ResponsiveImage } from '@/ui';
 
 const shimmer = keyframes`
+  0% { transform: translateX(-100%); }
+  75% { transform: translateX(100%); }
   100% { transform: translateX(100%); }
 `;
 
@@ -50,7 +52,7 @@ export const UploadCard = styled.div`
       ${({ theme }) => theme.colors.fill.transparent} 100%
     );
     transform: translateX(-100%);
-    animation: ${shimmer} 1.5s ease-in-out infinite;
+    animation: ${shimmer} 2s ease-in-out infinite;
   }
 
   @media (prefers-reduced-motion) {
