@@ -60,13 +60,14 @@ export function useFileUpload({ onFileSelect, onError, multiple = true }: UseFil
     [onError],
   );
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles, fileRejections } = useDropzone({
-    accept: ACCEPTED_FILE_TYPES,
-    maxSize: MAX_FILE_SIZE_BYTES,
-    multiple,
-    onDropAccepted,
-    onDropRejected,
-  });
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles, fileRejections, open } =
+    useDropzone({
+      accept: ACCEPTED_FILE_TYPES,
+      maxSize: MAX_FILE_SIZE_BYTES,
+      multiple,
+      onDropAccepted,
+      onDropRejected,
+    });
 
   const FileInput: ReactElement = useMemo(() => {
     const inputProps = getInputProps();
@@ -80,5 +81,6 @@ export function useFileUpload({ onFileSelect, onError, multiple = true }: UseFil
     isDragActive,
     acceptedFiles,
     fileRejections,
+    open,
   };
 }

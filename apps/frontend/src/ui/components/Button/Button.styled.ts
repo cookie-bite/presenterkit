@@ -1,5 +1,5 @@
 import type { DefaultTheme } from 'styled-components';
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 const rotateSpinner = keyframes`
   0% {
@@ -13,7 +13,26 @@ const rotateSpinner = keyframes`
   }
 `;
 
-export const StyledButton = styled.button`
+const ghostVariant = css`
+  background: transparent;
+  width: auto;
+  min-height: auto;
+  box-shadow: none;
+  padding: 4px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  color: inherit;
+
+  &:hover:not(:disabled) {
+    background: ${({ theme }) => theme.colors.fill.primary};
+    filter: none;
+  }
+
+  &:active:not(:disabled) {
+    background: ${({ theme }) => theme.colors.fill.secondary};
+  }
+`;
+
+export const StyledButton = styled.button<{ variant?: 'primary' | 'secondary' | 'ghost' }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,6 +64,8 @@ export const StyledButton = styled.button`
     filter: brightness(0.5) saturate(0.7);
     cursor: not-allowed;
   }
+
+  ${({ variant }) => variant === 'ghost' && ghostVariant}
 `;
 
 export const Spinner = styled.div<{ $spinnerColor?: string | ((theme: DefaultTheme) => string) }>`

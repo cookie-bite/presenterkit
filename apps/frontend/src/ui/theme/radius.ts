@@ -6,4 +6,5 @@ export const radius = {
   xl: '8px',
   xxl: '10px',
   xxxl: '14px',
+  full: '9999px',
 };

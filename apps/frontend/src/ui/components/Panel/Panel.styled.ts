@@ -10,8 +10,17 @@ export const StyledPanel = styled.div`
 `;
 
 export const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 4px 8px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.separator.nonOpaque};
+`;
+
+export const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
 
 export const Title = styled.h1`

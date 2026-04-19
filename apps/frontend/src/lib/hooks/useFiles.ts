@@ -14,7 +14,6 @@ export function useFiles() {
     queryKey: ['files'],
     queryFn: async () => {
       const result = await listFiles();
-      console.log('[useFiles] listFiles result', result);
       if (!result || 'error' in result) return [];
       return result as FileResponse[];
     },
