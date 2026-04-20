@@ -28,6 +28,7 @@ import { RenameFileDto } from './dto/rename-file.dto';
 import { WebhookFileProcessedDto } from './dto/webhook-file-processed.dto';
 import { FileStatus } from './entities/file.entity';
 import { FileService } from './file.service';
+import { isAllowedMimeType } from './file-types.constants';
 import { JwtQueryGuard } from './guards/jwt-query.guard';
 
 @Controller('events/:eventID/files')
@@ -46,15 +47,7 @@ export class FileController {
       throw new Error('No file provided');
     }
 
-    const allowedMimeTypes = [
-      'image/',
-      'video/',
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'application/vnd.ms-powerpoint',
-    ];
-    const isValidType = allowedMimeTypes.some(type => file.mimetype.startsWith(type));
-    if (!isValidType) {
+    if (!isAllowedMimeType(file.mimetype)) {
       throw new Error('Invalid file type. Only images, videos, and PDFs are allowed.');
     }
 

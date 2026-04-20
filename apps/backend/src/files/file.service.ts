@@ -131,16 +131,20 @@ export class FileService {
   async deleteFile(fileId: number, userId: number, eventID: string): Promise<void> {
     const file = await this.getFileById(fileId, userId, eventID);
 
-    if (file.blobPath) {
+    if (file.storageKey) {
       try {
-        const blobClient = BlobServiceClient.fromConnectionString(
+        const containerClient = BlobServiceClient.fromConnectionString(
           this.azureConfig.storageConnectionString,
-        )
-          .getContainerClient(this.azureConfig.containerName)
-          .getBlobClient(file.blobPath);
-        await blobClient.deleteIfExists();
+        ).getContainerClient(this.azureConfig.containerName);
+
+        const rawPrefix = this.azureConfig.blobPathPrefix?.trim().replace(/^\/|\/$/g, '');
+        const prefix = rawPrefix ? `${rawPrefix}/${file.storageKey}/` : `${file.storageKey}/`;
+
+        for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+          await containerClient.getBlobClient(blob.name).deleteIfExists();
+        }
       } catch (error) {
-        this.logger.warn(`Failed to delete blob for fileId=${fileId}: ${String(error)}`);
+        this.logger.warn(`Failed to delete blobs for fileId=${fileId}: ${String(error)}`);
       }
     }
 
@@ -174,7 +178,19 @@ export class FileService {
 
   private async startProcessing(file: File, uploadedFile: Express.Multer.File): Promise<void> {
     try {
-      await this.fileProcessingService.start(file, uploadedFile);
+      const result = await this.fileProcessingService.start(file, uploadedFile);
+      if (result.type === 'uploaded') {
+        await this.updateFileStatus(
+          file.id,
+          file.userId,
+          FileStatus.READY,
+          null,
+          result.thumbnailUrl,
+          undefined,
+          result.blobUrl,
+          result.blobPath,
+        );
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown processing error';
       await this.updateFileStatus(file.id, file.userId, FileStatus.FAILED, null, null, message);

@@ -1,5 +1,5 @@
 import { Configuration, Value } from '@itgorillaz/configify';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 @Configuration()
 export class AzureConfig {
@@ -22,4 +22,9 @@ export class AzureConfig {
   @IsString()
   @Value('LIBREOFFICE_URL')
   libreofficeUrl: string;
+
+  @IsOptional()
+  @IsString()
+  @Value('BLOB_PATH_PREFIX')
+  blobPathPrefix?: string;
 }
