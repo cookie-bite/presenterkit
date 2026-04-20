@@ -1,11 +1,13 @@
 import { FileResponse } from '@/lib/api/file.api';
 import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
+import { usePreviewStore } from '@/lib/stores/preview.store';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
-import { File, Thumbnail, Title, UploadCard } from './styled';
+import { File, FileHoverOverlay, Thumbnail, Title, UploadCard } from './styled';
 
 export const Files = ({ files }: { files: FileResponse[] }) => {
   const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
+  const { selectedFile, setSelectedFile } = usePreviewStore();
 
   return (
     <Panel
@@ -17,14 +19,19 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
       }
     >
       {FileInput}
-      <ScrollView $gap='12px' $padding='8px 0'>
+      <ScrollView $gap='6px' $padding='6px'>
         {isUploadActive && (
           <File>
             <UploadCard>{statusMessage}</UploadCard>
           </File>
         )}
         {files.map(file => (
-          <File key={file.fileId}>
+          <File
+            key={file.fileId}
+            onClick={() => setSelectedFile(file)}
+            $isSelected={selectedFile?.fileId === file.fileId}
+          >
+            <FileHoverOverlay $isSelected={selectedFile?.fileId === file.fileId} />
             <Title>{file.filename}</Title>
             <Thumbnail
               src={file.thumbnailUrl ?? ''}
