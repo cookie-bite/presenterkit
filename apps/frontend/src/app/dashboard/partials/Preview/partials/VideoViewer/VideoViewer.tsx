@@ -1,6 +1,6 @@
 import { FileResponse } from '@/lib/api/file.api';
 
-import { MainPageArea } from '../../styled';
+import { Stage } from '../../styled';
 import { Video } from './styled';
 
 interface VideoViewerProps {
@@ -8,7 +8,7 @@ interface VideoViewerProps {
 }
 
 export const VideoViewer = ({ file }: VideoViewerProps) => (
-  <MainPageArea>
+  <Stage>
     <Video controls src={file.blobUrl ?? ''} />
-  </MainPageArea>
+  </Stage>
 );

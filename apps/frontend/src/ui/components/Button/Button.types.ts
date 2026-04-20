@@ -4,6 +4,6 @@ import type { DefaultTheme } from 'styled-components';
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   isPending?: boolean;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'icon';
   spinnerColor?: string | ((theme: DefaultTheme) => string);
 }

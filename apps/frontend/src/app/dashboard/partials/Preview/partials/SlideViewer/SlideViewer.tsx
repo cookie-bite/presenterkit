@@ -3,18 +3,10 @@
 import { useState } from 'react';
 
 import { FileResponse } from '@/lib/api/file.api';
+import { Button, Icon } from '@/ui';
 
-import { MainPageArea } from '../../styled';
-import {
-  Container,
-  PageControlButton,
-  PageControls,
-  PageCounter,
-  PageImage,
-  ThumbnailImage,
-  ThumbnailItem,
-  ThumbnailStrip,
-} from './styled';
+import { Stage } from '../../styled';
+import { Container, Controls, Counter, Slide, Strip, Thumb, ThumbImg } from './styled';
 
 interface SlideViewerProps {
   file: FileResponse;
@@ -36,32 +28,33 @@ export const SlideViewer = ({ file }: SlideViewerProps) => {
 
   return (
     <Container>
-      <MainPageArea>
-        <PageImage src={pageImageUrl} alt={`Page ${currentPage} of ${file.filename ?? 'file'}`} />
-      </MainPageArea>
+      <Stage>
+        <Slide src={pageImageUrl} alt={`Page ${currentPage} of ${file.filename ?? 'file'}`} />
+      </Stage>
 
-      <PageControls>
-        <PageControlButton onClick={() => goTo(currentPage - 1)} disabled={currentPage === 1}>
-          ‹
-        </PageControlButton>
-        <PageCounter>
+      <Controls>
+        <Button variant='icon' onClick={() => goTo(currentPage - 1)} disabled={currentPage === 1}>
+          <Icon name='chevron-back' size={16} />
+        </Button>
+        <Counter>
           {currentPage} / {pageCount}
-        </PageCounter>
-        <PageControlButton
+        </Counter>
+        <Button
+          variant='icon'
           onClick={() => goTo(currentPage + 1)}
           disabled={currentPage === pageCount}
         >
-          ›
-        </PageControlButton>
-      </PageControls>
+          <Icon name='chevron-forward' size={16} />
+        </Button>
+      </Controls>
 
-      <ThumbnailStrip>
+      <Strip>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map(page => (
-          <ThumbnailItem key={page} $isActive={page === currentPage} onClick={() => goTo(page)}>
-            <ThumbnailImage src={getPageImageUrl(thumbnailUrl, page)} alt={`Page ${page}`} />
-          </ThumbnailItem>
+          <Thumb key={page} $isActive={page === currentPage} onClick={() => goTo(page)}>
+            <ThumbImg src={getPageImageUrl(thumbnailUrl, page)} alt={`Page ${page}`} />
+          </Thumb>
         ))}
-      </ThumbnailStrip>
+      </Strip>
     </Container>
   );
 };

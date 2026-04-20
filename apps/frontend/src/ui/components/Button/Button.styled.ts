@@ -32,7 +32,32 @@ const ghostVariant = css`
   }
 `;
 
-export const StyledButton = styled.button<{ variant?: 'primary' | 'secondary' | 'ghost' }>`
+const iconVariant = css`
+  width: 28px;
+  min-height: 28px;
+  height: 28px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background: ${({ theme }) => theme.colors.fill.secondary};
+  box-shadow: none;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    background: ${({ theme }) => theme.colors.fill.primary};
+    filter: none;
+  }
+
+  &:active:not(:disabled) {
+    background: ${({ theme }) => theme.colors.fill.tertiary};
+  }
+
+  &:disabled {
+    filter: none;
+    opacity: 0.3;
+    cursor: default;
+  }
+`;
+
+export const StyledButton = styled.button<{ variant?: 'primary' | 'secondary' | 'ghost' | 'icon' }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,6 +91,7 @@ export const StyledButton = styled.button<{ variant?: 'primary' | 'secondary' | 
   }
 
   ${({ variant }) => variant === 'ghost' && ghostVariant}
+  ${({ variant }) => variant === 'icon' && iconVariant}
 `;
 
 export const Spinner = styled.div<{ $spinnerColor?: string | ((theme: DefaultTheme) => string) }>`

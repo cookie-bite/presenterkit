@@ -9,14 +9,14 @@ export const Container = styled.div`
   overflow: hidden;
 `;
 
-export const PageImage = styled.img`
-  max-width: 100%;
-  max-height: 100%;
+export const Slide = styled.img`
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
   border-radius: ${({ theme }) => theme.radius.lg};
 `;
 
-export const PageControls = styled.div`
+export const Controls = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,29 +25,7 @@ export const PageControls = styled.div`
   flex-shrink: 0;
 `;
 
-export const PageControlButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: ${({ theme }) => theme.colors.fill.secondary};
-  ${({ theme }) => theme.text.title3.bold}
-  color: ${({ theme }) => theme.colors.text.primary};
-  transition: background 0.15s ease;
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.fill.primary};
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-`;
-
-export const PageCounter = styled.span`
+export const Counter = styled.span`
   ${({ theme }) => theme.text.callout.regular}
   color: ${({ theme }) => theme.colors.text.secondary};
   width: 7ch;
@@ -55,13 +33,13 @@ export const PageCounter = styled.span`
   font-variant-numeric: tabular-nums;
 `;
 
-export const ThumbnailStrip = styled.div`
+export const Strip = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 72px;
+  gap: 8px;
+  height: 108px;
   flex-shrink: 0;
-  padding: 4px 2px;
+  padding: 6px 8px;
   overflow-x: auto;
   overflow-y: hidden;
 
@@ -70,22 +48,22 @@ export const ThumbnailStrip = styled.div`
   }
 `;
 
-export const ThumbnailItem = styled.button<{ $isActive: boolean }>`
+export const Thumb = styled.button<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  height: 60px;
+  height: 90px;
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
   outline: 2px solid
     ${({ theme, $isActive }) => ($isActive ? theme.colors.accent.blue : 'transparent')};
-  outline-offset: 1px;
+  outline-offset: 2px;
   transition: outline-color 0.15s ease;
   cursor: pointer;
 `;
 
-export const ThumbnailImage = styled.img`
+export const ThumbImg = styled.img`
   height: 100%;
   width: auto;
   object-fit: cover;

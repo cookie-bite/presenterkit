@@ -1,6 +1,6 @@
 import { FileResponse } from '@/lib/api/file.api';
 
-import { MainPageArea } from '../../styled';
+import { Stage } from '../../styled';
 import { Image } from './styled';
 
 interface ImageViewerProps {
@@ -8,7 +8,7 @@ interface ImageViewerProps {
 }
 
 export const ImageViewer = ({ file }: ImageViewerProps) => (
-  <MainPageArea>
+  <Stage>
     <Image src={file.blobUrl ?? ''} alt={file.filename ?? 'Image'} />
-  </MainPageArea>
+  </Stage>
 );
