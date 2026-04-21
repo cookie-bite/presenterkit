@@ -30,7 +30,7 @@ export const Preview = () => {
       ) : getViewerType(selectedFile) === 'video' ? (
         <VideoViewer file={selectedFile} />
       ) : (
-        <SlideViewer file={selectedFile} />
+        <SlideViewer key={selectedFile.fileId} file={selectedFile} />
       )}
     </Container>
   );
