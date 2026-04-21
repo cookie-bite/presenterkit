@@ -30,8 +30,6 @@ export function useFileUploadHandler() {
     }
   };
 
-  // Option B: invalidate list on upload ready → triggers background refetch.
-  // Rename + delete will use option C (setQueryData) once implemented on frontend.
   useEffect(() => {
     if (fileStatus.status === 'ready') {
       void queryClient.invalidateQueries({ queryKey: ['files'] });
