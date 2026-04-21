@@ -1,9 +1,13 @@
 import { Panel } from '@/ui';
 
+import { Container, Text } from './styled';
+
 export const Displays = () => {
   return (
     <Panel title='Displays'>
-      <h1>Displays</h1>
+      <Container>
+        <Text>No displays</Text>
+      </Container>
     </Panel>
   );
 };
