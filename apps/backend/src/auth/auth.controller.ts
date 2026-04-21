@@ -14,7 +14,6 @@ import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { LoginDto } from './dto/login.dto';
-import { LogoutDto } from './dto/logout.dto';
 import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -29,7 +28,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/auth',
+      path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
   }
@@ -102,10 +101,14 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Body() logoutDto: LogoutDto, @Res({ passthrough: true }) res: Response) {
-    const response = await this.authService.logout(logoutDto);
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const token = req.cookies?.['refreshToken'];
+    if (!token) {
+      throw new UnauthorizedException('Refresh token required');
+    }
+    const response = await this.authService.logout({ token });
     if (response.success) {
-      res.clearCookie('refreshToken', { path: '/auth' });
+      res.clearCookie('refreshToken', { path: '/' });
     }
     return response;
   }

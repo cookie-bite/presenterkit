@@ -1,13 +1,11 @@
 import { apiClient } from './client';
-import { getRefreshToken, setAccessToken } from './token-storage';
+import { setAccessToken } from './token-storage';
 import type {
   AuthResponse,
   ErrorResponse,
   GoogleLoginRequest,
   InfoResponse,
   LoginRequest,
-  LogoutRequest,
-  RefreshRequest,
   RefreshResponse,
   RegisterRequest,
   SuccessResponse,
@@ -57,18 +55,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse | ErrorRes
  * Refresh the access token using refresh token from cookie
  */
 export async function refreshToken(): Promise<RefreshResponse | ErrorResponse> {
-  const refreshTokenValue = getRefreshToken();
-
-  if (!refreshTokenValue) {
-    return {
-      success: false,
-      error: 'No refresh token available',
-    } as ErrorResponse;
-  }
-
-  const response = await apiClient
-    .post('auth/refresh', { json: { token: refreshTokenValue } as RefreshRequest })
-    .json<RefreshResponse | ErrorResponse>();
+  const response = await apiClient.post('auth/refresh').json<RefreshResponse | ErrorResponse>();
 
   // If successful, store the new access token
   if (response.success && 'accessToken' in response) {
@@ -95,19 +82,8 @@ export async function googleLogin(data: GoogleLoginRequest): Promise<AuthRespons
 }
 
 /**
- * Logout - invalidate refresh token
+ * Logout - invalidate refresh token via cookie
  */
 export async function logout(): Promise<SuccessResponse | ErrorResponse> {
-  const refreshTokenValue = getRefreshToken();
-
-  if (!refreshTokenValue) {
-    return {
-      success: false,
-      error: 'No refresh token available',
-    } as ErrorResponse;
-  }
-
-  return apiClient
-    .post('auth/logout', { json: { token: refreshTokenValue } as LogoutRequest })
-    .json<SuccessResponse | ErrorResponse>();
+  return apiClient.post('auth/logout').json<SuccessResponse | ErrorResponse>();
 }

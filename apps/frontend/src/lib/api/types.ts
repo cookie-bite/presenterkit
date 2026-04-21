@@ -18,14 +18,6 @@ export interface VerifyRequest {
   otp: string;
 }
 
-export interface RefreshRequest {
-  token: string;
-}
-
-export interface LogoutRequest {
-  token: string;
-}
-
 // API Response Types
 export interface AuthResponse {
   success: true;

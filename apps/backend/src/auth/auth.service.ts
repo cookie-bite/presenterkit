@@ -20,7 +20,6 @@ import { EventsService } from '../events/events.service';
 import type { EmailVerifyDto } from './dto/email-verify.dto';
 import type { GoogleLoginDto } from './dto/google-login.dto';
 import type { LoginDto } from './dto/login.dto';
-import type { LogoutDto } from './dto/logout.dto';
 import type { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
 import type { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import type { RefreshDto } from './dto/refresh.dto';
@@ -433,9 +432,7 @@ export class AuthService {
     }
   }
 
-  async logout(logoutDto: LogoutDto) {
-    const { token } = logoutDto;
-
+  async logout({ token }: { token: string }) {
     if (!token) {
       throw new UnauthorizedException('Refresh token required');
     }

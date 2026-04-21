@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 import { googleLogin, login, logout, register, verify } from '@/lib/api/auth.api';
-import { clearAllTokens } from '@/lib/api/token-storage';
+import { clearAccessToken } from '@/lib/api/token-storage';
 import type {
   AuthResponse,
   ErrorResponse,
@@ -85,7 +85,7 @@ export function useLogout() {
   return useMutation<SuccessResponse | ErrorResponse, Error, void>({
     mutationFn: async () => {
       await logout();
-      clearAllTokens();
+      clearAccessToken();
       return { success: true } as SuccessResponse;
     },
     onSuccess: () => {

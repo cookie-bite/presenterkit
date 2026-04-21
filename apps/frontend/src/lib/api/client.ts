@@ -1,7 +1,7 @@
 import ky, { type KyInstance } from 'ky';
 
 import {
-  clearAllTokens,
+  clearAccessToken,
   getAccessToken,
   isAccessTokenExpiringSoon,
   setAccessToken,
@@ -34,7 +34,7 @@ async function refreshAccessToken(): Promise<string> {
     return accessToken;
   } catch (error) {
     // Clear tokens on refresh failure
-    clearAllTokens();
+    clearAccessToken();
     throw error;
   }
 }
@@ -119,7 +119,7 @@ export const apiClient: KyInstance = ky.create({
           // Don't clear tokens for refresh endpoint (it might be a legitimate failure)
           if (!url.pathname.includes('/auth/refresh')) {
             // Clear tokens on 401 to force re-authentication
-            clearAllTokens();
+            clearAccessToken();
           }
         }
 

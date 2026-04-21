@@ -6,7 +6,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
 import { LoginDto } from './dto/login.dto';
-import { LogoutDto } from './dto/logout.dto';
 import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -429,45 +428,45 @@ describe('AuthController', () => {
 
   describe('logout', () => {
     it('should return success when logout succeeds', async () => {
-      const logoutDto: LogoutDto = {
-        token: 'valid-refresh-token',
-      };
+      const token = 'valid-refresh-token';
+      const req = makeReq(token);
 
-      const expectedResponse = {
-        success: true,
-      };
+      const expectedResponse = { success: true };
 
       mockAuthService.logout.mockResolvedValue(expectedResponse);
 
-      const result = await controller.logout(logoutDto, mockRes);
+      const result = await controller.logout(req, mockRes);
 
-      expect(authService.logout).toHaveBeenCalledWith(logoutDto);
+      expect(authService.logout).toHaveBeenCalledWith({ token });
       expect(result).toEqual(expectedResponse);
     });
 
+    it('should throw when no refresh token cookie present', async () => {
+      const req = makeReq(undefined);
+
+      await expect(controller.logout(req, mockRes)).rejects.toThrow(UnauthorizedException);
+      expect(authService.logout).not.toHaveBeenCalled();
+    });
+
     it('should handle invalid token errors', async () => {
-      const logoutDto: LogoutDto = {
-        token: 'invalid-refresh-token',
-      };
+      const token = 'invalid-refresh-token';
+      const req = makeReq(token);
 
       mockAuthService.logout.mockRejectedValue(new UnauthorizedException('Invalid refresh token'));
 
-      await expect(controller.logout(logoutDto, mockRes)).rejects.toThrow(UnauthorizedException);
-      expect(authService.logout).toHaveBeenCalledWith(logoutDto);
+      await expect(controller.logout(req, mockRes)).rejects.toThrow(UnauthorizedException);
+      expect(authService.logout).toHaveBeenCalledWith({ token });
     });
 
-    it('should pass DTO to service', async () => {
-      const logoutDto: LogoutDto = {
-        token: 'valid-refresh-token',
-      };
+    it('should pass token from cookie to service', async () => {
+      const token = 'valid-refresh-token';
+      const req = makeReq(token);
 
-      mockAuthService.logout.mockResolvedValue({
-        success: true,
-      });
+      mockAuthService.logout.mockResolvedValue({ success: true });
 
-      await controller.logout(logoutDto, mockRes);
+      await controller.logout(req, mockRes);
 
-      expect(authService.logout).toHaveBeenCalledWith(logoutDto);
+      expect(authService.logout).toHaveBeenCalledWith({ token });
       expect(authService.logout).toHaveBeenCalledTimes(1);
     });
   });
