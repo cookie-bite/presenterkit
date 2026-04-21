@@ -10,6 +10,8 @@ const ACCEPTED_FILE_TYPES = {
   'image/*': [],
   'video/*': [],
   'application/pdf': [],
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': [],
+  'application/vnd.ms-powerpoint': [],
 };
 
 export interface UseFileUploadOptions {
@@ -40,7 +42,7 @@ export function useFileUpload({ onFileSelect, onError, multiple = true }: UseFil
               errorMessage = `File "${file.name}" exceeds the maximum size of ${MAX_FILE_SIZE_MB}MB`;
               break;
             case 'file-invalid-type':
-              errorMessage = `File "${file.name}" is not a valid type. Only images, videos, and PDFs are allowed.`;
+              errorMessage = `File "${file.name}" is not a valid type. Only images, videos, PDFs, PPT, and PPTX are allowed.`;
               break;
             case 'too-many-files':
               errorMessage = 'Too many files selected. Please select one file at a time.';
