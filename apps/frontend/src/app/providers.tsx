@@ -1,9 +1,24 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { IS_REACT_SCAN_ENABLED } from '@/lib/constants';
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' || !IS_REACT_SCAN_ENABLED) {
+      return;
+    }
+
+    const initializeReactScan = async () => {
+      const { scan } = await import('react-scan');
+      scan();
+    };
+
+    void initializeReactScan();
+  }, []);
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
