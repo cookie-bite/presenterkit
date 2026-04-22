@@ -13,5 +13,17 @@ export const Container = styled.div`
 `;
 
 export const PanelResizer = styled(PanelResizeHandle)`
-  width: 8px;
+  /* width: 8px; */
+
+  /* In horizontal group: left-right split => vertical line */
+  [data-panel-group-direction='horizontal'] & {
+    width: 8px;
+    min-height: 100%;
+    /* cursor: col-resize; */
+  }
+  /* In vertical group: top-bottom split => horizontal line */
+  [data-panel-group-direction='vertical'] & {
+    height: 8px;
+    /* cursor: row-resize; */
+  }
 `;

@@ -16,6 +16,5 @@ export const Stage = styled.div`
   justify-content: center;
   flex: 1;
   overflow: hidden;
-  border-radius: ${({ theme }) => theme.radius.xl};
-  background: ${({ theme }) => theme.colors.background.tertiary};
+  border-radius: ${({ theme }) => theme.radius.lg};
 `;
