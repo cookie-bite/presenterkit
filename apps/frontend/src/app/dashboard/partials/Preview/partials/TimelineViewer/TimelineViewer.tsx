@@ -5,12 +5,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { FileResponse } from '@/lib/api/file.api';
 import { usePreviewStore } from '@/lib/stores/preview.store';
 import { TimelineClip } from '@/lib/stores/timeline.store';
+import { buildTimelineSteps, TimelineStep } from '@/lib/utils/timeline';
 import { Button, Icon } from '@/ui';
 
 import { Stage } from '../../styled';
 import { Container, Controls, Counter, ImageStep, VideoStep } from './styled';
-
-type StepKind = 'image' | 'video' | 'slide';
 
 interface TimelineViewerProps {
   clips: TimelineClip[];
@@ -18,71 +17,10 @@ interface TimelineViewerProps {
   selectedInstanceId: string;
 }
 
-interface TimelineStep {
-  key: string;
-  kind: StepKind;
-  instanceId: string;
-  file: FileResponse;
-  page: number | null;
-  pageCount: number;
-  src: string;
-}
-
-function getViewerType(file: FileResponse): StepKind {
-  const mime = file.mimeType ?? '';
-  if (mime.startsWith('image/')) return 'image';
-  if (mime.startsWith('video/')) return 'video';
-  return 'slide';
-}
-
-function getPageImageUrl(thumbnailUrl: string, page: number): string {
-  const padded = String(page).padStart(3, '0');
-  return thumbnailUrl.replace(/\d{3}\.webp$/, `${padded}.webp`);
-}
-
 export const TimelineViewer = ({ clips, files, selectedInstanceId }: TimelineViewerProps) => {
   const { setSelectedFile } = usePreviewStore();
 
-  const steps = useMemo<TimelineStep[]>(() => {
-    const fileMap = new Map(files.map(file => [file.fileId, file]));
-
-    return clips.flatMap((clip): TimelineStep[] => {
-      const file = fileMap.get(clip.fileId);
-      if (!file) return [];
-
-      const kind = getViewerType(file);
-
-      if (kind === 'slide') {
-        const pageCount = Math.max(file.pageCount ?? 1, 1);
-        const thumbnailUrl = file.thumbnailUrl ?? '';
-
-        return Array.from({ length: pageCount }, (_, i) => {
-          const page = i + 1;
-          return {
-            key: `${clip.instanceId}-${page}`,
-            kind,
-            instanceId: clip.instanceId,
-            file,
-            page,
-            pageCount,
-            src: getPageImageUrl(thumbnailUrl, page),
-          };
-        });
-      }
-
-      return [
-        {
-          key: `${clip.instanceId}-1`,
-          kind,
-          instanceId: clip.instanceId,
-          file,
-          page: null,
-          pageCount: 1,
-          src: file.blobUrl ?? '',
-        },
-      ];
-    });
-  }, [clips, files]);
+  const steps = useMemo<TimelineStep[]>(() => buildTimelineSteps(clips, files), [clips, files]);
 
   const initialStepIndex = useMemo(() => {
     const found = steps.findIndex(step => step.instanceId === selectedInstanceId);
