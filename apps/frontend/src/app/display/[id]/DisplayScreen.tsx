@@ -53,7 +53,10 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
   }, [isReady, send]);
 
   useEffect(() => {
-    const handleUnload = () => {
+    const handleUnload = (event: BeforeUnloadEvent) => {
+      if (isReady) {
+        event.preventDefault();
+      }
       send({ type: 'CLOSING' });
     };
 
@@ -61,7 +64,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
     return () => {
       window.removeEventListener('beforeunload', handleUnload);
     };
-  }, [send]);
+  }, [isReady, send]);
 
   useEffect(() => {
     send({ type: 'ACK', stepIndex: boundedStepIndex });

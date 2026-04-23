@@ -2,22 +2,24 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
 import { useFiles } from '@/lib/hooks/useFiles';
+import { useOfflineStatus } from '@/lib/hooks/useOfflineStatus';
 import { useDisplayStore } from '@/lib/stores/display.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { buildTimelineSteps } from '@/lib/utils/timeline';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
 import { DisplayCard } from './partials/DisplayCard';
-import { Container, EmptyHint, List } from './styled';
+import { Container, EmptyHint, List, OfflineHint } from './styled';
 
 export const Displays = () => {
+  const { isOffline } = useOfflineStatus();
   const { files } = useFiles();
   const { clips } = useTimelineStore();
   const { displays, upsertDisplay, setDisplayStatus, setDisplayStep, setWindowRef, removeDisplay } =
     useDisplayStore();
 
   const activeDisplay = displays[0] ?? null;
-  const canAddDisplay = !activeDisplay || activeDisplay.status === 'blocked';
+  const canAddDisplay = (!activeDisplay || activeDisplay.status === 'blocked') && !isOffline;
 
   const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
 
@@ -94,7 +96,21 @@ export const Displays = () => {
     };
   }, [activeDisplay, send, setDisplayStep, steps.length]);
 
+  useEffect(() => {
+    if (!activeDisplay || activeDisplay.status !== 'connected') return;
+
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [activeDisplay]);
+
   const openDisplay = useCallback(() => {
+    if (isOffline) return;
     if (activeDisplay && activeDisplay.status !== 'blocked') return;
 
     if (activeDisplay?.status === 'blocked') {
@@ -127,7 +143,7 @@ export const Displays = () => {
       stepIndex: 0,
       windowRef,
     });
-  }, [activeDisplay, setDisplayStatus, setWindowRef, upsertDisplay]);
+  }, [activeDisplay, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
 
   const updateStep = useCallback(
     (delta: number) => {
@@ -157,6 +173,7 @@ export const Displays = () => {
       }
     >
       <Container>
+        {isOffline && <OfflineHint>Offline: existing display control only</OfflineHint>}
         {!activeDisplay ? (
           <EmptyHint>No displays</EmptyHint>
         ) : (

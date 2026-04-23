@@ -27,3 +27,8 @@ export const List = styled.div`
   gap: 8px;
   width: 100%;
 `;
+
+export const OfflineHint = styled.p`
+  ${({ theme }) => theme.text.caption1.regular}
+  color: ${({ theme }) => theme.colors.accent.orange};
+`;
