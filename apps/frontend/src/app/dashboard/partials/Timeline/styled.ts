@@ -11,7 +11,11 @@ export const Container = styled.div`
   background: ${({ theme }) => theme.colors.background.secondary};
 `;
 
-export const Track = styled.div<{ $isOver?: boolean; $isEmpty?: boolean }>`
+export const Track = styled.div<{
+  $isFileDragActive?: boolean;
+  $isOver?: boolean;
+  $isEmpty?: boolean;
+}>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -22,9 +26,14 @@ export const Track = styled.div<{ $isOver?: boolean; $isEmpty?: boolean }>`
   padding: 16px 8px;
   border-radius: ${({ theme }) => theme.radius.lg};
   border: 1px dashed
-    ${({ theme, $isOver, $isEmpty }) =>
-      $isOver || $isEmpty ? theme.colors.accent.indigo : 'transparent'};
-  background: ${({ theme, $isOver }) => ($isOver ? theme.colors.shade.indigo : 'transparent')};
+    ${({ theme, $isFileDragActive, $isOver, $isEmpty }) =>
+      $isFileDragActive || $isOver || $isEmpty ? theme.colors.separator.nonOpaque : 'transparent'};
+  background: ${({ theme, $isFileDragActive, $isOver }) =>
+    $isOver
+      ? theme.colors.fill.tertiary
+      : $isFileDragActive
+        ? theme.colors.fill.quaternary
+        : 'transparent'};
   transition:
     background 0.15s ease,
     border-color 0.15s ease;

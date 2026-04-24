@@ -142,7 +142,7 @@ export default function Dashboard() {
           </Panel>
           <PanelResizer />
           <Panel defaultSize={20}>
-            <Timeline files={files} />
+            <Timeline files={files} isFileDragActive={activeDrag?.type === 'file'} />
           </Panel>
         </PanelGroup>
       </Container>

@@ -11,7 +11,13 @@ import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { Clip } from './partials/Clip';
 import { Container, EmptyHint, Track } from './styled';
 
-export const Timeline = ({ files }: { files: FileResponse[] }) => {
+export const Timeline = ({
+  files,
+  isFileDragActive = false,
+}: {
+  files: FileResponse[];
+  isFileDragActive?: boolean;
+}) => {
   const { clips, selectedInstanceId, removeClip, selectClip } = useTimelineStore();
   const { setSelectedFile } = usePreviewStore();
   const { setNodeRef, isOver } = useDroppable({ id: 'timeline-track' });
@@ -23,7 +29,12 @@ export const Timeline = ({ files }: { files: FileResponse[] }) => {
 
   return (
     <Container onClick={() => selectClip(null)}>
-      <Track ref={setNodeRef} $isOver={isOver} $isEmpty={isEmpty}>
+      <Track
+        ref={setNodeRef}
+        $isFileDragActive={isFileDragActive}
+        $isOver={isOver}
+        $isEmpty={isEmpty}
+      >
         {isEmpty ? (
           <EmptyHint>Drag files here to build your event flow</EmptyHint>
         ) : (
