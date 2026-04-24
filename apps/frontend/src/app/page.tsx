@@ -52,11 +52,11 @@ export default function Home() {
       <HeroSection id='hero'>
         <Hero>
           <Title>
-            Designed for Presenters.
+            Designed for Every Stage.
             <br />
-            Built for Impact.
+            Built for Control.
           </Title>
-          <Subtitle>Real-Time Interaction, Slide Sharing, and Presentation Management.</Subtitle>
+          <Subtitle>Control Files, Displays, and Timers in One Simple Platform.</Subtitle>
           <CTAButton onClick={navigateToAuth}>Get Started</CTAButton>
           <ButtonInfo>
             <ButtonInfoText>It&apos;s completely free!</ButtonInfoText>

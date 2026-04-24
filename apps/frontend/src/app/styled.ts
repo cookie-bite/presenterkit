@@ -115,6 +115,7 @@ export const Title = styled.h2`
   font-size: 80px;
   font-weight: 500;
   line-height: 84px;
+  letter-spacing: 2%;
   text-align: center;
   margin-top: 52px;
   margin-bottom: 0;
@@ -128,15 +129,16 @@ export const Title = styled.h2`
 `;
 
 export const Subtitle = styled.h3`
-  font-size: 32px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 200;
   line-height: 36px;
+  letter-spacing: 1%;
   text-align: center;
   margin-top: 72px;
-  width: 560px;
+  width: 410px;
   max-width: 100%;
   margin-bottom: 0;
-  color: ${({ theme }) => theme.colors.landing.text};
+  color: ${({ theme }) => theme.colors.text.secondary};
 
   ${media.mobile`
     font-size: 17px;

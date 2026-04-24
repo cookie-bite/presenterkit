@@ -17,7 +17,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'PresenterKit',
-  description: 'Control panel for live presentations',
+  description: 'Control panel for every stage',
+  icons: {
+    icon: '/images/logo.svg',
+    shortcut: '/images/logo.svg',
+  },
 };
 
 export default function RootLayout({
