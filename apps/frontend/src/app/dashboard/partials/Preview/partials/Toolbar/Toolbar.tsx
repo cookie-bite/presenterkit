@@ -14,12 +14,6 @@ export const Toolbar = () => {
     <ToolbarContainer>
       <ToolbarTitle>{selectedFile.filename ?? ''}</ToolbarTitle>
       <ToolbarActions>
-        <Button variant='ghost'>
-          <Icon name='add' size={18} />
-        </Button>
-        <Button variant='ghost'>
-          <Icon name='folder-open-outline' size={18} />
-        </Button>
         <Button
           variant='ghost'
           onClick={() => void handleDelete(selectedFile.fileId)}
