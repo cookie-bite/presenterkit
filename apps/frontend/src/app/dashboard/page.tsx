@@ -20,7 +20,6 @@ import { Displays } from './partials/Displays';
 import { DragOverlayThumbnail } from './partials/DragOverlay';
 import { Files } from './partials/Files';
 import { Menu } from './partials/Menu';
-import { NoFiles } from './partials/NoFiles';
 import { Preview } from './partials/Preview';
 import { Timeline } from './partials/Timeline';
 import { Container, PanelResizer, SaveFailedHint } from './styled';
@@ -31,7 +30,7 @@ interface ActiveDrag {
 }
 
 export default function Dashboard() {
-  const { files, hasFiles } = useFiles();
+  const { files } = useFiles();
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null);
   const [timelineHydrated, setTimelineHydrated] = useState(false);
   const [showSaveFailed, setShowSaveFailed] = useState(false);
@@ -125,31 +124,27 @@ export default function Dashboard() {
       <Container>
         <Menu />
         {showSaveFailed && <SaveFailedHint>Save failed</SaveFailedHint>}
-        {!hasFiles ? (
-          <NoFiles />
-        ) : (
-          <PanelGroup direction='vertical'>
-            <Panel>
-              <PanelGroup direction='horizontal'>
-                <Panel defaultSize={20}>
-                  <Files files={files} />
-                </Panel>
-                <PanelResizer />
-                <Panel>
-                  <Preview />
-                </Panel>
-                <PanelResizer />
-                <Panel defaultSize={20}>
-                  <Displays />
-                </Panel>
-              </PanelGroup>
-            </Panel>
-            <PanelResizer />
-            <Panel defaultSize={20}>
-              <Timeline files={files} />
-            </Panel>
-          </PanelGroup>
-        )}
+        <PanelGroup direction='vertical'>
+          <Panel>
+            <PanelGroup direction='horizontal'>
+              <Panel defaultSize={20}>
+                <Files files={files} />
+              </Panel>
+              <PanelResizer />
+              <Panel>
+                <Preview />
+              </Panel>
+              <PanelResizer />
+              <Panel defaultSize={20}>
+                <Displays />
+              </Panel>
+            </PanelGroup>
+          </Panel>
+          <PanelResizer />
+          <Panel defaultSize={20}>
+            <Timeline files={files} />
+          </Panel>
+        </PanelGroup>
       </Container>
       <DragOverlay dropAnimation={null}>
         {overlayFile && <DragOverlayThumbnail file={overlayFile} />}

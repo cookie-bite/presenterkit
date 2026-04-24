@@ -8,8 +8,9 @@ import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { buildTimelineSteps } from '@/lib/utils/timeline';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
+import { EmptyHint } from '../../styled';
 import { DisplayCard } from './partials/DisplayCard';
-import { Container, EmptyHint, List, OfflineHint } from './styled';
+import { Container, List, OfflineHint } from './styled';
 
 export const Displays = () => {
   const { isOffline } = useOfflineStatus();

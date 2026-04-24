@@ -3,9 +3,10 @@ import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
 import { usePreviewStore } from '@/lib/stores/preview.store';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
+import { EmptyHint } from '../../styled';
 import { FileCard } from './partials/FileCard';
 import { File } from './partials/FileCard/styled';
-import { UploadCard } from './styled';
+import { Container, UploadCard } from './styled';
 
 export const Files = ({ files }: { files: FileResponse[] }) => {
   const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
@@ -20,22 +21,28 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
         </Button>
       }
     >
-      {FileInput}
-      <ScrollView $gap='6px' $padding='6px'>
-        {isUploadActive && (
-          <File>
-            <UploadCard>{statusMessage}</UploadCard>
-          </File>
+      <Container>
+        {FileInput}
+        {!isUploadActive && files.length === 0 ? (
+          <EmptyHint>No files</EmptyHint>
+        ) : (
+          <ScrollView $gap='6px' $padding='6px'>
+            {isUploadActive && (
+              <File>
+                <UploadCard>{statusMessage}</UploadCard>
+              </File>
+            )}
+            {files.map(file => (
+              <FileCard
+                key={file.fileId}
+                file={file}
+                isSelected={selectedFile?.fileId === file.fileId}
+                onClick={() => setSelectedFile(file)}
+              />
+            ))}
+          </ScrollView>
         )}
-        {files.map(file => (
-          <FileCard
-            key={file.fileId}
-            file={file}
-            isSelected={selectedFile?.fileId === file.fileId}
-            onClick={() => setSelectedFile(file)}
-          />
-        ))}
-      </ScrollView>
+      </Container>
     </Panel>
   );
 };

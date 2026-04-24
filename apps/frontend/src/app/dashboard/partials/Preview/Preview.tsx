@@ -5,8 +5,8 @@ import { useFiles } from '@/lib/hooks/useFiles';
 import { usePreviewStore } from '@/lib/stores/preview.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 
+import { EmptyHint } from '../../styled';
 import { ImageViewer } from './partials/ImageViewer';
-import { NoPreview } from './partials/NoPreview';
 import { SlideViewer } from './partials/SlideViewer';
 import { TimelineViewer } from './partials/TimelineViewer';
 import { Toolbar } from './partials/Toolbar/Toolbar';
@@ -32,7 +32,7 @@ export const Preview = () => {
     <Container>
       <Toolbar />
       {!selectedFile ? (
-        <NoPreview />
+        <EmptyHint>No preview</EmptyHint>
       ) : hasSelectedClip && selectedInstanceId ? (
         <TimelineViewer
           key={selectedInstanceId}

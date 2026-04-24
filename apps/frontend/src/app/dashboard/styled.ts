@@ -17,18 +17,25 @@ export const SaveFailedHint = styled.span`
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
-export const PanelResizer = styled(PanelResizeHandle)`
-  /* width: 8px; */
+export const EmptyHint = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  ${({ theme }) => theme.text.body.regular}
+  color: ${({ theme }) => theme.colors.text.tertiary};
+  pointer-events: none;
+  user-select: none;
+`;
 
+export const PanelResizer = styled(PanelResizeHandle)`
   /* In horizontal group: left-right split => vertical line */
   [data-panel-group-direction='horizontal'] & {
     width: 8px;
     min-height: 100%;
-    /* cursor: col-resize; */
   }
   /* In vertical group: top-bottom split => horizontal line */
   [data-panel-group-direction='vertical'] & {
     height: 8px;
-    /* cursor: row-resize; */
   }
 `;

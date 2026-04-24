@@ -6,6 +6,14 @@ const shimmer = keyframes`
   100% { transform: translateX(100%); }
 `;
 
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 8px;
+`;
+
 export const UploadCard = styled.div`
   position: relative;
   overflow: hidden;
