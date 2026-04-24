@@ -8,6 +8,7 @@ export interface TimelineClip {
 interface TimelineStore {
   clips: TimelineClip[];
   selectedInstanceId: string | null;
+  setClips: (clips: TimelineClip[]) => void;
   addClip: (fileId: number) => void;
   removeClip: (instanceId: string) => void;
   reorderClips: (oldIndex: number, newIndex: number) => void;
@@ -17,6 +18,14 @@ interface TimelineStore {
 export const useTimelineStore = create<TimelineStore>(set => ({
   clips: [],
   selectedInstanceId: null,
+
+  setClips: clips =>
+    set(state => ({
+      clips,
+      selectedInstanceId: clips.some(c => c.instanceId === state.selectedInstanceId)
+        ? state.selectedInstanceId
+        : null,
+    })),
 
   addClip: fileId =>
     set(state => ({

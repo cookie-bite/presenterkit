@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { Repository } from 'typeorm';
+import { In, type Repository } from 'typeorm';
 
+import { File } from '../files/entities/file.entity';
+import { TimelineClipDto } from './dto/timeline-clip.dto';
 import { Event } from './entities/event.entity';
 import { EventsConfig } from './events.config';
 
@@ -10,6 +12,8 @@ export class EventsService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
     private readonly eventsConfig: EventsConfig,
   ) {}
 
@@ -48,5 +52,47 @@ export class EventsService {
       where: { userId },
       order: { createdAt: 'ASC' },
     });
+  }
+
+  async getTimelineTrack(
+    userId: number,
+    eventID: string,
+  ): Promise<{ clips: TimelineClipDto[]; updatedAt: Date }> {
+    const event = await this.findByEventID(userId, eventID);
+    return {
+      clips: event.timelineTrack ?? [],
+      updatedAt: event.updatedAt,
+    };
+  }
+
+  async saveTimelineTrack(
+    userId: number,
+    eventID: string,
+    clips: TimelineClipDto[],
+  ): Promise<{ clips: TimelineClipDto[]; updatedAt: Date }> {
+    const event = await this.findByEventID(userId, eventID);
+    const fileIds = [...new Set(clips.map(clip => clip.fileId))];
+
+    if (fileIds.length > 0) {
+      const validFilesCount = await this.fileRepository.count({
+        where: {
+          id: In(fileIds),
+          userId,
+          eventId: event.id,
+        },
+      });
+
+      if (validFilesCount !== fileIds.length) {
+        throw new BadRequestException('Timeline contains invalid fileId');
+      }
+    }
+
+    event.timelineTrack = clips;
+    const savedEvent = await this.eventRepository.save(event);
+
+    return {
+      clips: savedEvent.timelineTrack,
+      updatedAt: savedEvent.updatedAt,
+    };
   }
 }

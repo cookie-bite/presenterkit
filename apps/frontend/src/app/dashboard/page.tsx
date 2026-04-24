@@ -9,9 +9,10 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup } from 'react-resizable-panels';
 
+import { getTimeline, updateTimeline } from '@/lib/api/timeline.api';
 import { useFiles } from '@/lib/hooks/useFiles';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 
@@ -22,7 +23,7 @@ import { Menu } from './partials/Menu';
 import { NoFiles } from './partials/NoFiles';
 import { Preview } from './partials/Preview';
 import { Timeline } from './partials/Timeline';
-import { Container, PanelResizer } from './styled';
+import { Container, PanelResizer, SaveFailedHint } from './styled';
 
 interface ActiveDrag {
   type: 'file' | 'clip';
@@ -32,8 +33,59 @@ interface ActiveDrag {
 export default function Dashboard() {
   const { files, hasFiles } = useFiles();
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null);
+  const [timelineHydrated, setTimelineHydrated] = useState(false);
+  const [showSaveFailed, setShowSaveFailed] = useState(false);
+  const lastSavedClipsRef = useRef<string | null>(null);
+  const { clips, setClips } = useTimelineStore();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void (async () => {
+      const result = await getTimeline();
+      if (isMounted && result && !('error' in result)) {
+        setClips(result.clips);
+        lastSavedClipsRef.current = JSON.stringify(result.clips);
+      }
+      if (isMounted) {
+        setTimelineHydrated(true);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setClips]);
+
+  useEffect(() => {
+    if (!timelineHydrated) {
+      return;
+    }
+
+    const serializedClips = JSON.stringify(clips);
+    if (serializedClips === lastSavedClipsRef.current) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      void (async () => {
+        const result = await updateTimeline(clips);
+        if (result && !('error' in result)) {
+          lastSavedClipsRef.current = JSON.stringify(result.clips);
+          setShowSaveFailed(false);
+          return;
+        }
+
+        setShowSaveFailed(true);
+      })();
+    }, 800);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [clips, timelineHydrated]);
 
   function handleDragStart(event: DragStartEvent) {
     const data = event.active.data.current;
@@ -72,6 +124,7 @@ export default function Dashboard() {
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <Container>
         <Menu />
+        {showSaveFailed && <SaveFailedHint>Save failed</SaveFailedHint>}
         {!hasFiles ? (
           <NoFiles />
         ) : (

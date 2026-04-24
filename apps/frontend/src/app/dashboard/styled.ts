@@ -12,6 +12,11 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background.primary};
 `;
 
+export const SaveFailedHint = styled.span`
+  ${({ theme }) => theme.text.caption1.regular}
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
 export const PanelResizer = styled(PanelResizeHandle)`
   /* width: 8px; */
 

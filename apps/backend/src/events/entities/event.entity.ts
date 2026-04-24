@@ -36,6 +36,12 @@ export class Event {
   @OneToMany(() => File, file => file.event)
   files: File[];
 
+  @Column({
+    type: 'jsonb',
+    default: () => "'[]'::jsonb",
+  })
+  timelineTrack: Array<{ instanceId: string; fileId: number }>;
+
   @CreateDateColumn()
   createdAt: Date;
 
