@@ -32,7 +32,7 @@ export const Preview = () => {
     <Container>
       <Toolbar />
       {!selectedFile ? (
-        <EmptyHint>No preview</EmptyHint>
+        <EmptyHint>Step 2: Select a file to preview how it will appear on screen.</EmptyHint>
       ) : hasSelectedClip && selectedInstanceId ? (
         <TimelineViewer
           key={selectedInstanceId}

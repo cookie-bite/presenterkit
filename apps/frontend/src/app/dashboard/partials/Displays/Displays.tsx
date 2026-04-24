@@ -176,7 +176,9 @@ export const Displays = () => {
       <Container>
         {isOffline && <OfflineHint>Offline: existing display control only</OfflineHint>}
         {!activeDisplay ? (
-          <EmptyHint>No displays</EmptyHint>
+          <EmptyHint>
+            Step 4: Add a display window to show this timeline on the stage monitor.
+          </EmptyHint>
         ) : (
           <ScrollView $gap='8px' $padding='0'>
             <List>

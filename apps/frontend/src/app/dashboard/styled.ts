@@ -22,6 +22,7 @@ export const EmptyHint = styled.p`
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding: 20px;
   ${({ theme }) => theme.text.body.regular}
   color: ${({ theme }) => theme.colors.text.tertiary};
   pointer-events: none;

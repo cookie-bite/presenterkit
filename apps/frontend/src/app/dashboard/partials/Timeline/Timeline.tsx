@@ -36,7 +36,7 @@ export const Timeline = ({
         $isEmpty={isEmpty}
       >
         {isEmpty ? (
-          <EmptyHint>Drag files here to build your event flow</EmptyHint>
+          <EmptyHint>Step 3: Drag your selected files here to build the event timeline.</EmptyHint>
         ) : (
           <SortableContext items={clipIds} strategy={horizontalListSortingStrategy}>
             {clips.map(clip => {

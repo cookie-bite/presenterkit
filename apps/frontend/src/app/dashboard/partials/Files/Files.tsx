@@ -24,7 +24,7 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
       <Container>
         {FileInput}
         {!isUploadActive && files.length === 0 ? (
-          <EmptyHint>No files</EmptyHint>
+          <EmptyHint>Step 1: Upload your assets - image, video, PDF, or PPTX.</EmptyHint>
         ) : (
           <ScrollView $gap='6px' $padding='6px'>
             {isUploadActive && (
