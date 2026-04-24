@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {
   ButtonInfo,
@@ -22,6 +23,12 @@ import {
 } from './styled';
 
 export default function Home() {
+  const router = useRouter();
+
+  const navigateToAuth = () => {
+    router.push('/auth');
+  };
+
   return (
     <>
       <Nav>
@@ -38,7 +45,7 @@ export default function Home() {
           <NavItem href='#features'>Features</NavItem>
           <NavItem href='#guide'>Guide</NavItem>
           <NavItem href='#demo'>Demo</NavItem>
-          <NavButton>Get Started</NavButton>
+          <NavButton onClick={navigateToAuth}>Get Started</NavButton>
         </NavContent>
       </Nav>
 
@@ -50,7 +57,7 @@ export default function Home() {
             Built for Impact.
           </Title>
           <Subtitle>Real-Time Interaction, Slide Sharing, and Presentation Management.</Subtitle>
-          <CTAButton>Get Started</CTAButton>
+          <CTAButton onClick={navigateToAuth}>Get Started</CTAButton>
           <ButtonInfo>
             <ButtonInfoText>It&apos;s completely free!</ButtonInfoText>
           </ButtonInfo>
