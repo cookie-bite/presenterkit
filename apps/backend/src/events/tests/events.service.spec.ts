@@ -2,10 +2,10 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-import { File } from '../files/entities/file.entity';
-import { Event } from './entities/event.entity';
-import { EventsConfig } from './events.config';
-import { EventsService } from './events.service';
+import { File } from '../../files/entities/file.entity';
+import { Event } from '../entities/event.entity';
+import { EventsConfig } from '../events.config';
+import { EventsService } from '../events.service';
 
 describe('EventsService', () => {
   let service: EventsService;

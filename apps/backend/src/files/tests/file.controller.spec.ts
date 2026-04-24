@@ -2,12 +2,12 @@ import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { firstValueFrom, Subject } from 'rxjs';
 
-import { AzureConfig } from '../config/azure.config';
-import { WebhookFileProcessedDto } from './dto/webhook-file-processed.dto';
-import { FileStatus } from './entities/file.entity';
-import { FileController, WebhookController } from './file.controller';
-import type { FileEvent } from './file.service';
-import { FileService } from './file.service';
+import { AzureConfig } from '../../config/azure.config';
+import { WebhookFileProcessedDto } from '../dto/webhook-file-processed.dto';
+import { FileStatus } from '../entities/file.entity';
+import { FileController, WebhookController } from '../file.controller';
+import type { FileEvent } from '../file.service';
+import { FileService } from '../file.service';
 
 const DEFAULT_EVENT_ID = 'sandbox';
 

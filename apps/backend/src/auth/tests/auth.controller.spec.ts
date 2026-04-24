@@ -2,14 +2,14 @@ import { BadRequestException, ConflictException, UnauthorizedException } from '@
 import { Test, type TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { EmailVerifyDto } from './dto/email-verify.dto';
-import { LoginDto } from './dto/login.dto';
-import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
-import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
-import { RegisterDto } from './dto/register.dto';
-import { VerifyDto } from './dto/verify.dto';
+import { AuthController } from '../auth.controller';
+import { AuthService } from '../auth.service';
+import { EmailVerifyDto } from '../dto/email-verify.dto';
+import { LoginDto } from '../dto/login.dto';
+import { PasswordResetConfirmDto } from '../dto/password-reset-confirm.dto';
+import { PasswordResetRequestDto } from '../dto/password-reset-request.dto';
+import { RegisterDto } from '../dto/register.dto';
+import { VerifyDto } from '../dto/verify.dto';
 
 const mockRes = {
   cookie: jest.fn(),
