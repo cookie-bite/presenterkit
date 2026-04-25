@@ -27,8 +27,14 @@ export const Timeline = ({
 
   const isEmpty = clips.length === 0;
 
+  const resetSelection = () => {
+    if (!isEmpty && selectedInstanceId) {
+      selectClip(null);
+    }
+  };
+
   return (
-    <Container onClick={() => selectClip(null)}>
+    <Container onClick={resetSelection}>
       <Track
         ref={setNodeRef}
         $isFileDragActive={isFileDragActive}

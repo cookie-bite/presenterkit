@@ -12,6 +12,14 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
   const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
   const { selectedFile, setSelectedFile } = usePreviewStore();
 
+  const isEmpty = files.length === 0;
+
+  const resetSelection = () => {
+    if (!isEmpty && selectedFile) {
+      setSelectedFile(null);
+    }
+  };
+
   return (
     <Panel
       title='Files'
@@ -21,9 +29,9 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
         </Button>
       }
     >
-      <Container>
+      <Container onClick={resetSelection}>
         {FileInput}
-        {!isUploadActive && files.length === 0 ? (
+        {!isUploadActive && isEmpty ? (
           <EmptyHint>Step 1: Upload your assets - image, video, PDF, or PPTX.</EmptyHint>
         ) : (
           <ScrollView $gap='6px' $padding='6px'>
