@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ToolbarContainer = styled.div`
+export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -8,11 +8,11 @@ export const ToolbarContainer = styled.div`
   height: 40px;
   width: 100%;
   margin-bottom: 8px;
-  padding: 4px 0px 4px 4px;
+  padding: 4px 0;
   border-radius: ${({ theme }) => theme.radius.lg};
 `;
 
-export const ToolbarTitle = styled.h2`
+export const Title = styled.h2`
   ${({ theme }) => theme.text.title2.bold}
   color: ${({ theme }) => theme.colors.text.primary};
   overflow: hidden;
@@ -20,7 +20,15 @@ export const ToolbarTitle = styled.h2`
   white-space: nowrap;
 `;
 
-export const ToolbarActions = styled.div`
+export const Left = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+`;
+
+export const Actions = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
