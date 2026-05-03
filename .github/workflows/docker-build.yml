@@ -12,9 +12,11 @@ on:
     branches:
       - main
 
-# Prevents concurrent runs from conflicting when creating/updating the Version PR.
+# push uses refs/heads/main; pull_request uses refs/pull/N/merge — different github.ref
+# would split concurrency and allow parallel runs (race on changesets). Single group
+# serializes all triggers that touch this workflow for this repo.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.repository }}-main
   cancel-in-progress: false  # don't cancel — let the first run finish cleanly
 
 # changesets/action needs these to open and push the Version Packages PR.
@@ -35,14 +37,16 @@ jobs:
   #      → commit message starts with "Version Packages" (set by changesets)
   #      → changesets/action has nothing to do, build jobs are unlocked.
   #
-  # We detect scenario B via the commit message instead of relying on the
-  # published output, which only works when publishing to npm.
+  # Scenario B: merged Version Packages PR (title check), OR push whose head commit
+  # message is that merge (squash title → commit subject). `merged == true` false on
+  # plain push → && short-circuits; no need to branch on github.event_name.
   # ──────────────────────────────────────────────────────────────────────────
   release:
     runs-on: ubuntu-latest
+    # Closed PR without merge: no changesets/Docker work; skip job (and downstream).
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     outputs:
-      # true only when the merged PR is the Version Packages PR created by changesets
-      is-version-pr: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Version Packages') }}
+      is-version-pr: ${{ (github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Version Packages')) || startsWith(github.event.head_commit.message, 'Version Packages') }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -52,8 +56,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 20
+          cache: yarn
 
-      - run: yarn --frozen-lockfile
+      - run: yarn install --immutable
 
       - uses: changesets/action@v1
         id: changesets
@@ -62,21 +67,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ─── Step 2a: Build & push backend ──────────────────────────────────────
-  # Only runs when the Version Packages PR was merged and backend version changed.
-  build-backend:
+  # ─── Step 2: Build & push images (only after Version Packages lands on main) ─
+  # Runs both images in parallel matrix legs. Comment above still applies: gate is
+  # version-package merge, not per-package diff (both tags bump together today).
+  build-images:
     needs: release
     if: needs.release.outputs.is-version-pr == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slug: backend
+            context: apps/backend
+            image: presenterkit/backend
+            pkg: apps/backend/package.json
+          - slug: pdf2img
+            context: apps/pdf2img
+            image: presenterkit/pdf2img
+            pkg: apps/pdf2img/package.json
     steps:
       - uses: actions/checkout@v6
 
-      # Version is read straight from package.json — changesets already
-      # bumped it when the Version Packages PR was created and merged.
-      - name: Read version
+      - name: Read version (${{ matrix.slug }})
         id: version
         run: |
-          VERSION=$(node -p "require('./apps/backend/package.json').version")
+          VERSION=$(node -p "require('./${{ matrix.pkg }}').version")
           echo "full=$VERSION" >> $GITHUB_OUTPUT
           echo "major=$(echo $VERSION | cut -d. -f1)" >> $GITHUB_OUTPUT
 
@@ -89,55 +105,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend
+      - name: Build and push ${{ matrix.slug }}
         uses: docker/build-push-action@v7
         with:
-          context: apps/backend
-          push: true
-          # Three tags per build:
-          #   presenterkit/backend:2.0.0  — exact, pinnable
-          #   presenterkit/backend:2      — always latest within major
-          #   presenterkit/backend:latest — always the newest build overall
-          tags: |
-            presenterkit/backend:${{ steps.version.outputs.full }}
-            presenterkit/backend:${{ steps.version.outputs.major }}
-            presenterkit/backend:latest
-          cache-from: type=registry,ref=presenterkit/backend:buildcache
-          cache-to:   type=registry,ref=presenterkit/backend:buildcache,mode=max
-
-  # ─── Step 2b: Build & push pdf2img ──────────────────────────────────────
-  # Runs in parallel with build-backend when both were version-bumped.
-  build-pdf2img:
-    needs: release
-    if: needs.release.outputs.is-version-pr == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Read version
-        id: version
-        run: |
-          VERSION=$(node -p "require('./apps/pdf2img/package.json').version")
-          echo "full=$VERSION" >> $GITHUB_OUTPUT
-          echo "major=$(echo $VERSION | cut -d. -f1)" >> $GITHUB_OUTPUT
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push pdf2img
-        uses: docker/build-push-action@v7
-        with:
-          context: apps/pdf2img
+          context: ${{ matrix.context }}
           push: true
           tags: |
-            presenterkit/pdf2img:${{ steps.version.outputs.full }}
-            presenterkit/pdf2img:${{ steps.version.outputs.major }}
-            presenterkit/pdf2img:latest
-          cache-from: type=registry,ref=presenterkit/pdf2img:buildcache
-          cache-to:   type=registry,ref=presenterkit/pdf2img:buildcache,mode=max
+            ${{ matrix.image }}:${{ steps.version.outputs.full }}
+            ${{ matrix.image }}:${{ steps.version.outputs.major }}
+            ${{ matrix.image }}:latest
+          cache-from: type=registry,ref=${{ matrix.image }}:buildcache
+          cache-to: type=registry,ref=${{ matrix.image }}:buildcache,mode=max
