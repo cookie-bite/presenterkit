@@ -78,12 +78,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Backend Dockerfile expects monorepo root (COPY yarn.lock, .yarn, apps/backend/...).
           - slug: backend
-            context: apps/backend
+            context: .
+            file: apps/backend/Dockerfile
             image: presenterkit/backend
             pkg: apps/backend/package.json
           - slug: pdf2img
             context: apps/pdf2img
+            file: apps/pdf2img/Dockerfile
             image: presenterkit/pdf2img
             pkg: apps/pdf2img/package.json
     steps:
@@ -109,6 +112,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
           push: true
           tags: |
             ${{ matrix.image }}:${{ steps.version.outputs.full }}
@@ -116,3 +120,4 @@ jobs:
             ${{ matrix.image }}:latest
           cache-from: type=registry,ref=${{ matrix.image }}:buildcache
           cache-to: type=registry,ref=${{ matrix.image }}:buildcache,mode=max
+
