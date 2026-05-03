@@ -4650,6 +4650,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@presenterkit/pdf2img@workspace:apps/pdf2img":
+  version: 0.0.0-use.local
+  resolution: "@presenterkit/pdf2img@workspace:apps/pdf2img"
+  languageName: unknown
+  linkType: soft
+
 "@react-email/render@npm:1.1.2":
   version: 1.1.2
   resolution: "@react-email/render@npm:1.1.2"
