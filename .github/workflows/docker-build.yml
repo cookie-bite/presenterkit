@@ -1,0 +1,142 @@
+name: Build & Push Docker Images
+
+# ─── Trigger ──────────────────────────────────────────────────────────────────
+# Every push to main goes through this workflow.
+# What actually happens depends on whether changeset files are present (see below).
+on:
+  push:
+    branches:
+      - main
+
+# Prevents concurrent runs from conflicting when creating/updating the Version PR.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false  # don't cancel — let the first run finish cleanly
+
+# changesets/action needs these to open and push the Version Packages PR.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # ─── Step 1: Changesets gate ──────────────────────────────────────────────
+  #
+  # This job has two distinct behaviours depending on what landed on main:
+  #
+  #   A) A regular dev→main merge that includes .changeset/*.md files
+  #      → changesets/action bumps versions in package.json files, opens
+  #        (or updates) a "Version Packages" PR, and stops. No Docker build.
+  #
+  #   B) The "Version Packages" PR itself is merged (no .changeset files left)
+  #      → changesets/action runs the publish script, sets published=true,
+  #        and the build jobs below are unlocked.
+  #
+  # This means Docker images are only ever built with a version you explicitly
+  # decided on — not on every commit.
+  # ──────────────────────────────────────────────────────────────────────────
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      published:         ${{ steps.changesets.outputs.published }}
+      publishedPackages: ${{ steps.changesets.outputs.publishedPackages }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # changesets needs full history to diff against the base branch
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: yarn --frozen-lockfile
+
+      - uses: changesets/action@v1
+        id: changesets
+        with:
+          # Only executed in scenario B (no pending changesets).
+          # We just need a valid command here — the real work is done by
+          # the build jobs below that read published/publishedPackages.
+          publish: echo "versions are ready"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─── Step 2a: Build & push backend ──────────────────────────────────────
+  # Only runs when @presenterkit/backend had a version bump in the merged Version PR.
+  build-backend:
+    needs: release
+    if: needs.release.outputs.published == 'true' && contains(needs.release.outputs.publishedPackages, '@presenterkit/backend')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version is read straight from package.json — changesets already
+      # bumped it when the Version Packages PR was created and merged.
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./apps/backend/package.json').version")
+          echo "full=$VERSION" >> $GITHUB_OUTPUT
+          echo "major=$(echo $VERSION | cut -d. -f1)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/backend
+          push: true
+          # Three tags per build:
+          #   presenterkit/backend:2.0.0  — exact, pinnable
+          #   presenterkit/backend:2      — always latest within major
+          #   presenterkit/backend:latest — always the newest build overall
+          tags: |
+            presenterkit/backend:${{ steps.version.outputs.full }}
+            presenterkit/backend:${{ steps.version.outputs.major }}
+            presenterkit/backend:latest
+          cache-from: type=registry,ref=presenterkit/backend:buildcache
+          cache-to:   type=registry,ref=presenterkit/backend:buildcache,mode=max
+
+  # ─── Step 2b: Build & push pdf2img ──────────────────────────────────────
+  # Runs in parallel with build-backend when both were version-bumped.
+  build-pdf2img:
+    needs: release
+    if: needs.release.outputs.published == 'true' && contains(needs.release.outputs.publishedPackages, '@presenterkit/pdf2img')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./apps/pdf2img/package.json').version")
+          echo "full=$VERSION" >> $GITHUB_OUTPUT
+          echo "major=$(echo $VERSION | cut -d. -f1)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push pdf2img
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/pdf2img
+          push: true
+          tags: |
+            presenterkit/pdf2img:${{ steps.version.outputs.full }}
+            presenterkit/pdf2img:${{ steps.version.outputs.major }}
+            presenterkit/pdf2img:latest
+          cache-from: type=registry,ref=presenterkit/pdf2img:buildcache
+          cache-to:   type=registry,ref=presenterkit/pdf2img:buildcache,mode=max
