@@ -1,5 +1,11 @@
 # @presenterkit/backend
 
+## 2.0.4
+
+### Patch Changes
+
+- 9131aa8: Update workflow #3
+
 ## 2.0.3
 
 ### Patch Changes
