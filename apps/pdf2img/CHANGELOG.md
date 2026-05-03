@@ -1,5 +1,11 @@
 # @presenterkit/pdf2img
 
+## 1.0.5
+
+### Patch Changes
+
+- 142d85e: Update workflow #4
+
 ## 1.0.4
 
 ### Patch Changes
