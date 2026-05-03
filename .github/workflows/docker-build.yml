@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
 
 # Prevents concurrent runs from conflicting when creating/updating the Version PR.
 concurrency:
@@ -37,8 +41,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
-      # true only when the merged commit is the Version Packages PR
-      is-version-pr: ${{ startsWith(github.event.head_commit.message, 'Version Packages') }}
+      # true only when the merged PR is the Version Packages PR created by changesets
+      is-version-pr: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Version Packages') }}
     steps:
       - uses: actions/checkout@v6
         with:
