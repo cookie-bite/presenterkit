@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
+import { AuthConfig } from '../config/auth.config';
 import { AuthService } from './auth.service';
 import { EmailVerifyDto } from './dto/email-verify.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
@@ -21,13 +22,17 @@ import { VerifyDto } from './dto/verify.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly authConfig: AuthConfig,
+  ) {}
 
   private setRefreshTokenCookie(res: Response, refreshToken: string) {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: this.authConfig.cookieSecure,
       sameSite: 'lax',
+      domain: this.authConfig.cookieDomain,
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });

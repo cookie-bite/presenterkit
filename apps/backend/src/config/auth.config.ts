@@ -1,5 +1,5 @@
 import { Configuration, Value } from '@itgorillaz/configify';
-import { IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 @Configuration()
 export class AuthConfig {
@@ -30,4 +30,13 @@ export class AuthConfig {
   @IsString()
   @Value('GOOGLE_CLIENT_ID')
   googleClientId: string;
+
+  @IsBoolean()
+  @Value('COOKIE_SECURE')
+  cookieSecure: boolean;
+
+  @IsOptional()
+  @IsString()
+  @Value('COOKIE_DOMAIN')
+  cookieDomain?: string;
 }
