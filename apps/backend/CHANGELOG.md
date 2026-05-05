@@ -1,5 +1,11 @@
 # @presenterkit/backend
 
+## 2.0.6
+
+### Patch Changes
+
+- 937bbcf: Add cookie configurations from environment variables
+
 ## 2.0.5
 
 ### Patch Changes
