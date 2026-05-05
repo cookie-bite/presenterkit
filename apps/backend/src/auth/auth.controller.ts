@@ -8,7 +8,7 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 
 import { AuthConfig } from '../config/auth.config';
 import { AuthService } from './auth.service';
@@ -27,13 +27,19 @@ export class AuthController {
     private readonly authConfig: AuthConfig,
   ) {}
 
-  private setRefreshTokenCookie(res: Response, refreshToken: string) {
-    res.cookie('refreshToken', refreshToken, {
+  private getRefreshTokenCookieOptions(): CookieOptions {
+    return {
       httpOnly: true,
       secure: this.authConfig.cookieSecure,
       sameSite: 'lax',
       domain: this.authConfig.cookieDomain,
       path: '/',
+    };
+  }
+
+  private setRefreshTokenCookie(res: Response, refreshToken: string) {
+    res.cookie('refreshToken', refreshToken, {
+      ...this.getRefreshTokenCookieOptions(),
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
   }
@@ -113,7 +119,7 @@ export class AuthController {
     }
     const response = await this.authService.logout({ token });
     if (response.success) {
-      res.clearCookie('refreshToken', { path: '/' });
+      res.clearCookie('refreshToken', this.getRefreshTokenCookieOptions());
     }
     return response;
   }
