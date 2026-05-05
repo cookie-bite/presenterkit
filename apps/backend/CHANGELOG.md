@@ -1,5 +1,11 @@
 # @presenterkit/backend
 
+## 2.0.7
+
+### Patch Changes
+
+- bbc4199: Fix COOKIE_SECURE parsing to boolean
+
 ## 2.0.6
 
 ### Patch Changes
