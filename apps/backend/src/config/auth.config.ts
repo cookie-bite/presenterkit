@@ -32,7 +32,9 @@ export class AuthConfig {
   googleClientId: string;
 
   @IsBoolean()
-  @Value('COOKIE_SECURE')
+  @Value('COOKIE_SECURE', {
+    parse: v => String(v).toLowerCase() === 'true',
+  })
   cookieSecure: boolean;
 
   @IsOptional()
