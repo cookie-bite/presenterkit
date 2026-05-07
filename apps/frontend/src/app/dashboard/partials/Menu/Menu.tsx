@@ -1,5 +1,6 @@
 'use client';
 
+import { AnalyticsEvents, resetAnalyticsIdentity, trackEvent } from '@/lib/analytics';
 import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/ui';
 
@@ -11,7 +12,15 @@ export const Menu = () => {
   return (
     <Container>
       <Title>PresenterKit</Title>
-      <Button variant='text' onClick={() => logout()} disabled={isPending}>
+      <Button
+        variant='text'
+        onClick={() => {
+          trackEvent(AnalyticsEvents.userLoggedOut);
+          resetAnalyticsIdentity();
+          logout();
+        }}
+        disabled={isPending}
+      >
         Logout
       </Button>
     </Container>

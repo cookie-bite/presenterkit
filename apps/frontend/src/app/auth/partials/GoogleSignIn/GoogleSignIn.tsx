@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Script from 'next/script';
 import { useRef, useState } from 'react';
 
+import { AnalyticsEvents, capturePosthogException, trackEvent } from '@/lib/analytics';
 import { useGoogleLogin } from '@/lib/hooks/useAuth';
 
 import { GoogleButton } from './styled';
@@ -39,10 +40,13 @@ export function GoogleSignIn({ onError, label }: GoogleSignInProps) {
   const handleGoogleSignIn = async (credential: string) => {
     try {
       const result = await googleLoginMutation.mutateAsync({ idToken: credential });
-      if (!result.success) {
+      if (result.success) {
+        trackEvent(AnalyticsEvents.userSignedInWithGoogle, { method: 'google' });
+      } else {
         onError?.((result as { error: string }).error);
       }
     } catch (error) {
+      capturePosthogException(error);
       onError?.(error instanceof Error ? error.message : 'An error occurred');
     }
   };

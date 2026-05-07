@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { FileResponse } from '@/lib/api/file.api';
 import { TimelineClip } from '@/lib/stores/timeline.store';
 import { Icon } from '@/ui';
@@ -44,6 +45,10 @@ export const Clip = ({ clip, file, isSelected, onSelect, onRemove }: ClipProps) 
           variant='ghost'
           onClick={e => {
             e.stopPropagation();
+            trackEvent(AnalyticsEvents.clipRemovedFromTimeline, {
+              file_id: clip.fileId,
+              file_name: file.filename,
+            });
             onRemove();
           }}
         >

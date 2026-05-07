@@ -1,3 +1,4 @@
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { FileResponse } from '@/lib/api/file.api';
 import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
 import { usePreviewStore } from '@/lib/stores/preview.store';
@@ -51,6 +52,10 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
                 onClick={() => {
                   selectClip(null);
                   setSelectedFile(file);
+                  trackEvent(AnalyticsEvents.fileSelected, {
+                    file_name: file.filename,
+                    file_id: file.fileId,
+                  });
                 }}
               />
             ))}

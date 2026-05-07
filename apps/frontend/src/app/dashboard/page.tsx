@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup } from 'react-resizable-panels';
 
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { getTimeline, updateTimeline } from '@/lib/api/timeline.api';
 import { useFiles } from '@/lib/hooks/useFiles';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
@@ -107,12 +108,17 @@ export default function Dashboard() {
         overId === 'timeline-track' || clips.some(c => c.instanceId === overId);
       if (isOverTimeline) {
         addClip(activeData.fileId);
+        trackEvent(AnalyticsEvents.clipAddedToTimeline, { file_id: activeData.fileId });
       }
     } else if (activeData?.type === 'clip') {
       const oldIndex = clips.findIndex(c => c.instanceId === String(active.id));
       const newIndex = clips.findIndex(c => c.instanceId === String(over.id));
       if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
         reorderClips(oldIndex, newIndex);
+        trackEvent(AnalyticsEvents.clipReorderedInTimeline, {
+          old_index: oldIndex,
+          new_index: newIndex,
+        });
       }
     }
   }

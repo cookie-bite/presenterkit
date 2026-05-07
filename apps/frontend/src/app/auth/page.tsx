@@ -4,6 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
+import {
+  AnalyticsEvents,
+  capturePosthogException,
+  identifyUser,
+  trackEvent,
+} from '@/lib/analytics';
 import { useLogin, useRegister, useVerify } from '@/lib/hooks/useAuth';
 import { ErrorMessage, Segment } from '@/ui';
 
@@ -81,10 +87,14 @@ export default function AuthPage() {
     setApiError('');
     try {
       const result = await loginMutation.mutateAsync(data);
-      if (!result.success) {
+      if (result.success) {
+        identifyUser(data.email, { email: data.email });
+        trackEvent(AnalyticsEvents.userSignedIn, { method: 'email' });
+      } else {
         setApiError((result as { error: string }).error);
       }
     } catch (error) {
+      capturePosthogException(error);
       setApiError(error instanceof Error ? error.message : 'An error occurred');
     }
   };
@@ -95,6 +105,7 @@ export default function AuthPage() {
       const result = await registerMutation.mutateAsync(data);
       console.log('result', result);
       if (result.success) {
+        trackEvent(AnalyticsEvents.userSignedUp, { email: data.email, username: data.username });
         setEmailForOTP(data.email);
         verifyForm.setValue('email', data.email);
         setShowOTPUI(true);
@@ -103,6 +114,7 @@ export default function AuthPage() {
         setApiError((result as { error: string }).error);
       }
     } catch (error) {
+      capturePosthogException(error);
       setApiError(error instanceof Error ? error.message : 'An error occurred');
     }
   };
@@ -115,10 +127,14 @@ export default function AuthPage() {
         email: data.email,
         otp: otpString,
       });
-      if (!result.success) {
+      if (result.success) {
+        identifyUser(data.email, { email: data.email });
+        trackEvent(AnalyticsEvents.emailVerified);
+      } else {
         setApiError((result as { error: string }).error);
       }
     } catch (error) {
+      capturePosthogException(error);
       setApiError(error instanceof Error ? error.message : 'An error occurred');
     }
   };

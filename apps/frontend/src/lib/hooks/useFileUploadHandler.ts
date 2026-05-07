@@ -1,7 +1,9 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import { AnalyticsEvents, capturePosthogException, trackEvent } from '@/lib/analytics';
 
 import { useFileStatus } from './useFileStatus';
 import { useFileUpload } from './useFileUpload';
@@ -10,6 +12,7 @@ import { useFileUploadMutation } from './useFileUploadMutation';
 export function useFileUploadHandler() {
   const queryClient = useQueryClient();
   const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
+  const pendingFileRef = useRef<File | null>(null);
   const uploadMutation = useFileUploadMutation();
   const fileStatus = useFileStatus({
     fileId: uploadedFileId,
@@ -19,6 +22,7 @@ export function useFileUploadHandler() {
   const handleFileSelect = async (files: File[]) => {
     if (files.length === 0) return;
     try {
+      pendingFileRef.current = files[0];
       const result = await uploadMutation.mutateAsync(files[0]);
       if ('fileId' in result) {
         setUploadedFileId(result.fileId);
@@ -26,12 +30,18 @@ export function useFileUploadHandler() {
         console.error('Upload failed:', result.error);
       }
     } catch (error) {
+      capturePosthogException(error);
       console.error('Upload error:', error);
     }
   };
 
   useEffect(() => {
     if (fileStatus.status === 'ready') {
+      trackEvent(AnalyticsEvents.fileUploaded, {
+        file_name: pendingFileRef.current?.name,
+        file_type: pendingFileRef.current?.type,
+        file_size: pendingFileRef.current?.size,
+      });
       void queryClient.invalidateQueries({ queryKey: ['files'] });
     }
   }, [fileStatus.status, queryClient]);
