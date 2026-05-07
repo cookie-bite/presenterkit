@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { Button } from '@/ui/components/Button';
 import { media } from '@/ui/theme/breakpoints';
 
 export const Nav = styled.nav`
@@ -55,9 +56,9 @@ export const NavHome = styled(NavItem)`
   }
 `;
 
-export const NavButton = styled.button`
-  display: flex;
-  align-items: center;
+export const NavButton = styled(Button)`
+  width: auto;
+  min-height: 40px;
   height: 40px;
   padding: 0 20px;
   border-radius: 20px;
@@ -65,10 +66,11 @@ export const NavButton = styled.button`
   font-weight: 500;
   color: ${({ theme }) => theme.colors.landing.text};
   background-color: ${({ theme }) => theme.colors.accent.blue};
-  cursor: pointer;
+  box-shadow: none;
 
-  &:hover {
+  &:hover:not(:disabled) {
     opacity: 0.6;
+    filter: none;
   }
 `;
 
@@ -148,22 +150,25 @@ export const Subtitle = styled.h3`
   `}
 `;
 
-export const CTAButton = styled.button`
-  font-size: 17px;
-  font-weight: 500;
+export const CTAButton = styled(Button)`
+  width: auto;
+  min-height: auto;
   padding: 11px 21px;
   border-radius: 1000px;
   margin: 72px 0 10px;
+  font-size: 17px;
+  font-weight: 500;
   background-color: ${({ theme }) => theme.colors.accent.blue};
   color: ${({ theme }) => theme.colors.landing.text};
-  cursor: pointer;
+  box-shadow: none;
 
   ${media.mobile`
     margin: 36px 0 10px;
   `}
 
-  &:hover {
+  &:hover:not(:disabled) {
     opacity: 0.6;
+    filter: none;
   }
 `;
 

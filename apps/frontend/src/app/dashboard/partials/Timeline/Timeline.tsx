@@ -18,8 +18,11 @@ export const Timeline = ({
   files: FileResponse[];
   isFileDragActive?: boolean;
 }) => {
-  const { clips, selectedInstanceId, removeClip, selectClip } = useTimelineStore();
-  const { setSelectedFile } = usePreviewStore();
+  const clips = useTimelineStore(state => state.clips);
+  const selectedInstanceId = useTimelineStore(state => state.selectedInstanceId);
+  const removeClip = useTimelineStore(state => state.removeClip);
+  const selectClip = useTimelineStore(state => state.selectClip);
+  const setSelectedFile = usePreviewStore(state => state.setSelectedFile);
   const { setNodeRef, isOver } = useDroppable({ id: 'timeline-track' });
 
   const fileMap = useMemo(() => new Map(files.map(f => [f.fileId, f])), [files]);

@@ -21,7 +21,10 @@ export const FileCard = ({ file, isSelected, onClick }: FileCardProps) => {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      onClick={onClick}
+      onClick={event => {
+        event.stopPropagation();
+        onClick();
+      }}
       $isSelected={isSelected}
       style={{ touchAction: 'none', opacity: isDragging ? 0.4 : 1 }}
     >

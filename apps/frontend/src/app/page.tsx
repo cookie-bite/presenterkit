@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
 
 import {
   ButtonInfo,
@@ -24,9 +25,16 @@ import {
 
 export default function Home() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    router.prefetch('/auth');
+  }, [router]);
 
   const navigateToAuth = () => {
-    router.push('/auth');
+    startTransition(() => {
+      router.push('/auth');
+    });
   };
 
   return (
@@ -45,7 +53,9 @@ export default function Home() {
           <NavItem href='#features'>Features</NavItem>
           <NavItem href='#guide'>Guide</NavItem>
           <NavItem href='#demo'>Demo</NavItem>
-          <NavButton onClick={navigateToAuth}>Get Started</NavButton>
+          <NavButton onClick={navigateToAuth} isPending={isPending}>
+            Get Started
+          </NavButton>
         </NavContent>
       </Nav>
 
@@ -57,7 +67,9 @@ export default function Home() {
             Built for Control.
           </Title>
           <Subtitle>Control Files, Displays, and Timers in One Simple Platform.</Subtitle>
-          <CTAButton onClick={navigateToAuth}>Get Started</CTAButton>
+          <CTAButton onClick={navigateToAuth} isPending={isPending}>
+            Get Started
+          </CTAButton>
           <ButtonInfo>
             <ButtonInfoText>It&apos;s completely free!</ButtonInfoText>
           </ButtonInfo>

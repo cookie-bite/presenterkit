@@ -11,7 +11,6 @@ export const Container = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  padding: 8px;
 `;
 
 export const UploadCard = styled.div`

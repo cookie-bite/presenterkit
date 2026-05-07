@@ -1,5 +1,7 @@
 'use client';
 
+import { memo, useMemo } from 'react';
+
 import { FileResponse } from '@/lib/api/file.api';
 import { useFiles } from '@/lib/hooks/useFiles';
 import { usePreviewStore } from '@/lib/stores/preview.store';
@@ -20,13 +22,15 @@ function getViewerType(file: FileResponse): 'image' | 'video' | 'slide' {
   return 'slide';
 }
 
-export const Preview = () => {
-  const { selectedFile } = usePreviewStore();
+const PreviewComponent = () => {
+  const selectedFile = usePreviewStore(state => state.selectedFile);
   const { files } = useFiles();
-  const { clips, selectedInstanceId } = useTimelineStore();
-  const hasSelectedClip = selectedInstanceId
-    ? clips.some(clip => clip.instanceId === selectedInstanceId)
-    : false;
+  const clips = useTimelineStore(state => state.clips);
+  const selectedInstanceId = useTimelineStore(state => state.selectedInstanceId);
+  const hasSelectedClip = useMemo(
+    () => (selectedInstanceId ? clips.some(clip => clip.instanceId === selectedInstanceId) : false),
+    [clips, selectedInstanceId],
+  );
 
   return (
     <Container>
@@ -50,3 +54,5 @@ export const Preview = () => {
     </Container>
   );
 };
+
+export const Preview = memo(PreviewComponent);

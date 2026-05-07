@@ -1,6 +1,8 @@
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { FileResponse } from '@/lib/api/file.api';
 import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
 import { usePreviewStore } from '@/lib/stores/preview.store';
+import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
 import { EmptyHint } from '../../styled';
@@ -10,7 +12,9 @@ import { Container, UploadCard } from './styled';
 
 export const Files = ({ files }: { files: FileResponse[] }) => {
   const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
-  const { selectedFile, setSelectedFile } = usePreviewStore();
+  const selectedFile = usePreviewStore(state => state.selectedFile);
+  const setSelectedFile = usePreviewStore(state => state.setSelectedFile);
+  const selectClip = useTimelineStore(state => state.selectClip);
 
   const isEmpty = files.length === 0;
 
@@ -34,7 +38,7 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
         {!isUploadActive && isEmpty ? (
           <EmptyHint>Step 1: Upload your assets - image, video, PDF, or PPTX.</EmptyHint>
         ) : (
-          <ScrollView $gap='6px' $padding='6px'>
+          <ScrollView $gap='6px' $padding='8px'>
             {isUploadActive && (
               <File>
                 <UploadCard>{statusMessage}</UploadCard>
@@ -45,7 +49,14 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
                 key={file.fileId}
                 file={file}
                 isSelected={selectedFile?.fileId === file.fileId}
-                onClick={() => setSelectedFile(file)}
+                onClick={() => {
+                  selectClip(null);
+                  setSelectedFile(file);
+                  trackEvent(AnalyticsEvents.fileSelected, {
+                    file_name: file.filename,
+                    file_id: file.fileId,
+                  });
+                }}
               />
             ))}
           </ScrollView>

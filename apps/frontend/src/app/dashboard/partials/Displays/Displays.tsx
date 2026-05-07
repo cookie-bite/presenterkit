@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
+import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
 import { useFiles } from '@/lib/hooks/useFiles';
 import { useOfflineStatus } from '@/lib/hooks/useOfflineStatus';
@@ -144,6 +145,7 @@ export const Displays = () => {
       stepIndex: 0,
       windowRef,
     });
+    trackEvent(AnalyticsEvents.displayOpened, { display_id: id });
   }, [activeDisplay, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
 
   const updateStep = useCallback(
@@ -155,6 +157,12 @@ export const Displays = () => {
       );
       setDisplayStep(activeDisplay.id, bounded);
       send({ type: 'STEP', stepIndex: bounded });
+      trackEvent(AnalyticsEvents.displayStepNavigated, {
+        display_id: activeDisplay.id,
+        direction: delta > 0 ? 'next' : 'prev',
+        step_index: bounded,
+        total_steps: steps.length,
+      });
     },
     [activeDisplay, send, setDisplayStep, steps.length],
   );
