@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useTransition } from 'react';
+import { useEffect, useTransition } from 'react';
 
 import {
   ButtonInfo,
@@ -26,6 +26,10 @@ import {
 export default function Home() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    router.prefetch('/auth');
+  }, [router]);
 
   const navigateToAuth = () => {
     startTransition(() => {
