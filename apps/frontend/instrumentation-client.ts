@@ -6,11 +6,11 @@ const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
 if (IS_POSTHOG_ENABLED && posthogKey) {
   posthog.init(posthogKey, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_API_HOST,
+    api_host: '/ingest',
     ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST,
     defaults: '2026-01-30',
     capture_exceptions: true,
-    disable_compression: process.env.NEXT_PUBLIC_POSTHOG_DISABLE_COMPRESSION === 'true',
+    disable_compression: true,
     debug: process.env.NEXT_PUBLIC_POSTHOG_DEBUG === 'true',
   });
 } else if (
