@@ -5,6 +5,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -33,6 +34,7 @@ import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private resend: Resend;
 
   constructor(
@@ -82,11 +84,18 @@ export class AuthService {
       // Send email
       await this.sendEmail(email, 'Your Confirmation Code', `Your confirmation code is ${otp}`);
 
+      this.logger.log(
+        { action: 'auth.register', phase: 'otp_sent' },
+        'Registration OTP email sent',
+      );
+
       return {
         success: true,
         info: 'Confirmation code sent to your email.',
       };
     } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error({ err }, 'register failed');
       throw new InternalServerErrorException(error);
     }
   }
@@ -134,12 +143,19 @@ export class AuthService {
       });
       await this._refreshTokenRepository.save(refreshTokenEntity);
 
+      this.logger.log(
+        { userId: savedUser.id, action: 'auth.verify' },
+        'Account verified and signed in',
+      );
+
       return {
         success: true,
         accessToken,
         refreshToken,
       };
     } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error({ err }, 'verify account failed');
       throw new InternalServerErrorException(error);
     }
   }
@@ -172,12 +188,16 @@ export class AuthService {
       });
       await this._refreshTokenRepository.save(refreshTokenEntity);
 
+      this.logger.log({ userId: user.id, action: 'auth.login' }, 'User signed in');
+
       return {
         success: true,
         accessToken,
         refreshToken,
       };
-    } catch (_error) {
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error({ err }, 'login token generation failed');
       throw new InternalServerErrorException();
     }
   }
@@ -207,6 +227,8 @@ export class AuthService {
         where: { email },
       });
 
+      const isNewUser = !user;
+
       if (!user) {
         // Create new user with placeholder password (won't be used for Google auth)
         const placeholderPassword = await this.hashPassword(randomBytes(32).toString('hex'));
@@ -228,6 +250,11 @@ export class AuthService {
         userId: user.id,
       });
       await this._refreshTokenRepository.save(refreshTokenEntity);
+
+      this.logger.log(
+        { userId: user.id, action: 'auth.google_login', isNewUser },
+        'Google sign-in completed',
+      );
 
       return {
         success: true,
@@ -278,11 +305,18 @@ export class AuthService {
         `Your confirmation code is ${confirmationCode}`,
       );
 
+      this.logger.log(
+        { userId: user.id, action: 'auth.password_reset_request' },
+        'Password reset code emailed',
+      );
+
       return {
         success: true,
         info: 'Confirmation code has been sent to your email.',
       };
-    } catch (_error) {
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.warn({ err }, 'password reset request failed');
       throw new UnauthorizedException();
     }
   }
@@ -327,11 +361,18 @@ export class AuthService {
       // Delete confirmation
       await this._confirmationRepository.delete(confirmation.id);
 
+      this.logger.log(
+        { userId: user.id, action: 'auth.password_reset_confirm' },
+        'Password reset completed',
+      );
+
       return {
         success: true,
         info: 'Password has been changed successfully.',
       };
-    } catch (_error) {
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error({ err, userId: user.id }, 'confirm password reset failed');
       throw new InternalServerErrorException();
     }
   }
@@ -378,12 +419,19 @@ export class AuthService {
       confirmation.token = confirmationToken;
       await this._confirmationRepository.save(confirmation);
 
+      this.logger.log(
+        { userId: user.id, action: 'auth.email_code_verify' },
+        'Email verification code confirmed',
+      );
+
       return {
         success: true,
         confirmationToken: confirmationToken,
         info: 'Email has been confirmed successfully.',
       };
-    } catch (_error) {
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error({ err, userId: user.id }, 'verify email confirmation failed');
       throw new InternalServerErrorException();
     }
   }
@@ -458,6 +506,8 @@ export class AuthService {
       // Delete refresh token
       await this._refreshTokenRepository.delete(refreshTokenEntity.id);
 
+      this.logger.log({ userId: payload.sub, action: 'auth.logout' }, 'User signed out');
+
       return {
         success: true,
       };
@@ -509,7 +559,7 @@ export class AuthService {
     });
 
     if (error) {
-      console.log('Email could not send:', error);
+      this.logger.error({ resendError: error }, 'Resend email send failed');
       throw new InternalServerErrorException('Failed to send email');
     }
   }

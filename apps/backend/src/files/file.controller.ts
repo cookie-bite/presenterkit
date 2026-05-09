@@ -6,6 +6,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Logger,
   MessageEvent,
   Param,
   ParseIntPipe,
@@ -190,6 +191,8 @@ export class FileController {
 
 @Controller('webhooks')
 export class WebhookController {
+  private readonly logger = new Logger(WebhookController.name);
+
   constructor(
     private readonly fileService: FileService,
     private readonly azureConfig: AzureConfig,
@@ -201,6 +204,7 @@ export class WebhookController {
     @Body() dto: WebhookFileProcessedDto,
   ): Promise<{ success: boolean }> {
     if (secret !== this.azureConfig.webhookSecret) {
+      this.logger.warn({ action: 'webhook.file-processed' }, 'Rejected: invalid webhook secret');
       throw new UnauthorizedException('Invalid webhook secret');
     }
 
@@ -213,6 +217,16 @@ export class WebhookController {
       dto.error,
       dto.blobUrl,
       dto.blobPath,
+    );
+
+    this.logger.log(
+      {
+        action: 'webhook.file-processed',
+        fileId: dto.fileId,
+        userId: dto.userId,
+        status: dto.status,
+      },
+      'File status updated via webhook',
     );
 
     return { success: true };
