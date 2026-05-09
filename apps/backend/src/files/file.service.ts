@@ -144,7 +144,11 @@ export class FileService {
           await containerClient.getBlobClient(blob.name).deleteIfExists();
         }
       } catch (error) {
-        this.logger.warn(`Failed to delete blobs for fileId=${fileId}: ${String(error)}`);
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.logger.warn(
+          { err, userId, fileId },
+          'Failed to delete one or more blobs; continuing with DB removal',
+        );
       }
     }
 
@@ -190,8 +194,40 @@ export class FileService {
           result.blobUrl,
           result.blobPath,
         );
+        this.logger.log(
+          {
+            userId: file.userId,
+            fileId: file.id,
+            eventId: file.eventId,
+            action: 'file_processing',
+            outcome: 'ready',
+          },
+          'Direct media upload finalized',
+        );
+      } else if (result.type === 'queued') {
+        this.logger.log(
+          {
+            userId: file.userId,
+            fileId: file.id,
+            eventId: file.eventId,
+            action: 'file_processing',
+            outcome: 'queued',
+          },
+          'File queued for pdf2img conversion',
+        );
       }
     } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(
+        {
+          err,
+          userId: file.userId,
+          fileId: file.id,
+          eventId: file.eventId,
+          action: 'file_processing',
+        },
+        'File processing failed',
+      );
       const message = error instanceof Error ? error.message : 'Unknown processing error';
       await this.updateFileStatus(file.id, file.userId, FileStatus.FAILED, null, null, message);
     }

@@ -29,16 +29,35 @@ export class FileProcessingService {
   async start(file: File, uploadedFile: Express.Multer.File): Promise<ProcessingResult> {
     if (isImageMimeType(uploadedFile.mimetype) || isVideoMimeType(uploadedFile.mimetype)) {
       const result = await this.uploadDirectlyToBlob(file, uploadedFile);
-      this.logger.log(`Direct upload complete for fileId=${file.id} userId=${file.userId}`);
+      this.logger.log(
+        {
+          userId: file.userId,
+          fileId: file.id,
+          mimeType: uploadedFile.mimetype,
+          action: 'blob_upload_direct',
+        },
+        'Direct upload to blob finished',
+      );
       return { type: 'uploaded', ...result };
     }
 
     const pdfBuffer = isOfficeMimeType(uploadedFile.mimetype)
-      ? await this.convertPresentationToPdf(uploadedFile)
+      ? await this.convertPresentationToPdf(uploadedFile, {
+          userId: file.userId,
+          fileId: file.id,
+        })
       : uploadedFile.buffer;
 
     await this.sendToPdf2Img(file, pdfBuffer);
-    this.logger.log(`Queued conversion for fileId=${file.id} userId=${file.userId}`);
+    this.logger.log(
+      {
+        userId: file.userId,
+        fileId: file.id,
+        mimeType: uploadedFile.mimetype,
+        action: 'pdf2img_queue',
+      },
+      'Queued pdf2img conversion',
+    );
     return { type: 'queued' };
   }
 
@@ -68,7 +87,10 @@ export class FileProcessingService {
     if (isImageMimeType(uploadedFile.mimetype)) {
       thumbnailUrl = blobUrl;
     } else {
-      const thumbnailBuffer = await this.extractVideoThumbnail(uploadedFile.buffer);
+      const thumbnailBuffer = await this.extractVideoThumbnail(uploadedFile.buffer, {
+        userId: file.userId,
+        fileId: file.id,
+      });
       if (thumbnailBuffer) {
         const thumbBlobPath = this.buildBlobPath(file.storageKey, 'image', 'thumbnail.webp');
         const thumbBlobClient = this.containerClient.getBlockBlobClient(thumbBlobPath);
@@ -85,7 +107,10 @@ export class FileProcessingService {
     return { blobUrl, blobPath: sourceBlobPath, thumbnailUrl };
   }
 
-  private async extractVideoThumbnail(videoBuffer: Buffer): Promise<Buffer | null> {
+  private async extractVideoThumbnail(
+    videoBuffer: Buffer,
+    ctx: { userId: number; fileId: number },
+  ): Promise<Buffer | null> {
     const tempDir = tmpdir();
     const inputPath = join(tempDir, `${randomUUID()}.tmp`);
     const outputPath = join(tempDir, `${randomUUID()}.webp`);
@@ -105,7 +130,8 @@ export class FileProcessingService {
 
       return await fs.readFile(outputPath);
     } catch (error) {
-      this.logger.warn(`FFmpeg thumbnail extraction failed: ${String(error)}`);
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.warn({ err, ...ctx }, 'FFmpeg thumbnail extraction failed');
       return null;
     } finally {
       await Promise.allSettled([
@@ -115,8 +141,14 @@ export class FileProcessingService {
     }
   }
 
-  private async convertPresentationToPdf(file: Express.Multer.File): Promise<Buffer> {
-    this.logger.log('Starting PPT/PPTX conversion via Gotenberg.');
+  private async convertPresentationToPdf(
+    file: Express.Multer.File,
+    ctx: { userId: number; fileId: number },
+  ): Promise<Buffer> {
+    this.logger.log(
+      { ...ctx, action: 'gotenberg_convert' },
+      'Starting PPT/PPTX conversion via Gotenberg',
+    );
     const formData = new FormData();
     const bytes = new Uint8Array(file.buffer);
     formData.append('files', new Blob([bytes], { type: file.mimetype }), file.originalname);
@@ -128,6 +160,15 @@ export class FileProcessingService {
     });
 
     if (!response.ok) {
+      this.logger.error(
+        {
+          userId: ctx.userId,
+          fileId: ctx.fileId,
+          httpStatus: response.status,
+          action: 'gotenberg_convert',
+        },
+        'Gotenberg conversion failed',
+      );
       throw new Error(`Gotenberg conversion failed with status ${response.status}`);
     }
 
@@ -155,6 +196,15 @@ export class FileProcessingService {
     });
 
     if (!response.ok) {
+      this.logger.error(
+        {
+          userId: file.userId,
+          fileId: file.id,
+          httpStatus: response.status,
+          action: 'pdf2img',
+        },
+        'pdf2img request failed',
+      );
       throw new Error(`pdf2img request failed with status ${response.status}`);
     }
   }
