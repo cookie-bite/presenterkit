@@ -1,5 +1,12 @@
 # @presenterkit/backend
 
+## 2.0.8
+
+### Patch Changes
+
+- 05b8518: Fix logout issue
+- 345964e: Add logging
+
 ## 2.0.7
 
 ### Patch Changes
