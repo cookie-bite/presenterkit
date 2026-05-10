@@ -95,4 +95,15 @@ export class EventsService {
       updatedAt: savedEvent.updatedAt,
     };
   }
+
+  async removeClipsForFileId(userId: number, eventID: string, fileId: number): Promise<void> {
+    const event = await this.findByEventID(userId, eventID);
+    const track = event.timelineTrack ?? [];
+    const nextTrack = track.filter(clip => clip.fileId !== fileId);
+    if (nextTrack.length === track.length) {
+      return;
+    }
+    event.timelineTrack = nextTrack;
+    await this.eventRepository.save(event);
+  }
 }

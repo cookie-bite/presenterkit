@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, UnauthorizedException } from '@
 import { Test, type TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 
+import { AuthConfig } from '../../config/auth.config';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { EmailVerifyDto } from '../dto/email-verify.dto';
@@ -33,6 +34,11 @@ describe('AuthController', () => {
     logout: jest.fn(),
   };
 
+  const mockAuthConfig = {
+    cookieSecure: false,
+    cookieDomain: undefined as string | undefined,
+  } as AuthConfig;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -40,6 +46,10 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: mockAuthService,
+        },
+        {
+          provide: AuthConfig,
+          useValue: mockAuthConfig,
         },
       ],
     }).compile();

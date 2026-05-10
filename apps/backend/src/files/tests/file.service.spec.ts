@@ -23,6 +23,7 @@ describe('FileService', () => {
   };
   const mockEventsService = {
     findByEventID: jest.fn(),
+    removeClipsForFileId: jest.fn(),
   };
   const mockAzureConfig = {
     storageConnectionString: 'UseDevelopmentStorage=true',
@@ -108,6 +109,24 @@ describe('FileService', () => {
       );
 
       expect(mockFileRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteFile', () => {
+    it('should strip file from timeline then remove file', async () => {
+      const file = {
+        id: 5,
+        eventId: 11,
+        userId: 4,
+        storageKey: null,
+      } as File;
+      mockEventsService.findByEventID.mockResolvedValue({ id: 11 });
+      mockFileRepository.findOne.mockResolvedValue(file);
+
+      await service.deleteFile(5, 4, 'sandbox');
+
+      expect(mockEventsService.removeClipsForFileId).toHaveBeenCalledWith(4, 'sandbox', 5);
+      expect(mockFileRepository.remove).toHaveBeenCalledWith(file);
     });
   });
 });

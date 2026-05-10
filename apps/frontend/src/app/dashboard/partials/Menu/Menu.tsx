@@ -14,12 +14,12 @@ export const Menu = () => {
       <Title>PresenterKit</Title>
       <Button
         variant='text'
+        isPending={isPending}
         onClick={() => {
           trackEvent(AnalyticsEvents.userLoggedOut);
           resetAnalyticsIdentity();
           logout();
         }}
-        disabled={isPending}
       >
         Logout
       </Button>

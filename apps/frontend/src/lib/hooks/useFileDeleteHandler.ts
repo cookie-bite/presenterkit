@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { FileResponse } from '@/lib/api/file.api';
 import { usePreviewStore } from '@/lib/stores/preview.store';
+import { useTimelineStore } from '@/lib/stores/timeline.store';
 
 import { useFileDeleteMutation } from './useFileDeleteMutation';
 
@@ -21,14 +22,19 @@ export function useFileDeleteHandler() {
         ? nextFiles[Math.min(deletedIndex, nextFiles.length - 1)]
         : null;
 
+    const previousClips = useTimelineStore.getState().clips;
+    const nextClips = previousClips.filter(clip => clip.fileId !== fileId);
+
     queryClient.setQueryData<FileResponse[]>(['files'], nextFiles);
     setSelectedFile(nextSelectedFile);
+    useTimelineStore.getState().setClips(nextClips);
 
     try {
       await deleteMutation.mutateAsync(fileId);
     } catch (error) {
       queryClient.setQueryData<FileResponse[]>(['files'], previousFiles);
       setSelectedFile(deletedIndex >= 0 ? previousFiles[deletedIndex] : null);
+      useTimelineStore.getState().setClips(previousClips);
       console.error('Delete error:', error);
     }
   };
