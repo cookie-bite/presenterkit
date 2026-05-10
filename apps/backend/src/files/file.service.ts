@@ -131,6 +131,8 @@ export class FileService {
   async deleteFile(fileId: number, userId: number, eventID: string): Promise<void> {
     const file = await this.getFileById(fileId, userId, eventID);
 
+    await this.eventsService.removeClipsForFileId(userId, eventID, fileId);
+
     if (file.storageKey) {
       try {
         const containerClient = BlobServiceClient.fromConnectionString(

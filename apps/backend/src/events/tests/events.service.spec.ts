@@ -145,4 +145,35 @@ describe('EventsService', () => {
       await expect(service.getTimelineTrack(4, 'unknown-event')).rejects.toThrow(NotFoundException);
     });
   });
+
+  describe('removeClipsForFileId', () => {
+    it('should remove clips for that file id and save', async () => {
+      const event = makeEvent({
+        timelineTrack: [
+          { instanceId: 'a', fileId: 1 },
+          { instanceId: 'b', fileId: 2 },
+        ],
+      });
+      mockEventRepository.findOne.mockResolvedValue(event);
+      mockEventRepository.save.mockResolvedValue(event);
+
+      await service.removeClipsForFileId(4, 'sandbox', 1);
+
+      expect(mockEventRepository.save).toHaveBeenCalledWith({
+        ...event,
+        timelineTrack: [{ instanceId: 'b', fileId: 2 }],
+      });
+    });
+
+    it('should not save when no clip references the file', async () => {
+      const event = makeEvent({
+        timelineTrack: [{ instanceId: 'b', fileId: 2 }],
+      });
+      mockEventRepository.findOne.mockResolvedValue(event);
+
+      await service.removeClipsForFileId(4, 'sandbox', 1);
+
+      expect(mockEventRepository.save).not.toHaveBeenCalled();
+    });
+  });
 });
