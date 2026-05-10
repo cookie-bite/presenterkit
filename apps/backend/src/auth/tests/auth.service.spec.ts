@@ -44,6 +44,7 @@ describe('AuthService', () => {
     pepper: 'pepper',
     resendApiKey: 'resend-key',
     googleClientId: 'google-client-id',
+    cookieSecure: false,
   };
   const mockEventsService = {
     ensureDefaultEvent: jest.fn(),
