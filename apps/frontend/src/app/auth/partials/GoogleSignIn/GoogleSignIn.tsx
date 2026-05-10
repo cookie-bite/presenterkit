@@ -31,7 +31,11 @@ interface GoogleSignInProps {
 }
 
 export function GoogleSignIn({ onError, label }: GoogleSignInProps) {
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    // Cached `gsi/client` after client-side nav: Script `onLoad` may not run; GSI may already exist.
+    return Boolean(window.google?.accounts?.id);
+  });
   const [isInitialized, setIsInitialized] = useState(false);
   const hiddenButtonRef = useRef<HTMLDivElement>(null);
   const googleLoginMutation = useGoogleLogin();
