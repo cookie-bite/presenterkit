@@ -111,12 +111,17 @@ export const Displays = () => {
     };
   }, [activeDisplay]);
 
+  const displayUrl = useCallback((id: string, name: string) => {
+    const params = new URLSearchParams({ name });
+    return `/display/${id}?${params.toString()}`;
+  }, []);
+
   const openDisplay = useCallback(() => {
     if (isOffline) return;
     if (activeDisplay && activeDisplay.status !== 'blocked') return;
 
     if (activeDisplay?.status === 'blocked') {
-      const retryWindow = window.open(`/display/${activeDisplay.id}`, '_blank');
+      const retryWindow = window.open(displayUrl(activeDisplay.id, activeDisplay.name), '_blank');
       if (!retryWindow) return;
       setWindowRef(activeDisplay.id, retryWindow);
       setDisplayStatus(activeDisplay.id, 'pending');
@@ -125,7 +130,7 @@ export const Displays = () => {
 
     const id = crypto.randomUUID();
     const name = 'Display 1';
-    const windowRef = window.open(`/display/${id}`, '_blank');
+    const windowRef = window.open(displayUrl(id, name), '_blank');
 
     if (!windowRef) {
       upsertDisplay({
@@ -146,7 +151,7 @@ export const Displays = () => {
       windowRef,
     });
     trackEvent(AnalyticsEvents.displayOpened, { display_id: id });
-  }, [activeDisplay, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
+  }, [activeDisplay, displayUrl, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
 
   const updateStep = useCallback(
     (delta: number) => {
