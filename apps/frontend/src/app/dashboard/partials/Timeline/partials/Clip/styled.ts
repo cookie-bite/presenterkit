@@ -39,7 +39,7 @@ export const Thumbnail = styled(Image)`
 
 export const ThumbnailPlaceholder = styled.div`
   height: 100%;
-  width: 80px;
+  aspect-ratio: 16 / 9;
   background: ${({ theme }) => theme.colors.fill.secondary};
 `;
 

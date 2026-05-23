@@ -65,6 +65,12 @@ export class File {
   @Column({ nullable: true, type: 'varchar' })
   thumbnailUrl: string | null;
 
+  @Column({ nullable: true, type: 'int' })
+  thumbnailWidth: number | null;
+
+  @Column({ nullable: true, type: 'int' })
+  thumbnailHeight: number | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

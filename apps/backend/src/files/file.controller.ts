@@ -84,6 +84,8 @@ export class FileController {
       storageKey: file.storageKey,
       pageCount: file.pageCount,
       thumbnailUrl: file.thumbnailUrl,
+      thumbnailWidth: file.thumbnailWidth,
+      thumbnailHeight: file.thumbnailHeight,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     }));
@@ -132,6 +134,8 @@ export class FileController {
       storageKey: file.storageKey,
       pageCount: file.pageCount,
       thumbnailUrl: file.thumbnailUrl,
+      thumbnailWidth: file.thumbnailWidth,
+      thumbnailHeight: file.thumbnailHeight,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     };
@@ -170,6 +174,8 @@ export class FileController {
       storageKey: file.storageKey,
       pageCount: file.pageCount,
       thumbnailUrl: file.thumbnailUrl,
+      thumbnailWidth: file.thumbnailWidth,
+      thumbnailHeight: file.thumbnailHeight,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     };
@@ -217,6 +223,8 @@ export class WebhookController {
       dto.error,
       dto.blobUrl,
       dto.blobPath,
+      dto.thumbnailWidth,
+      dto.thumbnailHeight,
     );
 
     this.logger.log(

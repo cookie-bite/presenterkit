@@ -6,6 +6,7 @@ import { extname, join } from 'node:path';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import { Injectable, Logger } from '@nestjs/common';
 import ffmpeg from 'fluent-ffmpeg';
+import { imageSize } from 'image-size';
 
 import { AzureConfig } from '../config/azure.config';
 import { File } from './entities/file.entity';
@@ -13,7 +14,14 @@ import { isImageMimeType, isOfficeMimeType, isVideoMimeType } from './file-types
 
 type ProcessingResult =
   | { type: 'queued' }
-  | { type: 'uploaded'; blobUrl: string; blobPath: string; thumbnailUrl: string | null };
+  | {
+      type: 'uploaded';
+      blobUrl: string;
+      blobPath: string;
+      thumbnailUrl: string | null;
+      thumbnailWidth: number | null;
+      thumbnailHeight: number | null;
+    };
 
 @Injectable()
 export class FileProcessingService {
@@ -64,7 +72,13 @@ export class FileProcessingService {
   private async uploadDirectlyToBlob(
     file: File,
     uploadedFile: Express.Multer.File,
-  ): Promise<{ blobUrl: string; blobPath: string; thumbnailUrl: string | null }> {
+  ): Promise<{
+    blobUrl: string;
+    blobPath: string;
+    thumbnailUrl: string | null;
+    thumbnailWidth: number | null;
+    thumbnailHeight: number | null;
+  }> {
     if (!file.storageKey) {
       throw new Error(`storageKey is missing for fileId=${file.id}`);
     }
@@ -83,9 +97,14 @@ export class FileProcessingService {
     const blobUrl = sourceBlobClient.url;
 
     let thumbnailUrl: string | null = null;
+    let thumbnailWidth: number | null = null;
+    let thumbnailHeight: number | null = null;
 
     if (isImageMimeType(uploadedFile.mimetype)) {
       thumbnailUrl = blobUrl;
+      const dims = this.readImageDimensions(uploadedFile.buffer);
+      thumbnailWidth = dims.width;
+      thumbnailHeight = dims.height;
     } else {
       const thumbnailBuffer = await this.extractVideoThumbnail(uploadedFile.buffer, {
         userId: file.userId,
@@ -101,10 +120,22 @@ export class FileProcessingService {
           },
         });
         thumbnailUrl = thumbBlobClient.url;
+        const dims = this.readImageDimensions(thumbnailBuffer);
+        thumbnailWidth = dims.width;
+        thumbnailHeight = dims.height;
       }
     }
 
-    return { blobUrl, blobPath: sourceBlobPath, thumbnailUrl };
+    return { blobUrl, blobPath: sourceBlobPath, thumbnailUrl, thumbnailWidth, thumbnailHeight };
+  }
+
+  private readImageDimensions(buffer: Buffer): { width: number | null; height: number | null } {
+    try {
+      const { width, height } = imageSize(buffer);
+      return { width: width ?? null, height: height ?? null };
+    } catch {
+      return { width: null, height: null };
+    }
   }
 
   private async extractVideoThumbnail(
