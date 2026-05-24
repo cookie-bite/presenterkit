@@ -59,7 +59,8 @@ export const Preview = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 120px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.background.primary};
   overflow: hidden;
@@ -68,7 +69,13 @@ export const Preview = styled.div`
 export const PreviewImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+`;
+
+export const PreviewVideo = styled.video`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 export const PreviewPlaceholder = styled.div`

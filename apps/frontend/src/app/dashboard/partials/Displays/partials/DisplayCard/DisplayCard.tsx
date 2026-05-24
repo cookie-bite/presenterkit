@@ -1,4 +1,5 @@
 import { DisplayStatus } from '@/lib/stores/display.store';
+import { StepKind } from '@/lib/utils/timeline';
 import { Button, Icon } from '@/ui';
 
 import {
@@ -9,6 +10,7 @@ import {
   Preview,
   PreviewImage,
   PreviewPlaceholder,
+  PreviewVideo,
   StatusDot,
   StatusRow,
   StatusText,
@@ -17,6 +19,7 @@ import {
 interface DisplayCardProps {
   name: string;
   status: DisplayStatus;
+  currentKind: StepKind | null;
   currentSrc: string | null;
   currentStep: number;
   totalSteps: number;
@@ -34,6 +37,7 @@ function getStatusLabel(status: DisplayStatus) {
 export const DisplayCard = ({
   name,
   status,
+  currentKind,
   currentSrc,
   currentStep,
   totalSteps,
@@ -55,7 +59,15 @@ export const DisplayCard = ({
       </Header>
 
       <Preview>
-        {currentSrc ? <PreviewImage src={currentSrc} alt={name} /> : <PreviewPlaceholder />}
+        {currentSrc ? (
+          currentKind === 'video' ? (
+            <PreviewVideo src={currentSrc} autoPlay muted playsInline />
+          ) : (
+            <PreviewImage src={currentSrc} alt={name} />
+          )
+        ) : (
+          <PreviewPlaceholder />
+        )}
       </Preview>
 
       {status === 'blocked' && <StatusText>Allow pop-ups in browser</StatusText>}

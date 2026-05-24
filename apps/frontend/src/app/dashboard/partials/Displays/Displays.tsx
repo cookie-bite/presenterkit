@@ -174,7 +174,9 @@ export const Displays = () => {
   const currentStep = activeDisplay
     ? Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0))
     : 0;
-  const currentSrc = steps[currentStep]?.src ?? null;
+  const currentStepData = steps[currentStep];
+  const currentSrc = currentStepData?.src ?? null;
+  const currentKind = currentStepData?.kind ?? null;
 
   return (
     <Panel
@@ -197,6 +199,7 @@ export const Displays = () => {
               <DisplayCard
                 name={activeDisplay.name}
                 status={activeDisplay.status}
+                currentKind={currentKind}
                 currentSrc={currentSrc}
                 currentStep={currentStep}
                 totalSteps={steps.length}
