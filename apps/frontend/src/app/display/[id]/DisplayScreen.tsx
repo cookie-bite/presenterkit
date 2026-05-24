@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { FileResponse } from '@/lib/api/file.api';
-import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
-import { TimelineClip } from '@/lib/stores/timeline.store';
-import { buildTimelineSteps } from '@/lib/utils/timeline';
+import {
+  DisplayChannelMessage,
+  DisplayStep,
+  useDisplayChannel,
+} from '@/lib/hooks/useDisplayChannel';
 
 import { Container, ImageStep, Stage, Status, VideoStep } from './styled';
 
@@ -14,19 +15,16 @@ interface DisplayScreenProps {
 }
 
 export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
-  const [clips, setClips] = useState<TimelineClip[]>([]);
-  const [files, setFiles] = useState<FileResponse[]>([]);
+  const [steps, setSteps] = useState<DisplayStep[]>([]);
   const [stepIndex, setStepIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
 
-  const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
   const boundedStepIndex = Math.min(Math.max(stepIndex, 0), Math.max(steps.length - 1, 0));
   const activeStep = steps[boundedStepIndex];
 
   const handleMessage = useCallback((message: DisplayChannelMessage) => {
     if (message.type === 'SYNC') {
-      setClips(message.clips);
-      setFiles(message.files);
+      setSteps(message.steps);
       setStepIndex(message.stepIndex);
       setIsReady(true);
       return;
@@ -92,7 +90,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
         {activeStep.kind === 'video' ? (
           <VideoStep autoPlay playsInline src={activeStep.src} />
         ) : (
-          <ImageStep src={activeStep.src} alt={activeStep.file.filename ?? 'Display step'} />
+          <ImageStep src={activeStep.src} alt='Display step' />
         )}
       </Stage>
     </Container>

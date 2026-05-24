@@ -53,11 +53,10 @@ export const Displays = () => {
     if (!activeDisplay || activeDisplay.status !== 'connected') return;
     send({
       type: 'SYNC',
-      clips,
-      files,
+      steps: steps.map(({ file: _, ...rest }) => rest),
       stepIndex: Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0)),
     });
-  }, [activeDisplay, clips, files, send, steps.length]);
+  }, [activeDisplay, send, steps]);
 
   useEffect(() => {
     if (!activeDisplay?.windowRef) return;
