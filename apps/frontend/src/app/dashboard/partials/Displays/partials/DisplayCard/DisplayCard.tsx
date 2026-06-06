@@ -4,9 +4,13 @@ import { Button, Icon } from '@/ui';
 
 import {
   Card,
+  ClickerAssignButton,
+  Controls,
+  ControlsRow,
   Counter,
   Header,
   Name,
+  NavControlsRow,
   Preview,
   PreviewImage,
   PreviewPlaceholder,
@@ -23,8 +27,10 @@ interface DisplayCardProps {
   currentSrc: string | null;
   currentStep: number;
   totalSteps: number;
+  isClickerAssigned: boolean;
   onPrev: () => void;
   onNext: () => void;
+  onToggleClicker: () => void;
 }
 
 function getStatusLabel(status: DisplayStatus) {
@@ -41,8 +47,10 @@ export const DisplayCard = ({
   currentSrc,
   currentStep,
   totalSteps,
+  isClickerAssigned,
   onPrev,
   onNext,
+  onToggleClicker,
 }: DisplayCardProps) => {
   const disabled = status !== 'connected';
   const safeTotal = Math.max(totalSteps, 0);
@@ -72,22 +80,34 @@ export const DisplayCard = ({
 
       {status === 'blocked' && <StatusText>Allow pop-ups in browser</StatusText>}
 
-      <Counter>
-        {safeCurrent} / {safeTotal}
-      </Counter>
-
-      <Header>
-        <Button variant='icon' onClick={onPrev} disabled={disabled || currentStep <= 0}>
-          <Icon name='chevron-back' size={16} />
-        </Button>
-        <Button
-          variant='icon'
-          onClick={onNext}
-          disabled={disabled || safeTotal === 0 || currentStep >= Math.max(totalSteps - 1, 0)}
-        >
-          <Icon name='chevron-forward' size={16} />
-        </Button>
-      </Header>
+      <Controls>
+        <ControlsRow>
+          <ClickerAssignButton
+            variant='icon'
+            $active={isClickerAssigned}
+            onClick={onToggleClicker}
+            disabled={disabled}
+            title={isClickerAssigned ? 'Unassign clicker' : 'Assign clicker'}
+          >
+            <Icon name='alert-circle-outline' size={16} />
+          </ClickerAssignButton>
+        </ControlsRow>
+        <NavControlsRow>
+          <Button variant='icon' onClick={onPrev} disabled={disabled || currentStep <= 0}>
+            <Icon name='chevron-back' size={16} />
+          </Button>
+          <Counter>
+            {safeCurrent} / {safeTotal}
+          </Counter>
+          <Button
+            variant='icon'
+            onClick={onNext}
+            disabled={disabled || safeTotal === 0 || currentStep >= Math.max(totalSteps - 1, 0)}
+          >
+            <Icon name='chevron-forward' size={16} />
+          </Button>
+        </NavControlsRow>
+      </Controls>
     </Card>
   );
 };

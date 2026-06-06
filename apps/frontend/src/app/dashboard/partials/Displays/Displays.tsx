@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
@@ -17,13 +17,30 @@ export const Displays = () => {
   const { isOffline } = useOfflineStatus();
   const { files } = useFiles();
   const { clips } = useTimelineStore();
-  const { displays, upsertDisplay, setDisplayStatus, setDisplayStep, setWindowRef, removeDisplay } =
-    useDisplayStore();
+  const {
+    displays,
+    clickerDisplayId,
+    upsertDisplay,
+    setDisplayStatus,
+    setDisplayStep,
+    setWindowRef,
+    setClickerDisplay,
+    removeDisplay,
+  } = useDisplayStore();
 
   const activeDisplay = displays[0] ?? null;
   const canAddDisplay = (!activeDisplay || activeDisplay.status === 'blocked') && !isOffline;
 
   const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
+
+  // Ref updated every render so the stable keydown listener always reads current values
+  // without needing to re-register on every step or display change.
+  const clickerRef = useRef<{
+    clickerDisplayId: string | null;
+    displays: typeof displays;
+    stepsLength: number;
+  }>({ clickerDisplayId: null, displays: [], stepsLength: 0 });
+  clickerRef.current = { clickerDisplayId, displays, stepsLength: steps.length };
 
   const handleMessage = useCallback(
     (message: DisplayChannelMessage) => {
@@ -73,29 +90,34 @@ export const Displays = () => {
   }, [activeDisplay, removeDisplay]);
 
   useEffect(() => {
-    if (!activeDisplay || activeDisplay.status !== 'connected') return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'PageUp' && event.key !== 'PageDown') return;
 
-    const onKeyUp = (event: KeyboardEvent) => {
-      const bounded = Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+      const { clickerDisplayId, displays, stepsLength } = clickerRef.current;
+      if (!clickerDisplayId) return;
 
-      if (event.key === 'PageUp') {
-        const next = Math.max(bounded - 1, 0);
-        setDisplayStep(activeDisplay.id, next);
-        send({ type: 'STEP', stepIndex: next });
-      }
+      const display = displays.find(d => d.id === clickerDisplayId);
+      if (!display || display.status !== 'connected') return;
 
-      if (event.key === 'PageDown') {
-        const next = Math.min(bounded + 1, Math.max(steps.length - 1, 0));
-        setDisplayStep(activeDisplay.id, next);
-        send({ type: 'STEP', stepIndex: next });
-      }
+      event.preventDefault();
+
+      const bounded = Math.min(Math.max(display.stepIndex, 0), Math.max(stepsLength - 1, 0));
+      const next =
+        event.key === 'PageUp'
+          ? Math.max(bounded - 1, 0)
+          : Math.min(bounded + 1, Math.max(stepsLength - 1, 0));
+
+      setDisplayStep(display.id, next);
+
+      const ch = new BroadcastChannel(`display-${display.id}`);
+      ch.postMessage({ type: 'STEP', stepIndex: next });
+      ch.close();
     };
 
-    window.addEventListener('keyup', onKeyUp);
-    return () => {
-      window.removeEventListener('keyup', onKeyUp);
-    };
-  }, [activeDisplay, send, setDisplayStep, steps.length]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!activeDisplay || activeDisplay.status !== 'connected') return;
@@ -171,6 +193,13 @@ export const Displays = () => {
     [activeDisplay, send, setDisplayStep, steps.length],
   );
 
+  const toggleClicker = useCallback(
+    (id: string) => {
+      setClickerDisplay(clickerDisplayId === id ? null : id);
+    },
+    [clickerDisplayId, setClickerDisplay],
+  );
+
   const currentStep = activeDisplay
     ? Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0))
     : 0;
@@ -203,8 +232,10 @@ export const Displays = () => {
                 currentSrc={currentSrc}
                 currentStep={currentStep}
                 totalSteps={steps.length}
+                isClickerAssigned={clickerDisplayId === activeDisplay.id}
                 onPrev={() => updateStep(-1)}
                 onNext={() => updateStep(1)}
+                onToggleClicker={() => toggleClicker(activeDisplay.id)}
               />
             </List>
           </ScrollView>

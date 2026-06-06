@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 
 import { DisplayStatus } from '@/lib/stores/display.store';
+import { Button } from '@/ui';
 
 export const Card = styled.div`
   display: flex;
@@ -83,8 +84,47 @@ export const PreviewPlaceholder = styled.div`
   height: 100%;
 `;
 
+export const Controls = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const ControlsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+export const NavControlsRow = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
 export const Counter = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   ${({ theme }) => theme.text.footnote.regular}
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
+  pointer-events: none;
+`;
+
+export const ClickerAssignButton = styled(Button)<{ $active?: boolean }>`
+  ${({ theme, $active }) =>
+    $active &&
+    css`
+      background: ${theme.colors.accent.indigo};
+      color: ${theme.colors.grays.white};
+
+      &:hover:not(:disabled) {
+        background: ${theme.colors.accent.indigo};
+        filter: brightness(0.85);
+      }
+    `}
 `;
