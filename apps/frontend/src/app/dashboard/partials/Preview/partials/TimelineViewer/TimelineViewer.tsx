@@ -36,36 +36,6 @@ export const TimelineViewer = ({ clips, files, selectedInstanceId }: TimelineVie
     }
   }, [activeStep, setSelectedFile]);
 
-  useEffect(() => {
-    if (!activeStep) return;
-
-    const adjacent = [steps[boundedStepIndex - 1], steps[boundedStepIndex + 1]].filter(
-      Boolean,
-    ) as TimelineStep[];
-
-    const elements: Array<HTMLVideoElement | HTMLImageElement> = [];
-
-    adjacent.forEach(step => {
-      if (step.kind === 'video') {
-        const video = document.createElement('video');
-        video.preload = 'metadata';
-        video.src = step.src;
-        video.load();
-        elements.push(video);
-      } else {
-        const image = new Image();
-        image.src = step.src;
-        elements.push(image);
-      }
-    });
-
-    return () => {
-      elements.forEach(el => {
-        el.src = '';
-      });
-    };
-  }, [activeStep, boundedStepIndex, steps]);
-
   if (!activeStep) return null;
 
   return (

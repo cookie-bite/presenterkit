@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   DisplayChannelMessage,
@@ -22,6 +22,13 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
 
   const boundedStepIndex = Math.min(Math.max(stepIndex, 0), Math.max(steps.length - 1, 0));
   const activeStep = steps[boundedStepIndex];
+
+  const lastVideoSrc = useMemo(() => {
+    for (let i = boundedStepIndex; i >= 0; i--) {
+      if (steps[i]?.kind === 'video' && steps[i]?.src) return steps[i].src;
+    }
+    return '';
+  }, [steps, boundedStepIndex]);
 
   const handleMessage = useCallback((message: DisplayChannelMessage) => {
     if (message.type === 'SYNC') {
@@ -107,11 +114,16 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
   return (
     <Container>
       <Stage>
-        {activeStep.kind === 'video' ? (
-          <VideoStep ref={videoRef} autoPlay playsInline src={activeStep.src} />
-        ) : (
-          <ImageStep src={activeStep.src} alt='Display step' />
+        {lastVideoSrc && (
+          <VideoStep
+            ref={videoRef}
+            autoPlay
+            playsInline
+            src={lastVideoSrc}
+            hidden={activeStep.kind !== 'video'}
+          />
         )}
+        {activeStep.kind !== 'video' && <ImageStep src={activeStep.src} alt='Display step' />}
       </Stage>
     </Container>
   );
