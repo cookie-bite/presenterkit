@@ -288,6 +288,8 @@ describe('WebhookController', () => {
         undefined,
         'https://storage/files/source.pdf',
         'dev/abc/pdfs/source.pdf',
+        undefined,
+        undefined,
       );
       expect(result).toEqual({ success: true });
     });

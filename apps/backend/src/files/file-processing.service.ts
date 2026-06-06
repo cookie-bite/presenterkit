@@ -84,13 +84,37 @@ export class FileProcessingService {
     }
 
     const folder = isImageMimeType(uploadedFile.mimetype) ? 'image' : 'video';
-    const ext = this.getExtension(uploadedFile.originalname);
-    const sourceBlobPath = this.buildBlobPath(file.storageKey, folder, `source.${ext}`);
+
+    let uploadBuffer: Buffer;
+    let uploadMimeType: string;
+    let blobExt: string;
+
+    if (isVideoMimeType(uploadedFile.mimetype)) {
+      const transcoded = await this.transcodeVideoToMp4(uploadedFile.buffer, {
+        userId: file.userId,
+        fileId: file.id,
+      });
+      if (transcoded) {
+        uploadBuffer = transcoded;
+        uploadMimeType = 'video/mp4';
+        blobExt = 'mp4';
+      } else {
+        uploadBuffer = uploadedFile.buffer;
+        uploadMimeType = uploadedFile.mimetype;
+        blobExt = this.getExtension(uploadedFile.originalname);
+      }
+    } else {
+      uploadBuffer = uploadedFile.buffer;
+      uploadMimeType = uploadedFile.mimetype;
+      blobExt = this.getExtension(uploadedFile.originalname);
+    }
+
+    const sourceBlobPath = this.buildBlobPath(file.storageKey, folder, `source.${blobExt}`);
 
     const sourceBlobClient = this.containerClient.getBlockBlobClient(sourceBlobPath);
-    await sourceBlobClient.uploadData(uploadedFile.buffer, {
+    await sourceBlobClient.uploadData(uploadBuffer, {
       blobHTTPHeaders: {
-        blobContentType: uploadedFile.mimetype,
+        blobContentType: uploadMimeType,
         blobCacheControl: 'max-age=86400',
       },
     });
@@ -106,7 +130,7 @@ export class FileProcessingService {
       thumbnailWidth = dims.width;
       thumbnailHeight = dims.height;
     } else {
-      const thumbnailBuffer = await this.extractVideoThumbnail(uploadedFile.buffer, {
+      const thumbnailBuffer = await this.extractVideoThumbnail(uploadBuffer, {
         userId: file.userId,
         fileId: file.id,
       });
@@ -163,6 +187,39 @@ export class FileProcessingService {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       this.logger.warn({ err, ...ctx }, 'FFmpeg thumbnail extraction failed');
+      return null;
+    } finally {
+      await Promise.allSettled([
+        fs.unlink(inputPath).catch(() => undefined),
+        fs.unlink(outputPath).catch(() => undefined),
+      ]);
+    }
+  }
+
+  private async transcodeVideoToMp4(
+    videoBuffer: Buffer,
+    ctx: { userId: number; fileId: number },
+  ): Promise<Buffer | null> {
+    const tempDir = tmpdir();
+    const inputPath = join(tempDir, `${randomUUID()}.tmp`);
+    const outputPath = join(tempDir, `${randomUUID()}.mp4`);
+
+    try {
+      await fs.writeFile(inputPath, videoBuffer);
+
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg(inputPath)
+          .outputOptions(['-vcodec', 'libx264', '-movflags', '+faststart', '-acodec', 'aac'])
+          .output(outputPath)
+          .on('end', () => resolve())
+          .on('error', (err: Error) => reject(err))
+          .run();
+      });
+
+      return await fs.readFile(outputPath);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.warn({ err, ...ctx }, 'FFmpeg video transcoding failed, using original');
       return null;
     } finally {
       await Promise.allSettled([
