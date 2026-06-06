@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   DisplayChannelMessage,
@@ -18,6 +18,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
   const [steps, setSteps] = useState<DisplayStep[]>([]);
   const [stepIndex, setStepIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const boundedStepIndex = Math.min(Math.max(stepIndex, 0), Math.max(steps.length - 1, 0));
   const activeStep = steps[boundedStepIndex];
@@ -68,6 +69,25 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
     send({ type: 'ACK', stepIndex: boundedStepIndex });
   }, [boundedStepIndex, send]);
 
+  useEffect(() => {
+    if (!isReady || activeStep?.kind !== 'video') return;
+
+    const interval = window.setInterval(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      send({
+        type: 'TIME',
+        stepIndex: boundedStepIndex,
+        currentTime: video.currentTime,
+        paused: video.paused,
+      });
+    }, 250);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [activeStep?.kind, boundedStepIndex, isReady, send]);
+
   if (!isReady) {
     return (
       <Container>
@@ -88,7 +108,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
     <Container>
       <Stage>
         {activeStep.kind === 'video' ? (
-          <VideoStep autoPlay playsInline src={activeStep.src} />
+          <VideoStep ref={videoRef} autoPlay playsInline src={activeStep.src} />
         ) : (
           <ImageStep src={activeStep.src} alt='Display step' />
         )}

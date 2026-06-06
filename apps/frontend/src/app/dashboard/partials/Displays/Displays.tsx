@@ -31,10 +31,11 @@ export const Displays = () => {
   const activeDisplay = displays[0] ?? null;
   const canAddDisplay = (!activeDisplay || activeDisplay.status === 'blocked') && !isOffline;
 
+  const playbackTimeRef = useRef<number | null>(null);
+  const playbackPausedRef = useRef<boolean>(false);
+
   const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
 
-  // Ref updated every render so the stable keydown listener always reads current values
-  // without needing to re-register on every step or display change.
   const clickerRef = useRef<{
     clickerDisplayId: string | null;
     displays: typeof displays;
@@ -54,6 +55,13 @@ export const Displays = () => {
       if (message.type === 'ACK') {
         const bounded = Math.min(Math.max(message.stepIndex, 0), Math.max(steps.length - 1, 0));
         setDisplayStep(activeDisplay.id, bounded);
+        return;
+      }
+
+      if (message.type === 'TIME') {
+        if (message.stepIndex !== activeDisplay.stepIndex) return;
+        playbackTimeRef.current = message.currentTime;
+        playbackPausedRef.current = message.paused;
         return;
       }
 
@@ -232,6 +240,9 @@ export const Displays = () => {
                 currentSrc={currentSrc}
                 currentStep={currentStep}
                 totalSteps={steps.length}
+                playbackTimeRef={playbackTimeRef}
+                playbackPausedRef={playbackPausedRef}
+                currentStepIndex={currentStep}
                 isClickerAssigned={clickerDisplayId === activeDisplay.id}
                 onPrev={() => updateStep(-1)}
                 onNext={() => updateStep(1)}

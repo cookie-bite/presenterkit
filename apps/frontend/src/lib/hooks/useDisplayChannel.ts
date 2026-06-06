@@ -7,6 +7,7 @@ import { StepKind } from '@/lib/utils/timeline';
 type DisplayReadyMessage = { type: 'READY' };
 type DisplayClosingMessage = { type: 'CLOSING' };
 type DisplayAckMessage = { type: 'ACK'; stepIndex: number };
+type DisplayTimeMessage = { type: 'TIME'; stepIndex: number; currentTime: number; paused: boolean };
 
 export type DisplayStep = {
   key: string;
@@ -24,7 +25,11 @@ type DisplaySyncMessage = {
 };
 type DisplayStepMessage = { type: 'STEP'; stepIndex: number };
 
-export type DisplayInboundMessage = DisplayReadyMessage | DisplayClosingMessage | DisplayAckMessage;
+export type DisplayInboundMessage =
+  | DisplayReadyMessage
+  | DisplayClosingMessage
+  | DisplayAckMessage
+  | DisplayTimeMessage;
 export type DisplayOutboundMessage = DisplaySyncMessage | DisplayStepMessage;
 export type DisplayChannelMessage = DisplayInboundMessage | DisplayOutboundMessage;
 
