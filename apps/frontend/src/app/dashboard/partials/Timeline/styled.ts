@@ -39,6 +39,12 @@ export const Track = styled.div<{
     border-color 0.15s ease;
 `;
 
+export const ActionsRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 4px 4px;
+`;
+
 export const EmptyHint = styled.div`
   display: flex;
   align-items: center;

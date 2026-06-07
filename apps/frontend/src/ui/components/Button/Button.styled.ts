@@ -20,7 +20,7 @@ const ghostVariant = css`
   box-shadow: none;
   padding: 4px;
   border-radius: ${({ theme }) => theme.radius.full};
-  color: inherit;
+  color: ${({ theme }) => theme.colors.accent.indigo};
 
   &:hover:not(:disabled) {
     background: ${({ theme }) => theme.colors.fill.primary};

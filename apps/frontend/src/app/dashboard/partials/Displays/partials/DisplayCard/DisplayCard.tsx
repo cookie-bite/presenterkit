@@ -32,6 +32,7 @@ interface DisplayCardProps {
   playbackTimeRef: RefObject<number | null>;
   playbackPausedRef: RefObject<boolean>;
   currentStepIndex: number;
+  nextWillPlay: boolean;
   isClickerAssigned: boolean;
   onPrev: () => void;
   onNext: () => void;
@@ -55,6 +56,7 @@ export const DisplayCard = ({
   playbackTimeRef,
   playbackPausedRef,
   currentStepIndex,
+  nextWillPlay,
   isClickerAssigned,
   onPrev,
   onNext,
@@ -145,7 +147,7 @@ export const DisplayCard = ({
               (currentStep >= Math.max(totalSteps - 1, 0) && currentKind !== 'video')
             }
           >
-            <Icon name='chevron-forward' size={16} />
+            <Icon name={nextWillPlay ? 'play' : 'chevron-forward'} size={16} />
           </Button>
         </NavControlsRow>
       </Controls>

@@ -7,9 +7,10 @@ import { useMemo } from 'react';
 import { FileResponse } from '@/lib/api/file.api';
 import { usePreviewStore } from '@/lib/stores/preview.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
+import { Button, Icon } from '@/ui';
 
 import { Clip } from './partials/Clip';
-import { Container, EmptyHint, Track } from './styled';
+import { ActionsRow, Container, EmptyHint, Track } from './styled';
 
 export const Timeline = ({
   files,
@@ -19,10 +20,14 @@ export const Timeline = ({
   isFileDragActive?: boolean;
 }) => {
   const clips = useTimelineStore(state => state.clips);
+  const committedClips = useTimelineStore(state => state.committedClips);
+  const commitClips = useTimelineStore(state => state.commitClips);
   const selectedInstanceId = useTimelineStore(state => state.selectedInstanceId);
   const removeClip = useTimelineStore(state => state.removeClip);
   const selectClip = useTimelineStore(state => state.selectClip);
   const setSelectedFile = usePreviewStore(state => state.setSelectedFile);
+
+  const isDirty = JSON.stringify(clips) !== JSON.stringify(committedClips);
   const { setNodeRef, isOver } = useDroppable({ id: 'timeline-track' });
 
   const fileMap = useMemo(() => new Map(files.map(f => [f.fileId, f])), [files]);
@@ -38,6 +43,13 @@ export const Timeline = ({
 
   return (
     <Container onClick={resetSelection}>
+      {isDirty && (
+        <ActionsRow>
+          <Button variant='ghost' onClick={commitClips}>
+            <Icon name='sync-outline' size={16} />
+          </Button>
+        </ActionsRow>
+      )}
       <Track
         ref={setNodeRef}
         $isFileDragActive={isFileDragActive}

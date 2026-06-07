@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
@@ -16,7 +16,7 @@ import { Container, List, OfflineHint } from './styled';
 export const Displays = () => {
   const { isOffline } = useOfflineStatus();
   const { files } = useFiles();
-  const { clips } = useTimelineStore();
+  const { committedClips } = useTimelineStore();
   const {
     displays,
     clickerDisplayId,
@@ -34,8 +34,9 @@ export const Displays = () => {
   const playbackTimeRef = useRef<number | null>(null);
   const playbackPausedRef = useRef<boolean>(false);
   const videoStartedStepRef = useRef<number | null>(null);
+  const prevStepsRef = useRef<typeof steps>([]);
 
-  const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
+  const steps = useMemo(() => buildTimelineSteps(committedClips, files), [committedClips, files]);
 
   const clickerRef = useRef<{
     clickerDisplayId: string | null;
@@ -77,11 +78,33 @@ export const Displays = () => {
 
   useEffect(() => {
     if (!activeDisplay || activeDisplay.status !== 'connected') return;
-    send({
-      type: 'SYNC',
-      steps: steps.map(({ file: _, ...rest }) => rest),
-      stepIndex: Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0)),
-    });
+    const stepsToSend = steps.map(({ file: _, ...rest }) => rest);
+    const prevSteps = prevStepsRef.current;
+    prevStepsRef.current = steps;
+
+    let syncStepIndex: number;
+    if (steps !== prevSteps) {
+      // Steps changed due to a commit — preserve the currently displayed clip by instanceId.
+      const currentIndex = Math.min(
+        Math.max(activeDisplay.stepIndex, 0),
+        Math.max(prevSteps.length - 1, 0),
+      );
+      const instanceId = prevSteps[currentIndex]?.instanceId ?? null;
+      const preserved =
+        instanceId != null ? stepsToSend.findIndex(s => s.instanceId === instanceId) : -1;
+      syncStepIndex =
+        preserved >= 0
+          ? preserved
+          : Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+      // Keep videoStartedStepRef in sync with the index change so "next" still advances.
+      if (videoStartedStepRef.current === activeDisplay.stepIndex) {
+        videoStartedStepRef.current = syncStepIndex;
+      }
+    } else {
+      syncStepIndex = Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+    }
+
+    send({ type: 'SYNC', steps: stepsToSend, stepIndex: syncStepIndex });
   }, [activeDisplay, send, steps]);
 
   useEffect(() => {
@@ -216,6 +239,11 @@ export const Displays = () => {
   const currentSrc = currentStepData?.src ?? null;
   const currentKind = currentStepData?.kind ?? null;
 
+  const [nextWillPlay, setNextWillPlay] = useState(false);
+  useEffect(() => {
+    setNextWillPlay(currentKind === 'video' && videoStartedStepRef.current !== currentStep);
+  }, [currentKind, currentStep]);
+
   return (
     <Panel
       title='Displays'
@@ -244,11 +272,13 @@ export const Displays = () => {
                 playbackTimeRef={playbackTimeRef}
                 playbackPausedRef={playbackPausedRef}
                 currentStepIndex={currentStep}
+                nextWillPlay={nextWillPlay}
                 isClickerAssigned={clickerDisplayId === activeDisplay.id}
                 onPrev={() => updateStep(-1)}
                 onNext={() => {
                   if (currentKind === 'video' && videoStartedStepRef.current !== currentStep) {
                     videoStartedStepRef.current = currentStep;
+                    setNextWillPlay(false);
                     send({ type: 'PLAY' });
                   } else {
                     updateStep(1);
