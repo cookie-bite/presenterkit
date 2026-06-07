@@ -1,5 +1,12 @@
 # @presenterkit/backend
 
+## 2.1.0
+
+### Minor Changes
+
+- 7f56c96: Add image size support
+- e6aeb07: Implement video transcoding to MP4 on upload
+
 ## 2.0.9
 
 ### Patch Changes
