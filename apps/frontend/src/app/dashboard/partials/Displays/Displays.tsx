@@ -33,6 +33,7 @@ export const Displays = () => {
 
   const playbackTimeRef = useRef<number | null>(null);
   const playbackPausedRef = useRef<boolean>(false);
+  const videoStartedStepRef = useRef<number | null>(null);
 
   const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
 
@@ -245,7 +246,14 @@ export const Displays = () => {
                 currentStepIndex={currentStep}
                 isClickerAssigned={clickerDisplayId === activeDisplay.id}
                 onPrev={() => updateStep(-1)}
-                onNext={() => updateStep(1)}
+                onNext={() => {
+                  if (currentKind === 'video' && videoStartedStepRef.current !== currentStep) {
+                    videoStartedStepRef.current = currentStep;
+                    send({ type: 'PLAY' });
+                  } else {
+                    updateStep(1);
+                  }
+                }}
                 onToggleClicker={() => toggleClicker(activeDisplay.id)}
               />
             </List>

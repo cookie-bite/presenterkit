@@ -109,8 +109,8 @@ export const Counter = styled.div`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  ${({ theme }) => theme.text.footnote.regular}
-  color: ${({ theme }) => theme.colors.text.secondary};
+  ${({ theme }) => theme.text.callout.bold}
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
   pointer-events: none;
 `;

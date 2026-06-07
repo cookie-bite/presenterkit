@@ -106,7 +106,7 @@ export const DisplayCard = ({
       <Preview>
         {currentSrc ? (
           currentKind === 'video' ? (
-            <PreviewVideo ref={videoRef} src={currentSrc} autoPlay muted playsInline />
+            <PreviewVideo ref={videoRef} src={currentSrc} muted playsInline />
           ) : (
             <PreviewImage src={currentSrc} alt={name} />
           )
@@ -126,7 +126,7 @@ export const DisplayCard = ({
             disabled={disabled}
             title={isClickerAssigned ? 'Unassign clicker' : 'Assign clicker'}
           >
-            <Icon name='alert-circle-outline' size={16} />
+            <Icon name='radio-outline' size={16} />
           </ClickerAssignButton>
         </ControlsRow>
         <NavControlsRow>
@@ -139,7 +139,11 @@ export const DisplayCard = ({
           <Button
             variant='icon'
             onClick={onNext}
-            disabled={disabled || safeTotal === 0 || currentStep >= Math.max(totalSteps - 1, 0)}
+            disabled={
+              disabled ||
+              safeTotal === 0 ||
+              (currentStep >= Math.max(totalSteps - 1, 0) && currentKind !== 'video')
+            }
           >
             <Icon name='chevron-forward' size={16} />
           </Button>

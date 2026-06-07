@@ -40,6 +40,11 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
 
     if (message.type === 'STEP') {
       setStepIndex(message.stepIndex);
+      return;
+    }
+
+    if (message.type === 'PLAY') {
+      void videoRef.current?.play();
     }
   }, []);
 
@@ -117,7 +122,6 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
         {lastVideoSrc && (
           <VideoStep
             ref={videoRef}
-            autoPlay
             playsInline
             src={lastVideoSrc}
             hidden={activeStep.kind !== 'video'}

@@ -24,13 +24,14 @@ type DisplaySyncMessage = {
   stepIndex: number;
 };
 type DisplayStepMessage = { type: 'STEP'; stepIndex: number };
+type DisplayPlayMessage = { type: 'PLAY' };
 
 export type DisplayInboundMessage =
   | DisplayReadyMessage
   | DisplayClosingMessage
   | DisplayAckMessage
   | DisplayTimeMessage;
-export type DisplayOutboundMessage = DisplaySyncMessage | DisplayStepMessage;
+export type DisplayOutboundMessage = DisplaySyncMessage | DisplayStepMessage | DisplayPlayMessage;
 export type DisplayChannelMessage = DisplayInboundMessage | DisplayOutboundMessage;
 
 export function useDisplayChannel(

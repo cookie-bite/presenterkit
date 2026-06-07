@@ -42,7 +42,7 @@ export const TimelineViewer = ({ clips, files, selectedInstanceId }: TimelineVie
     <Container>
       <Stage>
         {activeStep.kind === 'video' ? (
-          <VideoStep controls autoPlay playsInline src={activeStep.src} />
+          <VideoStep controls playsInline src={activeStep.src} />
         ) : (
           <ImageStep src={activeStep.src} alt={activeStep.file.filename ?? 'Timeline step'} />
         )}

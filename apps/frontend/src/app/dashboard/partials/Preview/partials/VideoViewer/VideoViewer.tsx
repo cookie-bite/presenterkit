@@ -9,6 +9,6 @@ interface VideoViewerProps {
 
 export const VideoViewer = ({ file }: VideoViewerProps) => (
   <Stage>
-    <Video controls autoPlay playsInline src={file.blobUrl ?? ''} />
+    <Video controls playsInline src={file.blobUrl ?? ''} />
   </Stage>
 );
