@@ -2,23 +2,36 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { FileResponse } from '@/lib/api/file.api';
-import { TimelineClip } from '@/lib/stores/timeline.store';
+import { StepKind } from '@/lib/utils/timeline';
 
 type DisplayReadyMessage = { type: 'READY' };
 type DisplayClosingMessage = { type: 'CLOSING' };
 type DisplayAckMessage = { type: 'ACK'; stepIndex: number };
+type DisplayTimeMessage = { type: 'TIME'; stepIndex: number; currentTime: number; paused: boolean };
+
+export type DisplayStep = {
+  key: string;
+  kind: StepKind;
+  instanceId: string;
+  src: string;
+  page: number | null;
+  pageCount: number;
+};
 
 type DisplaySyncMessage = {
   type: 'SYNC';
-  clips: TimelineClip[];
-  files: FileResponse[];
+  steps: DisplayStep[];
   stepIndex: number;
 };
 type DisplayStepMessage = { type: 'STEP'; stepIndex: number };
+type DisplayPlayMessage = { type: 'PLAY' };
 
-export type DisplayInboundMessage = DisplayReadyMessage | DisplayClosingMessage | DisplayAckMessage;
-export type DisplayOutboundMessage = DisplaySyncMessage | DisplayStepMessage;
+export type DisplayInboundMessage =
+  | DisplayReadyMessage
+  | DisplayClosingMessage
+  | DisplayAckMessage
+  | DisplayTimeMessage;
+export type DisplayOutboundMessage = DisplaySyncMessage | DisplayStepMessage | DisplayPlayMessage;
 export type DisplayChannelMessage = DisplayInboundMessage | DisplayOutboundMessage;
 
 export function useDisplayChannel(

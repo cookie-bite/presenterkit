@@ -36,33 +36,13 @@ export const TimelineViewer = ({ clips, files, selectedInstanceId }: TimelineVie
     }
   }, [activeStep, setSelectedFile]);
 
-  useEffect(() => {
-    if (!activeStep) return;
-
-    const adjacent = [steps[boundedStepIndex - 1], steps[boundedStepIndex + 1]].filter(
-      Boolean,
-    ) as TimelineStep[];
-
-    adjacent.forEach(step => {
-      if (step.kind === 'video') {
-        const video = document.createElement('video');
-        video.preload = 'metadata';
-        video.src = step.src;
-        video.load();
-      } else {
-        const image = new Image();
-        image.src = step.src;
-      }
-    });
-  }, [activeStep, boundedStepIndex, steps]);
-
   if (!activeStep) return null;
 
   return (
     <Container>
       <Stage>
         {activeStep.kind === 'video' ? (
-          <VideoStep controls autoPlay playsInline src={activeStep.src} />
+          <VideoStep controls playsInline src={activeStep.src} />
         ) : (
           <ImageStep src={activeStep.src} alt={activeStep.file.filename ?? 'Timeline step'} />
         )}

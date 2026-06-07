@@ -1,17 +1,20 @@
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { FileResponse } from '@/lib/api/file.api';
 import { useFileUploadHandler } from '@/lib/hooks/useFileUploadHandler';
+import { useMediaCache } from '@/lib/hooks/useMediaCache';
 import { usePreviewStore } from '@/lib/stores/preview.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { Button, Icon, Panel, ScrollView } from '@/ui';
 
 import { EmptyHint } from '../../styled';
+import { CacheProgress } from './partials/CacheProgress';
 import { FileCard } from './partials/FileCard';
 import { File } from './partials/FileCard/styled';
 import { Container, UploadCard } from './styled';
 
 export const Files = ({ files }: { files: FileResponse[] }) => {
   const { FileInput, openFilePicker, isUploadActive, statusMessage } = useFileUploadHandler();
+  const { fileDone, fileTotal, byteProgress } = useMediaCache(files);
   const selectedFile = usePreviewStore(state => state.selectedFile);
   const setSelectedFile = usePreviewStore(state => state.setSelectedFile);
   const selectClip = useTimelineStore(state => state.selectClip);
@@ -39,6 +42,13 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
           <EmptyHint>Step 1: Upload your assets - image, video, PDF, or PPTX.</EmptyHint>
         ) : (
           <ScrollView $gap='6px' $padding='8px'>
+            {fileDone !== null && fileTotal !== null && (
+              <CacheProgress
+                fileDone={fileDone}
+                fileTotal={fileTotal}
+                byteProgress={byteProgress}
+              />
+            )}
             {isUploadActive && (
               <File>
                 <UploadCard>{statusMessage}</UploadCard>

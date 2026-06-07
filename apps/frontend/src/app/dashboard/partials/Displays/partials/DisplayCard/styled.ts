@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 
 import { DisplayStatus } from '@/lib/stores/display.store';
+import { Button } from '@/ui';
 
 export const Card = styled.div`
   display: flex;
@@ -59,7 +60,8 @@ export const Preview = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 120px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.background.primary};
   overflow: hidden;
@@ -68,7 +70,13 @@ export const Preview = styled.div`
 export const PreviewImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+`;
+
+export const PreviewVideo = styled.video`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 export const PreviewPlaceholder = styled.div`
@@ -76,8 +84,47 @@ export const PreviewPlaceholder = styled.div`
   height: 100%;
 `;
 
+export const Controls = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const ControlsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+export const NavControlsRow = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
 export const Counter = styled.div`
-  ${({ theme }) => theme.text.footnote.regular}
-  color: ${({ theme }) => theme.colors.text.secondary};
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  ${({ theme }) => theme.text.callout.bold}
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
+  pointer-events: none;
+`;
+
+export const ClickerAssignButton = styled(Button)<{ $active?: boolean }>`
+  ${({ theme, $active }) =>
+    $active &&
+    css`
+      background: ${theme.colors.accent.indigo};
+      color: ${theme.colors.grays.white};
+
+      &:hover:not(:disabled) {
+        background: ${theme.colors.accent.indigo};
+        filter: brightness(0.85);
+      }
+    `}
 `;

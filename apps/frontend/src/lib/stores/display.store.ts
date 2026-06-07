@@ -12,15 +12,18 @@ export interface DisplayEntry {
 
 interface DisplayStore {
   displays: DisplayEntry[];
+  clickerDisplayId: string | null;
   upsertDisplay: (display: DisplayEntry) => void;
   setDisplayStatus: (id: string, status: DisplayStatus) => void;
   setDisplayStep: (id: string, stepIndex: number) => void;
   setWindowRef: (id: string, windowRef: Window | null) => void;
+  setClickerDisplay: (id: string | null) => void;
   removeDisplay: (id: string) => void;
 }
 
 export const useDisplayStore = create<DisplayStore>(set => ({
   displays: [],
+  clickerDisplayId: null,
 
   upsertDisplay: display =>
     set(state => {
@@ -54,8 +57,11 @@ export const useDisplayStore = create<DisplayStore>(set => ({
       ),
     })),
 
+  setClickerDisplay: id => set({ clickerDisplayId: id }),
+
   removeDisplay: id =>
     set(state => ({
       displays: state.displays.filter(display => display.id !== id),
+      clickerDisplayId: state.clickerDisplayId === id ? null : state.clickerDisplayId,
     })),
 }));

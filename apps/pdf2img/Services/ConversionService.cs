@@ -26,6 +26,8 @@ public class ConversionService(
     string? pdfBlobPath = null;
     string? pdfBlobUrl = null;
     var pageCount = 0;
+    int? thumbnailWidth = null;
+    int? thumbnailHeight = null;
 
     try
     {
@@ -40,6 +42,13 @@ public class ConversionService(
           userId);
 
         using var image = Conversion.ToImage(base64, pageIndex, options: new(Dpi));
+
+        if (pageIndex == 0)
+        {
+          thumbnailWidth = image.Width;
+          thumbnailHeight = image.Height;
+        }
+
         await using var encodedImage = image.Encode(SKEncodedImageFormat.Webp, WebpQuality).AsStream();
 
         var pageFile = $"{pageIndex + 1:D3}.webp";
@@ -60,6 +69,8 @@ public class ConversionService(
         status = "ready",
         pageCount,
         thumbnailUrl,
+        thumbnailWidth,
+        thumbnailHeight,
         blobUrl = pdfBlobUrl,
         blobPath = pdfBlobPath,
       });

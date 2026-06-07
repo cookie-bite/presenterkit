@@ -12,6 +12,8 @@ export class FileResponseDto {
   storageKey?: string | null;
   pageCount?: number | null;
   thumbnailUrl?: string | null;
+  thumbnailWidth?: number | null;
+  thumbnailHeight?: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

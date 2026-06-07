@@ -59,8 +59,8 @@ export const Clip = ({ clip, file, isSelected, onSelect, onRemove }: ClipProps) 
         <Thumbnail
           src={file.thumbnailUrl}
           alt={file.filename ?? ''}
-          width={0}
-          height={0}
+          width={file.thumbnailWidth ?? 0}
+          height={file.thumbnailHeight ?? 0}
           sizes='100vw'
           draggable={false}
         />

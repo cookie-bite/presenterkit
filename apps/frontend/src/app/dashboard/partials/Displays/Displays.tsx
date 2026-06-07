@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { DisplayChannelMessage, useDisplayChannel } from '@/lib/hooks/useDisplayChannel';
@@ -16,14 +16,34 @@ import { Container, List, OfflineHint } from './styled';
 export const Displays = () => {
   const { isOffline } = useOfflineStatus();
   const { files } = useFiles();
-  const { clips } = useTimelineStore();
-  const { displays, upsertDisplay, setDisplayStatus, setDisplayStep, setWindowRef, removeDisplay } =
-    useDisplayStore();
+  const { committedClips } = useTimelineStore();
+  const {
+    displays,
+    clickerDisplayId,
+    upsertDisplay,
+    setDisplayStatus,
+    setDisplayStep,
+    setWindowRef,
+    setClickerDisplay,
+    removeDisplay,
+  } = useDisplayStore();
 
   const activeDisplay = displays[0] ?? null;
   const canAddDisplay = (!activeDisplay || activeDisplay.status === 'blocked') && !isOffline;
 
-  const steps = useMemo(() => buildTimelineSteps(clips, files), [clips, files]);
+  const playbackTimeRef = useRef<number | null>(null);
+  const playbackPausedRef = useRef<boolean>(false);
+  const videoStartedStepRef = useRef<number | null>(null);
+  const prevStepsRef = useRef<typeof steps>([]);
+
+  const steps = useMemo(() => buildTimelineSteps(committedClips, files), [committedClips, files]);
+
+  const clickerRef = useRef<{
+    clickerDisplayId: string | null;
+    displays: typeof displays;
+    stepsLength: number;
+  }>({ clickerDisplayId: null, displays: [], stepsLength: 0 });
+  clickerRef.current = { clickerDisplayId, displays, stepsLength: steps.length };
 
   const handleMessage = useCallback(
     (message: DisplayChannelMessage) => {
@@ -40,6 +60,13 @@ export const Displays = () => {
         return;
       }
 
+      if (message.type === 'TIME') {
+        if (message.stepIndex !== activeDisplay.stepIndex) return;
+        playbackTimeRef.current = message.currentTime;
+        playbackPausedRef.current = message.paused;
+        return;
+      }
+
       if (message.type === 'CLOSING') {
         removeDisplay(activeDisplay.id);
       }
@@ -51,13 +78,34 @@ export const Displays = () => {
 
   useEffect(() => {
     if (!activeDisplay || activeDisplay.status !== 'connected') return;
-    send({
-      type: 'SYNC',
-      clips,
-      files,
-      stepIndex: Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0)),
-    });
-  }, [activeDisplay, clips, files, send, steps.length]);
+    const stepsToSend = steps.map(({ file: _, ...rest }) => rest);
+    const prevSteps = prevStepsRef.current;
+    prevStepsRef.current = steps;
+
+    let syncStepIndex: number;
+    if (steps !== prevSteps) {
+      // Steps changed due to a commit — preserve the currently displayed clip by instanceId.
+      const currentIndex = Math.min(
+        Math.max(activeDisplay.stepIndex, 0),
+        Math.max(prevSteps.length - 1, 0),
+      );
+      const instanceId = prevSteps[currentIndex]?.instanceId ?? null;
+      const preserved =
+        instanceId != null ? stepsToSend.findIndex(s => s.instanceId === instanceId) : -1;
+      syncStepIndex =
+        preserved >= 0
+          ? preserved
+          : Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+      // Keep videoStartedStepRef in sync with the index change so "next" still advances.
+      if (videoStartedStepRef.current === activeDisplay.stepIndex) {
+        videoStartedStepRef.current = syncStepIndex;
+      }
+    } else {
+      syncStepIndex = Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+    }
+
+    send({ type: 'SYNC', steps: stepsToSend, stepIndex: syncStepIndex });
+  }, [activeDisplay, send, steps]);
 
   useEffect(() => {
     if (!activeDisplay?.windowRef) return;
@@ -74,29 +122,34 @@ export const Displays = () => {
   }, [activeDisplay, removeDisplay]);
 
   useEffect(() => {
-    if (!activeDisplay || activeDisplay.status !== 'connected') return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'PageUp' && event.key !== 'PageDown') return;
 
-    const onKeyUp = (event: KeyboardEvent) => {
-      const bounded = Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
+      const { clickerDisplayId, displays, stepsLength } = clickerRef.current;
+      if (!clickerDisplayId) return;
 
-      if (event.key === 'PageUp') {
-        const next = Math.max(bounded - 1, 0);
-        setDisplayStep(activeDisplay.id, next);
-        send({ type: 'STEP', stepIndex: next });
-      }
+      const display = displays.find(d => d.id === clickerDisplayId);
+      if (!display || display.status !== 'connected') return;
 
-      if (event.key === 'PageDown') {
-        const next = Math.min(bounded + 1, Math.max(steps.length - 1, 0));
-        setDisplayStep(activeDisplay.id, next);
-        send({ type: 'STEP', stepIndex: next });
-      }
+      event.preventDefault();
+
+      const bounded = Math.min(Math.max(display.stepIndex, 0), Math.max(stepsLength - 1, 0));
+      const next =
+        event.key === 'PageUp'
+          ? Math.max(bounded - 1, 0)
+          : Math.min(bounded + 1, Math.max(stepsLength - 1, 0));
+
+      setDisplayStep(display.id, next);
+
+      const ch = new BroadcastChannel(`display-${display.id}`);
+      ch.postMessage({ type: 'STEP', stepIndex: next });
+      ch.close();
     };
 
-    window.addEventListener('keyup', onKeyUp);
-    return () => {
-      window.removeEventListener('keyup', onKeyUp);
-    };
-  }, [activeDisplay, send, setDisplayStep, steps.length]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!activeDisplay || activeDisplay.status !== 'connected') return;
@@ -111,12 +164,17 @@ export const Displays = () => {
     };
   }, [activeDisplay]);
 
+  const displayUrl = useCallback((id: string, name: string) => {
+    const params = new URLSearchParams({ name });
+    return `/display/${id}?${params.toString()}`;
+  }, []);
+
   const openDisplay = useCallback(() => {
     if (isOffline) return;
     if (activeDisplay && activeDisplay.status !== 'blocked') return;
 
     if (activeDisplay?.status === 'blocked') {
-      const retryWindow = window.open(`/display/${activeDisplay.id}`, '_blank');
+      const retryWindow = window.open(displayUrl(activeDisplay.id, activeDisplay.name), '_blank');
       if (!retryWindow) return;
       setWindowRef(activeDisplay.id, retryWindow);
       setDisplayStatus(activeDisplay.id, 'pending');
@@ -125,7 +183,7 @@ export const Displays = () => {
 
     const id = crypto.randomUUID();
     const name = 'Display 1';
-    const windowRef = window.open(`/display/${id}`, '_blank');
+    const windowRef = window.open(displayUrl(id, name), '_blank');
 
     if (!windowRef) {
       upsertDisplay({
@@ -146,7 +204,7 @@ export const Displays = () => {
       windowRef,
     });
     trackEvent(AnalyticsEvents.displayOpened, { display_id: id });
-  }, [activeDisplay, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
+  }, [activeDisplay, displayUrl, isOffline, setDisplayStatus, setWindowRef, upsertDisplay]);
 
   const updateStep = useCallback(
     (delta: number) => {
@@ -167,10 +225,24 @@ export const Displays = () => {
     [activeDisplay, send, setDisplayStep, steps.length],
   );
 
+  const toggleClicker = useCallback(
+    (id: string) => {
+      setClickerDisplay(clickerDisplayId === id ? null : id);
+    },
+    [clickerDisplayId, setClickerDisplay],
+  );
+
   const currentStep = activeDisplay
     ? Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0))
     : 0;
-  const currentSrc = steps[currentStep]?.src ?? null;
+  const currentStepData = steps[currentStep];
+  const currentSrc = currentStepData?.src ?? null;
+  const currentKind = currentStepData?.kind ?? null;
+
+  const [nextWillPlay, setNextWillPlay] = useState(false);
+  useEffect(() => {
+    setNextWillPlay(currentKind === 'video' && videoStartedStepRef.current !== currentStep);
+  }, [currentKind, currentStep]);
 
   return (
     <Panel
@@ -193,11 +265,26 @@ export const Displays = () => {
               <DisplayCard
                 name={activeDisplay.name}
                 status={activeDisplay.status}
+                currentKind={currentKind}
                 currentSrc={currentSrc}
                 currentStep={currentStep}
                 totalSteps={steps.length}
+                playbackTimeRef={playbackTimeRef}
+                playbackPausedRef={playbackPausedRef}
+                currentStepIndex={currentStep}
+                nextWillPlay={nextWillPlay}
+                isClickerAssigned={clickerDisplayId === activeDisplay.id}
                 onPrev={() => updateStep(-1)}
-                onNext={() => updateStep(1)}
+                onNext={() => {
+                  if (currentKind === 'video' && videoStartedStepRef.current !== currentStep) {
+                    videoStartedStepRef.current = currentStep;
+                    setNextWillPlay(false);
+                    send({ type: 'PLAY' });
+                  } else {
+                    updateStep(1);
+                  }
+                }}
+                onToggleClicker={() => toggleClicker(activeDisplay.id)}
               />
             </List>
           </ScrollView>

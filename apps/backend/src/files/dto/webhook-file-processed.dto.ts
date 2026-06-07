@@ -31,4 +31,12 @@ export class WebhookFileProcessedDto {
   @IsOptional()
   @IsString()
   blobPath?: string;
+
+  @IsOptional()
+  @IsInt()
+  thumbnailWidth?: number;
+
+  @IsOptional()
+  @IsInt()
+  thumbnailHeight?: number;
 }

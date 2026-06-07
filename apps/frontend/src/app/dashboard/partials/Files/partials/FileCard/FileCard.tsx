@@ -30,7 +30,12 @@ export const FileCard = ({ file, isSelected, onClick }: FileCardProps) => {
     >
       <FileHoverOverlay $isSelected={isSelected} />
       <Title>{file.filename}</Title>
-      <Thumbnail src={file.thumbnailUrl ?? ''} alt={file.filename ?? ''} width={500} height={500} />
+      <Thumbnail
+        src={file.thumbnailUrl ?? ''}
+        alt={file.filename ?? ''}
+        width={file.thumbnailWidth ?? 500}
+        height={file.thumbnailHeight ?? 500}
+      />
     </File>
   );
 };
