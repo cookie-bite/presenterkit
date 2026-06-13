@@ -4,9 +4,11 @@ export { default as 'alert-circle-outline' } from './icons/alert-circle-outline.
 export { default as 'chevron-back' } from './icons/chevron-back.svg';
 export { default as 'chevron-forward' } from './icons/chevron-forward.svg';
 export { default as 'close' } from './icons/close.svg';
+export { default as 'cloud-upload-outline' } from './icons/cloud-upload-outline.svg';
 export { default as 'folder-open' } from './icons/folder-open.svg';
 export { default as 'folder-open-outline' } from './icons/folder-open-outline.svg';
 export { default as 'play' } from './icons/play.svg';
 export { default as 'radio-outline' } from './icons/radio-outline.svg';
+export { default as 'share-outline' } from './icons/share-outline.svg';
 export { default as 'sync-outline' } from './icons/sync-outline.svg';
 export { default as 'trash-outline' } from './icons/trash-outline.svg';

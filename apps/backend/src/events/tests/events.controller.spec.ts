@@ -13,6 +13,8 @@ describe('EventsController', () => {
     findByEventID: jest.fn(),
     getTimelineTrack: jest.fn(),
     saveTimelineTrack: jest.fn(),
+    createUploadLink: jest.fn(),
+    revokeUploadLink: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -42,6 +44,7 @@ describe('EventsController', () => {
           eventID: 'sandbox',
           name: 'Sandbox',
           isDefault: true,
+          uploadToken: null,
           createdAt: new Date('2026-04-24T10:00:00.000Z'),
           updatedAt: new Date('2026-04-24T11:00:00.000Z'),
         },
@@ -49,6 +52,7 @@ describe('EventsController', () => {
           eventID: 'demo',
           name: 'Demo',
           isDefault: false,
+          uploadToken: 'demo-token',
           createdAt: new Date('2026-04-23T10:00:00.000Z'),
           updatedAt: new Date('2026-04-23T11:00:00.000Z'),
         },
@@ -69,6 +73,7 @@ describe('EventsController', () => {
         eventID: 'sandbox',
         name: 'Sandbox',
         isDefault: true,
+        uploadToken: 'existing-token',
         createdAt: new Date('2026-04-24T10:00:00.000Z'),
         updatedAt: new Date('2026-04-24T11:00:00.000Z'),
       };
@@ -77,7 +82,14 @@ describe('EventsController', () => {
       const result = await controller.getEvent(req, 'sandbox');
 
       expect(eventsService.findByEventID).toHaveBeenCalledWith(21, 'sandbox');
-      expect(result).toEqual(event);
+      expect(result).toEqual({
+        eventID: 'sandbox',
+        name: 'Sandbox',
+        isDefault: true,
+        uploadToken: 'existing-token',
+        createdAt: event.createdAt,
+        updatedAt: event.updatedAt,
+      });
     });
 
     it('should propagate not found errors', async () => {
@@ -102,6 +114,29 @@ describe('EventsController', () => {
 
       expect(eventsService.getTimelineTrack).toHaveBeenCalledWith(21, 'sandbox');
       expect(result).toEqual(response);
+    });
+  });
+
+  describe('createUploadLink', () => {
+    it('should return upload token for the event', async () => {
+      const req = { user: { userId: 21 } };
+      mockEventsService.createUploadLink.mockResolvedValue('upload-token-abc');
+
+      const result = await controller.createUploadLink(req, 'sandbox');
+
+      expect(eventsService.createUploadLink).toHaveBeenCalledWith(21, 'sandbox');
+      expect(result).toEqual({ token: 'upload-token-abc' });
+    });
+  });
+
+  describe('revokeUploadLink', () => {
+    it('should revoke upload link for the event', async () => {
+      const req = { user: { userId: 21 } };
+      mockEventsService.revokeUploadLink.mockResolvedValue(undefined);
+
+      await controller.revokeUploadLink(req, 'sandbox');
+
+      expect(eventsService.revokeUploadLink).toHaveBeenCalledWith(21, 'sandbox');
     });
   });
 

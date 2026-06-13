@@ -35,6 +35,7 @@ export class FileService {
     userId: number,
     eventID: string,
     file: Express.Multer.File,
+    uploadedBy?: string,
   ): Promise<{ fileId: number; status: FileStatus }> {
     const event = await this.eventsService.findByEventID(userId, eventID);
 
@@ -47,6 +48,7 @@ export class FileService {
       status: FileStatus.PROCESSING,
       blobPath: '',
       storageKey: randomUUID(),
+      uploadedBy: uploadedBy ?? null,
     });
 
     const savedFile = await this.fileRepository.save(fileEntity);

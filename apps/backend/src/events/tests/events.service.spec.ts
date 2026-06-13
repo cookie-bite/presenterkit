@@ -62,6 +62,7 @@ describe('EventsService', () => {
       user: {} as Event['user'],
       files: [],
       timelineTrack: [],
+      uploadToken: null,
       createdAt: new Date('2026-04-24T11:00:00.000Z'),
       updatedAt: new Date('2026-04-24T12:00:00.000Z'),
       ...overrides,
@@ -143,6 +144,55 @@ describe('EventsService', () => {
       mockEventRepository.findOne.mockResolvedValue(null);
 
       await expect(service.getTimelineTrack(4, 'unknown-event')).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('createUploadLink', () => {
+    it('should generate and save upload token', async () => {
+      const event = makeEvent({ uploadToken: null });
+      mockEventRepository.findOne.mockResolvedValue(event);
+      mockEventRepository.save.mockImplementation(async saved => saved);
+
+      const token = await service.createUploadLink(4, 'sandbox');
+
+      expect(token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(event.uploadToken).toBe(token);
+      expect(mockEventRepository.save).toHaveBeenCalledWith(event);
+    });
+  });
+
+  describe('revokeUploadLink', () => {
+    it('should clear upload token', async () => {
+      const event = makeEvent({ uploadToken: 'existing-token' });
+      mockEventRepository.findOne.mockResolvedValue(event);
+      mockEventRepository.save.mockImplementation(async saved => saved);
+
+      await service.revokeUploadLink(4, 'sandbox');
+
+      expect(event.uploadToken).toBeNull();
+      expect(mockEventRepository.save).toHaveBeenCalledWith(event);
+    });
+  });
+
+  describe('findByUploadToken', () => {
+    it('should return event for valid token', async () => {
+      const event = makeEvent({ uploadToken: 'token-123' });
+      mockEventRepository.findOne.mockResolvedValue(event);
+
+      const result = await service.findByUploadToken('token-123');
+
+      expect(mockEventRepository.findOne).toHaveBeenCalledWith({
+        where: { uploadToken: 'token-123' },
+      });
+      expect(result).toBe(event);
+    });
+
+    it('should return null when token is not found', async () => {
+      mockEventRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.findByUploadToken('missing');
+
+      expect(result).toBeNull();
     });
   });
 

@@ -91,7 +91,8 @@ export const apiClient: KyInstance = ky.create({
           url.pathname.includes('/auth/register') ||
           url.pathname.includes('/auth/login') ||
           url.pathname.includes('/auth/verify') ||
-          url.pathname.includes('/auth/google')
+          url.pathname.includes('/auth/google') ||
+          url.pathname === '/upload'
         ) {
           return;
         }
@@ -117,7 +118,7 @@ export const apiClient: KyInstance = ky.create({
           const url = new URL(request.url);
 
           // Don't clear tokens for refresh endpoint (it might be a legitimate failure)
-          if (!url.pathname.includes('/auth/refresh')) {
+          if (!url.pathname.includes('/auth/refresh') && url.pathname !== '/upload') {
             // Clear tokens on 401 to force re-authentication
             clearAccessToken();
           }

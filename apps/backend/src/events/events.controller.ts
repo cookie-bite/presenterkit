@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, Put, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EventResponseDto } from './dto/event-response.dto';
@@ -20,6 +32,7 @@ export class EventsController {
       eventID: e.eventID,
       name: e.name,
       isDefault: e.isDefault,
+      uploadToken: e.uploadToken,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     }));
@@ -34,6 +47,7 @@ export class EventsController {
       eventID: event.eventID,
       name: event.name,
       isDefault: event.isDefault,
+      uploadToken: event.uploadToken,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
     };
@@ -46,6 +60,23 @@ export class EventsController {
   ): Promise<TimelineResponseDto> {
     const userId = req.user.userId;
     return this.eventsService.getTimelineTrack(userId, eventID);
+  }
+
+  @Post(':eventID/upload-link')
+  async createUploadLink(
+    @Request() req,
+    @Param('eventID') eventID: string,
+  ): Promise<{ token: string }> {
+    const userId = req.user.userId;
+    const token = await this.eventsService.createUploadLink(userId, eventID);
+    return { token };
+  }
+
+  @Delete(':eventID/upload-link')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async revokeUploadLink(@Request() req, @Param('eventID') eventID: string): Promise<void> {
+    const userId = req.user.userId;
+    await this.eventsService.revokeUploadLink(userId, eventID);
   }
 
   @Put(':eventID/timeline')

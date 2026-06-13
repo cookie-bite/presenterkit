@@ -11,6 +11,12 @@ export const Container = styled.div`
   background: ${({ theme }) => theme.colors.background.secondary};
 `;
 
+export const LeftGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
 export const Title = styled.span`
   ${({ theme }) => theme.text.callout.bold}
   color: ${({ theme }) => theme.colors.text.primary};
