@@ -1,5 +1,11 @@
 # @presenterkit/frontend
 
+## 2.2.0
+
+### Minor Changes
+
+- 2ff4061: Add public upload functionality
+
 ## 2.1.0
 
 ### Minor Changes
