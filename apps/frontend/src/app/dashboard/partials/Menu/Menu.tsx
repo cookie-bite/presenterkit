@@ -4,14 +4,21 @@ import { AnalyticsEvents, resetAnalyticsIdentity, trackEvent } from '@/lib/analy
 import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/ui';
 
-import { Container, Title } from './styled';
+import { ShareLink } from './partials/Actions/ShareLink';
+import { MenuPanel } from './partials/MenuPanel/MenuPanel';
+import { Container, LeftGroup, Title } from './styled';
 
 export const Menu = () => {
   const { mutate: logout, isPending } = useLogout();
 
   return (
     <Container>
-      <Title>PresenterKit</Title>
+      <LeftGroup>
+        <Title>PresenterKit</Title>
+        <MenuPanel triggerLabel='Actions'>
+          <ShareLink />
+        </MenuPanel>
+      </LeftGroup>
       <Button
         variant='text'
         isPending={isPending}

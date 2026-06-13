@@ -36,6 +36,9 @@ export class Event {
   @OneToMany(() => File, file => file.event)
   files: File[];
 
+  @Column({ nullable: true, unique: true, type: 'varchar' })
+  uploadToken: string | null;
+
   @Column({
     type: 'jsonb',
     default: () => "'[]'::jsonb",

@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, type Repository } from 'typeorm';
@@ -94,6 +96,23 @@ export class EventsService {
       clips: savedEvent.timelineTrack,
       updatedAt: savedEvent.updatedAt,
     };
+  }
+
+  async createUploadLink(userId: number, eventID: string): Promise<string> {
+    const event = await this.findByEventID(userId, eventID);
+    event.uploadToken = randomUUID();
+    await this.eventRepository.save(event);
+    return event.uploadToken;
+  }
+
+  async revokeUploadLink(userId: number, eventID: string): Promise<void> {
+    const event = await this.findByEventID(userId, eventID);
+    event.uploadToken = null;
+    await this.eventRepository.save(event);
+  }
+
+  async findByUploadToken(token: string): Promise<Event | null> {
+    return this.eventRepository.findOne({ where: { uploadToken: token } });
   }
 
   async removeClipsForFileId(userId: number, eventID: string, fileId: number): Promise<void> {

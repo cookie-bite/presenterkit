@@ -11,6 +11,7 @@ import { LoggingConfig } from './config/logging.config';
 import { EventsModule } from './events/events.module';
 import { FileModule } from './files/file.module';
 import { buildPinoLoggerParams } from './logging/pino-params.factory';
+import { PublicUploadModule } from './public-upload/public-upload.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { buildPinoLoggerParams } from './logging/pino-params.factory';
     AuthModule,
     EventsModule,
     FileModule,
+    PublicUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
