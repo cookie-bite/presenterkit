@@ -71,6 +71,9 @@ export class File {
   @Column({ nullable: true, type: 'int' })
   thumbnailHeight: number | null;
 
+  @Column({ nullable: true, type: 'float' })
+  duration: number | null;
+
   @Column({ nullable: true, type: 'varchar' })
   uploadedBy: string | null;
 
