@@ -19,3 +19,11 @@ export const OverlayClipThumbnail = styled(Image)`
   width: auto !important;
   display: block;
 `;
+
+export const AudioOverlay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+`;

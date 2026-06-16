@@ -16,6 +16,7 @@ import { AnalyticsEvents, trackEvent } from '@/lib/analytics';
 import { getTimeline, updateTimeline } from '@/lib/api/timeline.api';
 import { useFiles } from '@/lib/hooks/useFiles';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
+import { getDefaultDuration, isAudioFile } from '@/lib/utils/timeline';
 
 import { Displays } from './partials/Displays';
 import { DragOverlayThumbnail } from './partials/DragOverlay';
@@ -36,7 +37,7 @@ export default function Dashboard() {
   const [timelineHydrated, setTimelineHydrated] = useState(false);
   const [showSaveFailed, setShowSaveFailed] = useState(false);
   const lastSavedClipsRef = useRef<string | null>(null);
-  const { clips, setClips } = useTimelineStore();
+  const { clips, audioClips, setClips } = useTimelineStore();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -46,8 +47,11 @@ export default function Dashboard() {
     void (async () => {
       const result = await getTimeline();
       if (isMounted && result && !('error' in result)) {
-        setClips(result.clips);
-        lastSavedClipsRef.current = JSON.stringify(result.clips);
+        setClips(result.clips, result.audioClips ?? []);
+        lastSavedClipsRef.current = JSON.stringify({
+          clips: result.clips,
+          audioClips: result.audioClips ?? [],
+        });
       }
       if (isMounted) {
         setTimelineHydrated(true);
@@ -64,16 +68,19 @@ export default function Dashboard() {
       return;
     }
 
-    const serializedClips = JSON.stringify(clips);
-    if (serializedClips === lastSavedClipsRef.current) {
+    const serialized = JSON.stringify({ clips, audioClips });
+    if (serialized === lastSavedClipsRef.current) {
       return;
     }
 
     const timeoutId = setTimeout(() => {
       void (async () => {
-        const result = await updateTimeline(clips);
+        const result = await updateTimeline(clips, audioClips);
         if (result && !('error' in result)) {
-          lastSavedClipsRef.current = JSON.stringify(result.clips);
+          lastSavedClipsRef.current = JSON.stringify({
+            clips: result.clips,
+            audioClips: result.audioClips ?? [],
+          });
           setShowSaveFailed(false);
           return;
         }
@@ -85,7 +92,7 @@ export default function Dashboard() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [clips, timelineHydrated]);
+  }, [clips, audioClips, timelineHydrated]);
 
   function handleDragStart(event: DragStartEvent) {
     const data = event.active.data.current;
@@ -99,16 +106,27 @@ export default function Dashboard() {
     setActiveDrag(null);
     if (!over) return;
 
-    const { clips, addClip, reorderClips } = useTimelineStore.getState();
+    const { clips, audioClips, addClip, addAudioClip, reorderClips } = useTimelineStore.getState();
     const activeData = active.data.current;
 
     if (activeData?.type === 'file') {
       const overId = String(over.id);
-      const isOverTimeline =
+      const file = files.find(f => f.fileId === activeData.fileId);
+      if (!file) return;
+
+      const isAudio = isAudioFile(file);
+
+      const isOverAudioTrack =
+        overId === 'audio-track' || audioClips.some(c => c.instanceId === overId);
+      const isOverMainTrack =
         overId === 'timeline-track' || clips.some(c => c.instanceId === overId);
-      if (isOverTimeline) {
-        addClip(activeData.fileId);
-        trackEvent(AnalyticsEvents.clipAddedToTimeline, { file_id: activeData.fileId });
+
+      if (isOverAudioTrack && isAudio) {
+        addAudioClip(file.fileId, getDefaultDuration(file));
+        trackEvent(AnalyticsEvents.clipAddedToTimeline, { file_id: file.fileId });
+      } else if (isOverMainTrack && !isAudio) {
+        addClip(file.fileId, getDefaultDuration(file));
+        trackEvent(AnalyticsEvents.clipAddedToTimeline, { file_id: file.fileId });
       }
     } else if (activeData?.type === 'clip') {
       const oldIndex = clips.findIndex(c => c.instanceId === String(active.id));

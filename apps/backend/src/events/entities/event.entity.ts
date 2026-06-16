@@ -43,7 +43,13 @@ export class Event {
     type: 'jsonb',
     default: () => "'[]'::jsonb",
   })
-  timelineTrack: Array<{ instanceId: string; fileId: number }>;
+  timelineTrack: Array<{ instanceId: string; fileId: number; duration: number }>;
+
+  @Column({
+    type: 'jsonb',
+    default: () => "'[]'::jsonb",
+  })
+  audioTrack: Array<{ instanceId: string; fileId: number; duration: number }>;
 
   @CreateDateColumn()
   createdAt: Date;

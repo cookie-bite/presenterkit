@@ -39,7 +39,7 @@ export const Files = ({ files }: { files: FileResponse[] }) => {
       <Container onClick={resetSelection}>
         {FileInput}
         {!isUploadActive && isEmpty ? (
-          <EmptyHint>Step 1: Upload your assets - image, video, PDF, or PPTX.</EmptyHint>
+          <EmptyHint>Step 1: Upload your assets - image, video, audio, PDF, or PPTX.</EmptyHint>
         ) : (
           <ScrollView $gap='6px' $padding='8px'>
             {fileDone !== null && fileTotal !== null && (

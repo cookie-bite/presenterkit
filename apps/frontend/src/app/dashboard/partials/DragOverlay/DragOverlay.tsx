@@ -1,13 +1,26 @@
 import { FileResponse } from '@/lib/api/file.api';
+import { isAudioFile } from '@/lib/utils/timeline';
+import { Icon } from '@/ui';
 
-import { OverlayClipThumbnail, OverlayClipWrapper } from './styled';
+import { AudioOverlay, OverlayClipThumbnail, OverlayClipWrapper } from './styled';
 
 interface DragOverlayThumbnailProps {
   file: FileResponse;
 }
 
 export const DragOverlayThumbnail = ({ file }: DragOverlayThumbnailProps) => {
+  if (isAudioFile(file)) {
+    return (
+      <OverlayClipWrapper>
+        <AudioOverlay>
+          <Icon name='musical-notes' size={32} color='text.tertiary' />
+        </AudioOverlay>
+      </OverlayClipWrapper>
+    );
+  }
+
   if (!file.thumbnailUrl) return null;
+
   return (
     <OverlayClipWrapper>
       <OverlayClipThumbnail

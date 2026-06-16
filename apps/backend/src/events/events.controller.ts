@@ -86,6 +86,6 @@ export class EventsController {
     @Body() dto: UpdateTimelineDto,
   ): Promise<TimelineResponseDto> {
     const userId = req.user.userId;
-    return this.eventsService.saveTimelineTrack(userId, eventID, dto.clips);
+    return this.eventsService.saveTimelineTrack(userId, eventID, dto.clips, dto.audioClips);
   }
 }

@@ -1,7 +1,16 @@
 import { FileResponse } from '@/lib/api/file.api';
 import { TimelineClip } from '@/lib/stores/timeline.store';
 
-export type StepKind = 'image' | 'video' | 'slide';
+export type StepKind = 'image' | 'video' | 'slide' | 'audio';
+
+export const isAudioFile = (file: FileResponse): boolean =>
+  file.mimeType?.startsWith('audio/') ?? false;
+
+export const isVideoFile = (file: FileResponse): boolean =>
+  file.mimeType?.startsWith('video/') ?? false;
+
+export const DEFAULT_IMAGE_DURATION_S = 12;
+export const DEFAULT_SLIDE_DURATION_PER_PAGE_S = 12;
 
 export interface TimelineStep {
   key: string;
@@ -13,10 +22,19 @@ export interface TimelineStep {
   src: string;
 }
 
+export function getDefaultDuration(file: FileResponse): number {
+  const mime = file.mimeType ?? '';
+  if (mime.startsWith('audio/') || mime.startsWith('video/'))
+    return file.duration ?? DEFAULT_IMAGE_DURATION_S;
+  if (mime.startsWith('image/')) return DEFAULT_IMAGE_DURATION_S;
+  return (file.pageCount ?? 1) * DEFAULT_SLIDE_DURATION_PER_PAGE_S;
+}
+
 function getViewerType(file: FileResponse): StepKind {
   const mime = file.mimeType ?? '';
   if (mime.startsWith('image/')) return 'image';
   if (mime.startsWith('video/')) return 'video';
+  if (mime.startsWith('audio/')) return 'audio';
   return 'slide';
 }
 
