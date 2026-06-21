@@ -1,5 +1,15 @@
 # @presenterkit/frontend
 
+## 2.3.0
+
+### Minor Changes
+
+- ef0e67a: Add audio clips support to timeline
+
+### Patch Changes
+
+- e644ee8: Improve timeline UI
+
 ## 2.2.0
 
 ### Minor Changes

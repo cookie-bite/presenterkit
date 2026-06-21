@@ -1,5 +1,16 @@
 # @presenterkit/backend
 
+## 2.3.0
+
+### Minor Changes
+
+- 844b3fc: Add support for audio files on backend
+
+### Patch Changes
+
+- ef0e67a: Add audio clips support to timeline
+- e644ee8: Improve timeline UI
+
 ## 2.2.0
 
 ### Minor Changes
