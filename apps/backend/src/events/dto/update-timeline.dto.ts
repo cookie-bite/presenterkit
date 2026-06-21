@@ -9,4 +9,10 @@ export class UpdateTimelineDto {
   @ValidateNested({ each: true })
   @Type(() => TimelineClipDto)
   clips: TimelineClipDto[];
+
+  @IsArray()
+  @ArrayMaxSize(500)
+  @ValidateNested({ each: true })
+  @Type(() => TimelineClipDto)
+  audioClips: TimelineClipDto[];
 }

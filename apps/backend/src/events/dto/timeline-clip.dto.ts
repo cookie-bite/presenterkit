@@ -1,4 +1,4 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class TimelineClipDto {
   @IsString()
@@ -6,4 +6,11 @@ export class TimelineClipDto {
 
   @IsInt()
   fileId: number;
+
+  @IsNumber()
+  duration: number;
+
+  @IsOptional()
+  @IsNumber()
+  startTime?: number;
 }

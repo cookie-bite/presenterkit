@@ -144,7 +144,9 @@ export const DisplayCard = ({
             disabled={
               disabled ||
               safeTotal === 0 ||
-              (currentStep >= Math.max(totalSteps - 1, 0) && currentKind !== 'video')
+              (currentStep >= Math.max(totalSteps - 1, 0) &&
+                currentKind !== 'video' &&
+                !nextWillPlay)
             }
           >
             <Icon name={nextWillPlay ? 'play' : 'chevron-forward'} size={16} />

@@ -14,6 +14,7 @@ export class FileResponseDto {
   thumbnailUrl?: string | null;
   thumbnailWidth?: number | null;
   thumbnailHeight?: number | null;
+  duration?: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

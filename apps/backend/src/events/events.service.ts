@@ -59,10 +59,11 @@ export class EventsService {
   async getTimelineTrack(
     userId: number,
     eventID: string,
-  ): Promise<{ clips: TimelineClipDto[]; updatedAt: Date }> {
+  ): Promise<{ clips: TimelineClipDto[]; audioClips: TimelineClipDto[]; updatedAt: Date }> {
     const event = await this.findByEventID(userId, eventID);
     return {
       clips: event.timelineTrack ?? [],
+      audioClips: event.audioTrack ?? [],
       updatedAt: event.updatedAt,
     };
   }
@@ -71,29 +72,34 @@ export class EventsService {
     userId: number,
     eventID: string,
     clips: TimelineClipDto[],
-  ): Promise<{ clips: TimelineClipDto[]; updatedAt: Date }> {
+    audioClips: TimelineClipDto[],
+  ): Promise<{ clips: TimelineClipDto[]; audioClips: TimelineClipDto[]; updatedAt: Date }> {
     const event = await this.findByEventID(userId, eventID);
-    const fileIds = [...new Set(clips.map(clip => clip.fileId))];
+    const allFileIds = [
+      ...new Set([...clips.map(c => c.fileId), ...audioClips.map(c => c.fileId)]),
+    ];
 
-    if (fileIds.length > 0) {
+    if (allFileIds.length > 0) {
       const validFilesCount = await this.fileRepository.count({
         where: {
-          id: In(fileIds),
+          id: In(allFileIds),
           userId,
           eventId: event.id,
         },
       });
 
-      if (validFilesCount !== fileIds.length) {
+      if (validFilesCount !== allFileIds.length) {
         throw new BadRequestException('Timeline contains invalid fileId');
       }
     }
 
     event.timelineTrack = clips;
+    event.audioTrack = audioClips;
     const savedEvent = await this.eventRepository.save(event);
 
     return {
       clips: savedEvent.timelineTrack,
+      audioClips: savedEvent.audioTrack,
       updatedAt: savedEvent.updatedAt,
     };
   }
@@ -117,12 +123,14 @@ export class EventsService {
 
   async removeClipsForFileId(userId: number, eventID: string, fileId: number): Promise<void> {
     const event = await this.findByEventID(userId, eventID);
-    const track = event.timelineTrack ?? [];
-    const nextTrack = track.filter(clip => clip.fileId !== fileId);
-    if (nextTrack.length === track.length) {
-      return;
-    }
+    const nextTrack = (event.timelineTrack ?? []).filter(clip => clip.fileId !== fileId);
+    const nextAudioTrack = (event.audioTrack ?? []).filter(clip => clip.fileId !== fileId);
+    const changed =
+      nextTrack.length !== (event.timelineTrack ?? []).length ||
+      nextAudioTrack.length !== (event.audioTrack ?? []).length;
+    if (!changed) return;
     event.timelineTrack = nextTrack;
+    event.audioTrack = nextAudioTrack;
     await this.eventRepository.save(event);
   }
 }

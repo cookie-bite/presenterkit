@@ -61,3 +61,14 @@ export const Thumbnail = styled(ResponsiveImage)`
   border-radius: ${({ theme }) => theme.radius.lg};
   z-index: 0;
 `;
+
+export const AudioPlaceholder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.fill.secondary};
+  z-index: 0;
+`;

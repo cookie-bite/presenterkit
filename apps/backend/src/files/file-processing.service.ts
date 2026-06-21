@@ -10,7 +10,12 @@ import { imageSize } from 'image-size';
 
 import { AzureConfig } from '../config/azure.config';
 import { File } from './entities/file.entity';
-import { isImageMimeType, isOfficeMimeType, isVideoMimeType } from './file-types.constants';
+import {
+  isAudioMimeType,
+  isImageMimeType,
+  isOfficeMimeType,
+  isVideoMimeType,
+} from './file-types.constants';
 
 type ProcessingResult =
   | { type: 'queued' }
@@ -21,6 +26,7 @@ type ProcessingResult =
       thumbnailUrl: string | null;
       thumbnailWidth: number | null;
       thumbnailHeight: number | null;
+      duration: number | null;
     };
 
 @Injectable()
@@ -35,7 +41,11 @@ export class FileProcessingService {
   }
 
   async start(file: File, uploadedFile: Express.Multer.File): Promise<ProcessingResult> {
-    if (isImageMimeType(uploadedFile.mimetype) || isVideoMimeType(uploadedFile.mimetype)) {
+    if (
+      isImageMimeType(uploadedFile.mimetype) ||
+      isVideoMimeType(uploadedFile.mimetype) ||
+      isAudioMimeType(uploadedFile.mimetype)
+    ) {
       const result = await this.uploadDirectlyToBlob(file, uploadedFile);
       this.logger.log(
         {
@@ -78,9 +88,14 @@ export class FileProcessingService {
     thumbnailUrl: string | null;
     thumbnailWidth: number | null;
     thumbnailHeight: number | null;
+    duration: number | null;
   }> {
     if (!file.storageKey) {
       throw new Error(`storageKey is missing for fileId=${file.id}`);
+    }
+
+    if (isAudioMimeType(uploadedFile.mimetype)) {
+      return this.uploadAudioToBlob(file, uploadedFile);
     }
 
     const folder = isImageMimeType(uploadedFile.mimetype) ? 'image' : 'video';
@@ -150,7 +165,49 @@ export class FileProcessingService {
       }
     }
 
-    return { blobUrl, blobPath: sourceBlobPath, thumbnailUrl, thumbnailWidth, thumbnailHeight };
+    return {
+      blobUrl,
+      blobPath: sourceBlobPath,
+      thumbnailUrl,
+      thumbnailWidth,
+      thumbnailHeight,
+      duration: null,
+    };
+  }
+
+  private async uploadAudioToBlob(
+    file: File,
+    uploadedFile: Express.Multer.File,
+  ): Promise<{
+    blobUrl: string;
+    blobPath: string;
+    thumbnailUrl: null;
+    thumbnailWidth: null;
+    thumbnailHeight: null;
+    duration: number | null;
+  }> {
+    const ctx = { userId: file.userId, fileId: file.id };
+    const { mp3Buffer, duration } = await this.transcodeAudioToMp3(uploadedFile.buffer, ctx);
+
+    const blobPath = this.buildBlobPath(file.storageKey!, 'audio', 'source.mp3');
+    const blobClient = this.containerClient.getBlockBlobClient(blobPath);
+    await blobClient.uploadData(mp3Buffer, {
+      blobHTTPHeaders: {
+        blobContentType: 'audio/mpeg',
+        blobCacheControl: 'max-age=86400',
+      },
+    });
+
+    this.logger.log({ ...ctx, action: 'audio_transcode' }, 'Audio transcoded and uploaded');
+
+    return {
+      blobUrl: blobClient.url,
+      blobPath,
+      thumbnailUrl: null,
+      thumbnailWidth: null,
+      thumbnailHeight: null,
+      duration,
+    };
   }
 
   private readImageDimensions(buffer: Buffer): { width: number | null; height: number | null } {
@@ -221,6 +278,51 @@ export class FileProcessingService {
       const err = error instanceof Error ? error : new Error(String(error));
       this.logger.warn({ err, ...ctx }, 'FFmpeg video transcoding failed, using original');
       return null;
+    } finally {
+      await Promise.allSettled([
+        fs.unlink(inputPath).catch(() => undefined),
+        fs.unlink(outputPath).catch(() => undefined),
+      ]);
+    }
+  }
+
+  private async transcodeAudioToMp3(
+    audioBuffer: Buffer,
+    ctx: { userId: number; fileId: number },
+  ): Promise<{ mp3Buffer: Buffer; duration: number | null }> {
+    const tempDir = tmpdir();
+    const inputPath = join(tempDir, `${randomUUID()}.tmp`);
+    const outputPath = join(tempDir, `${randomUUID()}.mp3`);
+
+    try {
+      await fs.writeFile(inputPath, audioBuffer);
+
+      let duration: number | null = null;
+
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg.ffprobe(inputPath, (err, metadata) => {
+          if (!err) {
+            duration = metadata.format.duration ?? null;
+          }
+          resolve();
+        });
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg(inputPath)
+          .outputOptions(['-codec:a', 'libmp3lame', '-b:a', '192k', '-ac', '2', '-ar', '44100'])
+          .output(outputPath)
+          .on('end', () => resolve())
+          .on('error', (err: Error) => reject(err))
+          .run();
+      });
+
+      const mp3Buffer = await fs.readFile(outputPath);
+      return { mp3Buffer, duration };
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.warn({ err, ...ctx }, 'FFmpeg audio transcoding failed');
+      throw err;
     } finally {
       await Promise.allSettled([
         fs.unlink(inputPath).catch(() => undefined),

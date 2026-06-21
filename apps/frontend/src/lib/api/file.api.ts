@@ -21,6 +21,7 @@ export interface FileResponse {
   thumbnailUrl?: string | null;
   thumbnailWidth?: number | null;
   thumbnailHeight?: number | null;
+  duration?: number | null;
   createdAt?: string;
   updatedAt?: string;
 }

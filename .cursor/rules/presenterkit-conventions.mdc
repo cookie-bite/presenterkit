@@ -1,0 +1,229 @@
+---
+description: PresenterKit coding conventions for backend (NestJS) and frontend (Next.js + React)
+alwaysApply: true
+---
+
+# PresenterKit — Development Conventions
+
+Project structure: `apps/backend` (NestJS + TypeORM + PostgreSQL) and `apps/frontend` (Next.js 16 + React 19 + styled-components).
+
+---
+
+## General TypeScript
+
+- Strict TypeScript everywhere — no `any`; use `unknown` with narrowing when type is external.
+- Always declare types for function parameters and return values.
+- Use `interface` for object shapes; use `type` for unions, intersections, and mapped types.
+- Use `readonly` for immutable properties; `as const` for literal constants.
+- Name boolean variables with auxiliary verbs: `isLoading`, `hasError`, `canDelete`.
+- Use PascalCase for classes and interfaces; camelCase for variables and functions; kebab-case for file and directory names.
+- Use complete words over abbreviations. Accepted exceptions: `i`/`j` for loops, `err` for errors, `ctx` for contexts, `req`/`res`/`next` for middleware.
+- Start function names with a verb. Booleans → `isX`/`hasX`/`canX`; void functions → `executeX`/`saveX`.
+- Keep functions short and single-purpose (aim for < 20 statements).
+- Avoid deep nesting — use early returns and guard clauses instead.
+- Use the RORO (Receive Object, Return Object) pattern for functions with multiple parameters.
+- Use `async/await` over raw Promises.
+- No magic numbers — define named constants.
+
+---
+
+## Backend (`apps/backend`) — NestJS
+
+### Module Architecture
+
+- One module per main domain (`auth`, `files`, `events`, `public-upload`).
+- Each module owns: a controller, DTOs (`dto/`), entities (`entities/`), interfaces (`interfaces/`), service(s), and tests (`tests/`).
+- `config/` holds environment configuration via `@itgorillaz/configify`.
+- `logging/` holds Pino setup — do not add ad-hoc console logs.
+- Cross-cutting concerns (guards, filters, interceptors) live in a `core` module — do not scatter them.
+- Shared utilities go in a `shared` module.
+
+### Controllers and Services
+
+- Controllers only handle HTTP concerns (routing, parsing, response mapping) — no business logic.
+- Services own business logic and persistence. One service per entity.
+- Use `class-validator` + `class-transformer` for all DTO validation — never validate manually in service methods.
+- Return plain typed objects from services; avoid returning entity instances directly to controllers.
+
+### Authentication
+
+- JWT via `@nestjs/jwt` + Passport strategies. Do not bypass guards.
+- Passwords hashed with Argon2 — never store or log plaintext passwords.
+- Cookies managed via `cookie-parser`.
+
+### Database (TypeORM + PostgreSQL)
+
+- Use `TIMESTAMPTZ` for all timestamp columns, never `TIMESTAMP` without timezone.
+- Use `UUID` for public-facing IDs; prefer auto-generated PKs for internal keys.
+- All FK columns must have explicit `ON DELETE` behavior defined.
+- Never use `SELECT *` — always select explicit columns.
+- Add LIMIT on all potentially large queries.
+
+### Logging
+
+- Use Pino via `nestjs-pino` — it is already configured in `logging/`.
+- Log at `info` for normal operations, `warn` for unexpected-but-recoverable states, `error` for failures.
+- Never log sensitive data (passwords, tokens, PII).
+
+### Error Handling
+
+- Use NestJS exception filters for consistent HTTP error responses.
+- Throw NestJS built-in HTTP exceptions (`NotFoundException`, `BadRequestException`, etc.) from services when appropriate.
+- Use a global exception filter for unhandled errors — do not silence them.
+
+### Testing (Jest)
+
+- Test files live in `tests/` within each module (e.g., `auth/tests/`).
+- Follow Arrange-Act-Assert in unit tests.
+- Name variables: `inputX`, `mockX`, `actualX`, `expectedX`.
+- Use Jest mocks for external dependencies (Azure Blob, Resend email, etc.).
+- Write at least one unit test per public service method.
+
+---
+
+## Frontend (`apps/frontend`) — Next.js + React
+
+### Project Structure
+
+```
+src/
+  app/                        # Next.js App Router routes
+  ui/
+    components/               # Reusable UI library components
+    theme/                    # styled-components theme and global styles
+  lib/
+    api/                      # ky-based API clients (one file per resource)
+    stores/                   # Zustand stores (one file per domain)
+    hooks/                    # Shared hooks (used across multiple features)
+    utils/                    # Pure utility functions
+    sse/                      # Server-Sent Events helpers
+```
+
+#### Route folder (`src/app/<route>/`)
+
+```
+<route>/
+  page.tsx          # Route entry point
+  layout.tsx        # (optional) Route layout
+  styled.ts         # Page-level styled components
+  schemas.ts        # (optional) Zod schemas for all forms on this route
+  schemas.test.ts   # (optional) Schema unit tests
+  page.test.tsx     # (optional) Page-level tests
+  partials/         # Sub-components used only by this route
+```
+
+#### Partial / feature component (`partials/<Name>/`)
+
+```
+<Name>/
+  <Name>.tsx        # Component implementation
+  styled.ts         # Local styled components
+  index.ts          # Barrel export
+  <Name>.test.tsx   # (optional) Component tests
+  hooks/            # (optional) Hooks local to this component
+    use<Name>.ts
+  types.ts          # (optional) Component-specific types
+  partials/         # (optional) Nested sub-components, same structure recursively
+```
+
+#### UI library component (`src/ui/components/<Name>/`)
+
+```
+<Name>/
+  <Name>.tsx        # Component implementation
+  <Name>.styled.ts  # Styled components (prefixed unlike route partials)
+  <Name>.types.ts   # TypeScript types
+  index.ts          # Barrel export
+  <Name>.icons.ts   # (optional) Icon/asset registry
+```
+
+### Components
+
+- Use functional components only.
+- Use `function` declarations for top-level components — not `const` arrow functions.
+- One component per file; named exports only.
+- Component types (props, local types) live in a `types.ts` within the same co-located folder.
+- Hooks local to a component live in that component's `partials/` folder. Only hooks shared across multiple features go in `src/lib/hooks/`.
+- Keep component files small — extract sub-components and helpers when a file grows unwieldy.
+
+### Styling (styled-components)
+
+- All styling via styled-components — no inline `style` props except for truly dynamic values.
+- For locally-scoped styled components (used only within their file), keep names short and generic: `Container`, `Title`, `Wrapper`. Only prefix with the component name (e.g. `CardTitle`) when the styled component is exported or shared across files.
+- Before creating a new UI element, check `src/ui/components/` first. Use the existing component if one fits; create a new one there only if nothing suitable exists.
+- Use `ThemeProvider` and the project theme from `src/ui/theme/` for all design tokens (colors, spacing, typography).
+- Use the `css` helper for conditional/complex style blocks.
+- Add proper TypeScript prop types to styled components that accept props for dynamic styling.
+- Do not mix styled-components with Tailwind or other styling solutions.
+
+### Data Fetching (TanStack Query v5)
+
+- TanStack Query manages all server state — do not duplicate fetched data into Zustand.
+- Always define `queryOptions()` outside components, never inline inside `useQuery()`.
+- Use a query key factory pattern per resource (e.g., `fileKeys`, `eventKeys`).
+- Mutations invalidate the relevant query keys on success.
+- Use `useSuspenseQuery` with `<Suspense>` + error boundary wrappers for data-dependent UI.
+- Never use `useEffect` to fetch data.
+- API calls go in `src/lib/api/` — one file per resource using the `ky` client from `client.ts`.
+
+### Client State (Zustand)
+
+- Zustand is for shared client-only state (e.g., `display.store`, `preview.store`, `timeline.store`).
+- Do not put server/fetched data in Zustand — that belongs in TanStack Query.
+- Each store is domain-focused. Define explicit `State` and `Actions` interfaces.
+- Subscribe to the smallest needed slice: `useStore((s) => s.value)`.
+- Use `useShallow` when selecting multiple values at once.
+- Use functional `set((state) => …)` when next state depends on current state.
+- Never persist secrets or auth tokens to browser storage.
+- Do not create a single global store for everything.
+
+### Forms (React Hook Form + Zod)
+
+- All forms use `react-hook-form` with `@hookform/resolvers/zod`.
+- Zod schemas live in a route-level `schemas.ts` (e.g. `src/app/auth/schemas.ts`) — one file per route grouping all its form schemas. Export inferred types (`z.infer<typeof schema>`) from the same file.
+- Show field-level validation errors using the `formState.errors` object.
+- Async submit errors should be surfaced to the user — not silently swallowed.
+
+### Error Handling
+
+- Use error boundaries (`error.tsx` in App Router) for unexpected rendering errors.
+- API errors thrown from `src/lib/api/` are caught by TanStack Query and surfaced via `isError`/`error`.
+- Do not use `try/catch` for expected API errors in query functions — let TanStack Query handle them.
+
+### Next.js App Router
+
+- Most routes (`/auth`, `/dashboard`, `/upload`) are client components — they rely heavily on hooks and do not need SEO optimization. Mark them with `'use client'`.
+- Only the main public-facing page uses React Server Components for SEO. Do not add RSC to pages that don't need it.
+- Optimize images: use `<Image>` from `next/image` with explicit `width`/`height` or `fill`.
+
+### Testing (Vitest + Testing Library)
+
+- Unit and component tests use Vitest + `@testing-library/react`.
+- Mock dependencies with `vi.mock()` before imports.
+- Follow Arrange-Act-Assert. Group related tests in `describe` blocks with descriptive names.
+
+---
+
+## Git
+
+Follow Conventional Commits:
+
+```
+<type>[optional scope]: <description>
+```
+
+Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `style`, `perf`, `ci`.
+Scope example: `feat(auth): add refresh token rotation`.
+Breaking changes: append `!` to type or add `BREAKING CHANGE:` footer.
+
+Keep messages brief — describe what changed and why, not where. Do not list file paths in the message.
+
+---
+
+## Code Quality
+
+- ESLint + Prettier are configured in both apps. Run `npm run check` before committing.
+- Import order is enforced via `eslint-plugin-simple-import-sort`.
+- Do not commit code that fails lint or type checks.
+- Only change what was asked. Do not refactor unrelated code in the same PR.
+- No speculative abstractions — add abstraction only when there is a concrete, present need.

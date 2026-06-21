@@ -101,6 +101,7 @@ export class FileService {
     blobPath?: string,
     thumbnailWidth?: number | null,
     thumbnailHeight?: number | null,
+    duration?: number | null,
   ): Promise<void> {
     const file = await this.fileRepository.findOne({
       where: { id: fileId, userId },
@@ -128,6 +129,9 @@ export class FileService {
     }
     if (thumbnailHeight !== undefined) {
       file.thumbnailHeight = thumbnailHeight;
+    }
+    if (duration !== undefined) {
+      file.duration = duration;
     }
 
     await this.fileRepository.save(file);
@@ -207,6 +211,7 @@ export class FileService {
           result.blobPath,
           result.thumbnailWidth,
           result.thumbnailHeight,
+          result.duration,
         );
         this.logger.log(
           {

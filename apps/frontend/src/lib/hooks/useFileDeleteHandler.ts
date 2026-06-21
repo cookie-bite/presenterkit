@@ -23,18 +23,20 @@ export function useFileDeleteHandler() {
         : null;
 
     const previousClips = useTimelineStore.getState().clips;
+    const previousAudioClips = useTimelineStore.getState().audioClips;
     const nextClips = previousClips.filter(clip => clip.fileId !== fileId);
+    const nextAudioClips = previousAudioClips.filter(clip => clip.fileId !== fileId);
 
     queryClient.setQueryData<FileResponse[]>(['files'], nextFiles);
     setSelectedFile(nextSelectedFile);
-    useTimelineStore.getState().setClips(nextClips);
+    useTimelineStore.getState().setClips(nextClips, nextAudioClips);
 
     try {
       await deleteMutation.mutateAsync(fileId);
     } catch (error) {
       queryClient.setQueryData<FileResponse[]>(['files'], previousFiles);
       setSelectedFile(deletedIndex >= 0 ? previousFiles[deletedIndex] : null);
-      useTimelineStore.getState().setClips(previousClips);
+      useTimelineStore.getState().setClips(previousClips, previousAudioClips);
       console.error('Delete error:', error);
     }
   };

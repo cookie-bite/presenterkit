@@ -43,7 +43,10 @@ coverage/
 *.pem
 
 # IDEs and editors
-.cursor/
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/presenterkit-conventions.mdc
 .idea/
 .vscode/*
 !.vscode/settings.json

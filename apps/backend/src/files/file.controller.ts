@@ -86,6 +86,7 @@ export class FileController {
       thumbnailUrl: file.thumbnailUrl,
       thumbnailWidth: file.thumbnailWidth,
       thumbnailHeight: file.thumbnailHeight,
+      duration: file.duration,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     }));
@@ -136,6 +137,7 @@ export class FileController {
       thumbnailUrl: file.thumbnailUrl,
       thumbnailWidth: file.thumbnailWidth,
       thumbnailHeight: file.thumbnailHeight,
+      duration: file.duration,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     };
@@ -176,6 +178,7 @@ export class FileController {
       thumbnailUrl: file.thumbnailUrl,
       thumbnailWidth: file.thumbnailWidth,
       thumbnailHeight: file.thumbnailHeight,
+      duration: file.duration,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     };
