@@ -120,6 +120,7 @@ export const AudioClip = ({
         {isSelected && (
           <RemoveButton
             variant='ghost'
+            onPointerDown={e => e.stopPropagation()}
             onClick={e => {
               e.stopPropagation();
               trackEvent(AnalyticsEvents.clipRemovedFromTimeline, {
@@ -132,7 +133,7 @@ export const AudioClip = ({
             <Icon name='trash-outline' size={12} color='text.secondary' />
           </RemoveButton>
         )}
-        <Icon name='musical-notes' size={24} color='text.tertiary' />
+        <Icon name='musical-notes' size={16} color='text.tertiary' />
         <Label>{file.filename}</Label>
       </Inner>
     </Container>

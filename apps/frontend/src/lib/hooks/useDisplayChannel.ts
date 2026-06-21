@@ -16,6 +16,7 @@ export type DisplayStep = {
   src: string;
   page: number | null;
   pageCount: number;
+  audioSrc: string | null;
 };
 
 type DisplaySyncMessage = {

@@ -20,6 +20,7 @@ export interface TimelineStep {
   page: number | null;
   pageCount: number;
   src: string;
+  audioSrc: string | null;
 }
 
 export function getDefaultDuration(file: FileResponse): number {
@@ -43,35 +44,44 @@ function getPageImageUrl(thumbnailUrl: string, page: number): string {
   return thumbnailUrl.replace(/\d{3}\.webp$/, `${padded}.webp`);
 }
 
-export function buildTimelineSteps(clips: TimelineClip[], files: FileResponse[]): TimelineStep[] {
+export function buildTimelineSteps(
+  clips: TimelineClip[],
+  files: FileResponse[],
+  audioClips: TimelineClip[] = [],
+): TimelineStep[] {
   const fileMap = new Map(files.map(file => [file.fileId, file]));
+  const steps: TimelineStep[] = [];
+  let cumulativeTime = 0;
 
-  return clips.flatMap((clip): TimelineStep[] => {
+  for (const clip of clips) {
     const file = fileMap.get(clip.fileId);
-    if (!file) return [];
+    if (!file) {
+      cumulativeTime += clip.duration;
+      continue;
+    }
 
     const kind = getViewerType(file);
 
     if (kind === 'slide') {
       const pageCount = Math.max(file.pageCount ?? 1, 1);
+      const pageDuration = clip.duration / pageCount;
       const thumbnailUrl = file.thumbnailUrl ?? '';
 
-      return Array.from({ length: pageCount }, (_, i) => {
-        const page = i + 1;
-        return {
-          key: `${clip.instanceId}-${page}`,
+      for (let i = 0; i < pageCount; i++) {
+        const stepStart = cumulativeTime + i * pageDuration;
+        steps.push({
+          key: `${clip.instanceId}-${i + 1}`,
           kind,
           instanceId: clip.instanceId,
           file,
-          page,
+          page: i + 1,
           pageCount,
-          src: getPageImageUrl(thumbnailUrl, page),
-        };
-      });
-    }
-
-    return [
-      {
+          src: getPageImageUrl(thumbnailUrl, i + 1),
+          audioSrc: findAudioSrc(audioClips, fileMap, stepStart, pageDuration),
+        });
+      }
+    } else {
+      steps.push({
         key: `${clip.instanceId}-1`,
         kind,
         instanceId: clip.instanceId,
@@ -79,7 +89,25 @@ export function buildTimelineSteps(clips: TimelineClip[], files: FileResponse[])
         page: null,
         pageCount: 1,
         src: file.blobUrl ?? '',
-      },
-    ];
+        audioSrc: findAudioSrc(audioClips, fileMap, cumulativeTime, clip.duration),
+      });
+    }
+
+    cumulativeTime += clip.duration;
+  }
+
+  return steps;
+}
+
+function findAudioSrc(
+  audioClips: TimelineClip[],
+  fileMap: Map<number, FileResponse>,
+  stepStart: number,
+  stepDuration: number,
+): string | null {
+  const match = audioClips.find(ac => {
+    const t = ac.startTime ?? 0;
+    return t >= stepStart && t < stepStart + stepDuration;
   });
+  return match ? (fileMap.get(match.fileId)?.blobUrl ?? null) : null;
 }

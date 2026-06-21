@@ -9,7 +9,7 @@ export const Container = styled.div<{ $isSelected?: boolean; $width: number; $le
   width: ${({ $width }) => $width}px;
   height: 100%;
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.fill.secondary};
+  background: ${({ theme }) => theme.colors.shade.green};
   overflow: visible;
   outline: 2px solid
     ${({ theme, $isSelected }) => ($isSelected ? theme.colors.accent.blue : 'transparent')};
@@ -27,9 +27,9 @@ export const Container = styled.div<{ $isSelected?: boolean; $width: number; $le
 export const Inner = styled.div`
   position: relative;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
-  justify-content: center;
+  padding-left: 4px;
   gap: 4px;
   width: 100%;
   height: 100%;
@@ -38,8 +38,8 @@ export const Inner = styled.div`
 `;
 
 export const Label = styled.span`
-  ${({ theme }) => theme.text.caption2.regular}
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  ${({ theme }) => theme.text.subheadline.bold}
+  color: ${({ theme }) => theme.colors.text.secondary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -49,7 +49,7 @@ export const Label = styled.span`
 export const RemoveButton = styled(Button)`
   position: absolute;
   top: 2px;
-  right: 18px;
+  right: 2px;
   z-index: 2;
   flex-shrink: 0;
 `;

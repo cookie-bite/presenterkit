@@ -7,6 +7,7 @@ export { default as 'close' } from './icons/close.svg';
 export { default as 'cloud-upload-outline' } from './icons/cloud-upload-outline.svg';
 export { default as 'folder-open' } from './icons/folder-open.svg';
 export { default as 'folder-open-outline' } from './icons/folder-open-outline.svg';
+export { default as 'images' } from './icons/images.svg';
 export { default as 'musical-notes' } from './icons/musical-notes.svg';
 export { default as 'play' } from './icons/play.svg';
 export { default as 'radio-outline' } from './icons/radio-outline.svg';

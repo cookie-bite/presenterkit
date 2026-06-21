@@ -9,9 +9,12 @@ import { usePreviewStore } from '@/lib/stores/preview.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { Button, Icon } from '@/ui';
 
+import { timeToPixel } from './layout';
 import { AudioClip } from './partials/AudioClip';
 import { Clip } from './partials/Clip';
+import { Ruler } from './partials/Ruler';
 import {
+  Actions,
   ActionsRow,
   AudioTrack,
   Container,
@@ -24,26 +27,6 @@ import {
 } from './styled';
 
 export const ZOOM_LEVELS = [5, 10, 20, 40, 80] as const;
-
-// Must match Track's CSS padding and gap values.
-const TRACK_PADDING_PX = 8;
-const CLIP_GAP_PX = 8;
-
-/**
- * Converts a pure time value (seconds) to a pixel offset within the AudioTrack,
- * accounting for the fixed-pixel gaps between main-track clips so the audio
- * track stays aligned at every zoom level.
- */
-function timeToPixel(time: number, clips: Array<{ duration: number }>, pps: number): number {
-  let gapCount = 0;
-  let cumTime = 0;
-  for (const clip of clips) {
-    if (cumTime >= time) break;
-    cumTime += clip.duration;
-    if (cumTime <= time) gapCount++;
-  }
-  return TRACK_PADDING_PX + time * pps + gapCount * CLIP_GAP_PX;
-}
 
 export const Timeline = ({
   files,
@@ -87,15 +70,18 @@ export const Timeline = ({
     return times;
   }, [clips]);
 
-  const mainTrackWidth = useMemo(
-    () => clips.reduce((sum, c) => sum + c.duration, 0) * pixelsPerSecond,
-    [clips, pixelsPerSecond],
-  );
-
   const audioTrackWidth = useMemo(() => {
-    const maxEnd = audioClips.reduce((max, c) => Math.max(max, (c.startTime ?? 0) + c.duration), 0);
-    return Math.max(mainTrackWidth, maxEnd * pixelsPerSecond, 200);
-  }, [audioClips, mainTrackWidth, pixelsPerSecond]);
+    const totalDuration = clips.reduce((sum, c) => sum + c.duration, 0);
+    const mainLayoutWidth =
+      clips.length > 0 ? timeToPixel(totalDuration, clips, pixelsPerSecond) : 0;
+
+    const maxAudioEndPx = audioClips.reduce((max, clip) => {
+      const left = timeToPixel(clip.startTime ?? 0, clips, pixelsPerSecond);
+      return Math.max(max, left + clip.duration * pixelsPerSecond);
+    }, 0);
+
+    return Math.max(mainLayoutWidth, maxAudioEndPx, 200);
+  }, [audioClips, clips, pixelsPerSecond]);
 
   const resetSelection = () => {
     if (selectedInstanceId) selectClip(null);
@@ -103,25 +89,18 @@ export const Timeline = ({
 
   return (
     <Container onClick={resetSelection}>
-      <ActionsRow>
-        <ZoomRange
-          type='range'
-          min={0}
-          max={4}
-          step={1}
-          value={zoomIndex}
-          onChange={e => setZoomIndex(Number(e.target.value))}
-        />
-        {isDirty && (
-          <Button variant='ghost' onClick={commitClips}>
-            <Icon name='sync-outline' size={16} />
-          </Button>
-        )}
-      </ActionsRow>
-
       <TracksWrapper>
         <TrackRow>
-          <TrackLabel>Video</TrackLabel>
+          <TrackLabel aria-hidden>
+            <span style={{ width: 20, height: 20, flexShrink: 0 }} />
+          </TrackLabel>
+          <Ruler clips={clips} pixelsPerSecond={pixelsPerSecond} />
+        </TrackRow>
+
+        <TrackRow>
+          <TrackLabel>
+            <Icon name='images' size={20} color='text.tertiary' />
+          </TrackLabel>
           <Track
             ref={setMainRef}
             $isFileDragActive={isFileDragActive}
@@ -156,7 +135,9 @@ export const Timeline = ({
         </TrackRow>
 
         <TrackRow>
-          <TrackLabel>Audio</TrackLabel>
+          <TrackLabel>
+            <Icon name='musical-notes' size={20} color='text.tertiary' />
+          </TrackLabel>
           <AudioTrack
             ref={setAudioRef}
             $isFileDragActive={isFileDragActive}
@@ -191,6 +172,24 @@ export const Timeline = ({
           </AudioTrack>
         </TrackRow>
       </TracksWrapper>
+
+      <ActionsRow>
+        <Actions>
+          {isDirty && (
+            <Button variant='ghost' onClick={commitClips}>
+              <Icon name='sync-outline' size={16} />
+            </Button>
+          )}
+          <ZoomRange
+            type='range'
+            min={0}
+            max={4}
+            step={1}
+            value={zoomIndex}
+            onChange={e => setZoomIndex(Number(e.target.value))}
+          />
+        </Actions>
+      </ActionsRow>
     </Container>
   );
 };

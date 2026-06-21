@@ -19,6 +19,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const boundedStepIndex = Math.min(Math.max(stepIndex, 0), Math.max(steps.length - 1, 0));
   const activeStep = steps[boundedStepIndex];
@@ -44,7 +45,10 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
     }
 
     if (message.type === 'PLAY') {
-      void videoRef.current?.play();
+      if (videoRef.current && !videoRef.current.hidden) {
+        void videoRef.current.play();
+      }
+      void audioRef.current?.play();
     }
   }, []);
 
@@ -100,6 +104,15 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
     };
   }, [activeStep?.kind, boundedStepIndex, isReady, send]);
 
+  useEffect(() => {
+    videoRef.current?.pause();
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [boundedStepIndex]);
+
   if (!isReady) {
     return (
       <Container>
@@ -129,6 +142,7 @@ export const DisplayScreen = ({ displayId }: DisplayScreenProps) => {
         )}
         {activeStep.kind !== 'video' && <ImageStep src={activeStep.src} alt='Display step' />}
       </Stage>
+      {activeStep.audioSrc && <audio ref={audioRef} src={activeStep.audioSrc} />}
     </Container>
   );
 };

@@ -16,7 +16,7 @@ import { Container, List, OfflineHint } from './styled';
 export const Displays = () => {
   const { isOffline } = useOfflineStatus();
   const { files } = useFiles();
-  const { committedClips } = useTimelineStore();
+  const { committedClips, committedAudioClips } = useTimelineStore();
   const {
     displays,
     clickerDisplayId,
@@ -34,9 +34,13 @@ export const Displays = () => {
   const playbackTimeRef = useRef<number | null>(null);
   const playbackPausedRef = useRef<boolean>(false);
   const videoStartedStepRef = useRef<number | null>(null);
+  const audioStartedStepRef = useRef<number | null>(null);
   const prevStepsRef = useRef<typeof steps>([]);
 
-  const steps = useMemo(() => buildTimelineSteps(committedClips, files), [committedClips, files]);
+  const steps = useMemo(
+    () => buildTimelineSteps(committedClips, files, committedAudioClips),
+    [committedClips, committedAudioClips, files],
+  );
 
   const clickerRef = useRef<{
     clickerDisplayId: string | null;
@@ -96,9 +100,12 @@ export const Displays = () => {
         preserved >= 0
           ? preserved
           : Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
-      // Keep videoStartedStepRef in sync with the index change so "next" still advances.
+      // Keep started-step refs in sync with the index change so "next" still advances.
       if (videoStartedStepRef.current === activeDisplay.stepIndex) {
         videoStartedStepRef.current = syncStepIndex;
+      }
+      if (audioStartedStepRef.current === activeDisplay.stepIndex) {
+        audioStartedStepRef.current = syncStepIndex;
       }
     } else {
       syncStepIndex = Math.min(Math.max(activeDisplay.stepIndex, 0), Math.max(steps.length - 1, 0));
@@ -241,8 +248,12 @@ export const Displays = () => {
 
   const [nextWillPlay, setNextWillPlay] = useState(false);
   useEffect(() => {
-    setNextWillPlay(currentKind === 'video' && videoStartedStepRef.current !== currentStep);
-  }, [currentKind, currentStep]);
+    audioStartedStepRef.current = null;
+    setNextWillPlay(
+      (currentKind === 'video' && videoStartedStepRef.current !== currentStep) ||
+        currentStepData?.audioSrc != null,
+    );
+  }, [currentKind, currentStep, currentStepData?.audioSrc]);
 
   return (
     <Panel
@@ -278,6 +289,13 @@ export const Displays = () => {
                 onNext={() => {
                   if (currentKind === 'video' && videoStartedStepRef.current !== currentStep) {
                     videoStartedStepRef.current = currentStep;
+                    setNextWillPlay(false);
+                    send({ type: 'PLAY' });
+                  } else if (
+                    currentStepData?.audioSrc != null &&
+                    audioStartedStepRef.current !== currentStep
+                  ) {
+                    audioStartedStepRef.current = currentStep;
                     setNextWillPlay(false);
                     send({ type: 'PLAY' });
                   } else {

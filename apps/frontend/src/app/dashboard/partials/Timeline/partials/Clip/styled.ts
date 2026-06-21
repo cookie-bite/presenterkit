@@ -31,10 +31,10 @@ export const Inner = styled.div`
   overflow: hidden;
 `;
 
-export const RemoveButton = styled(Button)`
+export const RemoveButton = styled(Button)<{ $offsetForResize?: boolean }>`
   position: absolute;
   top: 2px;
-  right: 18px;
+  right: ${({ $offsetForResize }) => ($offsetForResize ? '18px' : '2px')};
   z-index: 2;
   flex-shrink: 0;
 `;

@@ -110,6 +110,8 @@ export const Clip = ({
         {isSelected && (
           <RemoveButton
             variant='ghost'
+            $offsetForResize={isResizable}
+            onPointerDown={e => e.stopPropagation()}
             onClick={e => {
               e.stopPropagation();
               trackEvent(AnalyticsEvents.clipRemovedFromTimeline, {
