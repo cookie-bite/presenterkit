@@ -11,7 +11,7 @@ import {
   timeToPixel,
   timeToRulerPixel,
   TRACK_PADDING_PX,
-} from '../../layout';
+} from '../../utils';
 import { RulerSizer, RulerTrack, Tick, TickLabel, TickMark } from './styled';
 
 interface RulerProps {

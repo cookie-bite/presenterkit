@@ -9,7 +9,6 @@ import { usePreviewStore } from '@/lib/stores/preview.store';
 import { useTimelineStore } from '@/lib/stores/timeline.store';
 import { Button, Icon } from '@/ui';
 
-import { timeToPixel } from './layout';
 import { AudioClip } from './partials/AudioClip';
 import { Clip } from './partials/Clip';
 import { Ruler } from './partials/Ruler';
@@ -25,6 +24,7 @@ import {
   TracksWrapper,
   ZoomRange,
 } from './styled';
+import { timeToPixel } from './utils';
 
 export const ZOOM_LEVELS = [5, 10, 20, 40, 80] as const;
 
